@@ -1,0 +1,14 @@
+
+
+
+.profileContainer {
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+
+  .profileContent {
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+  }
+}

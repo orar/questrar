@@ -1,0 +1,66 @@
+
+
+.contextStateAppContainer {
+
+}
+
+.requestButton {
+
+}
+
+
+.deleteButtonContainer {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  width: 50rem;
+  padding: 3rem;
+
+  .warning {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border-radius: .6rem;
+    border: 1px solid red;
+    background-color: rgba(255, 205, 206, 0.45);
+    min-height: 3rem;
+  }
+
+  .warnBold {
+    font-weight: 600;
+  }
+
+  .deleteStatusWrap {
+    margin: 2rem auto;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .deleteStatus {
+    margin: 2rem auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  .warnButtonWrap {
+    margin-top: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .deleteButton {
+    border: 1px solid #ccc;
+    background-color: #ffc8ca;
+    padding: .5rem;
+    border-radius: .2rem;
+  }
+
+
+  .redBack {
+    background-color: #ffc8ca;
+  }
+}

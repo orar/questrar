@@ -1,0 +1,46 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/node', '/usr/bin/npm', 'run', 'example-state' ]
+2 info using npm@3.10.10
+3 info using node@v6.14.3
+4 verbose run-script [ 'preexample-state', 'example-state', 'postexample-state' ]
+5 info lifecycle questrar@1.0.0~preexample-state: questrar@1.0.0
+6 silly lifecycle questrar@1.0.0~preexample-state: no script for preexample-state, continuing
+7 info lifecycle questrar@1.0.0~example-state: questrar@1.0.0
+8 verbose lifecycle questrar@1.0.0~example-state: unsafe-perm in lifecycle true
+9 verbose lifecycle questrar@1.0.0~example-state: PATH: /usr/lib/node_modules/npm/bin/node-gyp-bin:/home/orar/workspace/npmlab/questrar/node_modules/.bin:/home/orar/bin:/home/orar/.local/bin:/home/orar/bin:/home/orar/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/orar/Android/Sdk/tools:/home/orar/Android/Sdk/platform-tools:/snap/bin:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin:/home/orar/Android/Sdk/tools:/home/orar/Android/Sdk/platform-tools:/usr/lib/jvm/java-8-oracle/bin:/usr/lib/jvm/java-8-oracle/db/bin:/usr/lib/jvm/java-8-oracle/jre/bin
+10 verbose lifecycle questrar@1.0.0~example-state: CWD: /home/orar/workspace/npmlab/questrar
+11 silly lifecycle questrar@1.0.0~example-state: Args: [ '-c',
+11 silly lifecycle   'cross-env NODE_ENV=development node_modules/webpack-dev-server --host 0.0.0.0' ]
+12 silly lifecycle questrar@1.0.0~example-state: Returned: code: 1  signal: null
+13 info lifecycle questrar@1.0.0~example-state: Failed to exec example-state script
+14 verbose stack Error: questrar@1.0.0 example-state: `cross-env NODE_ENV=development node_modules/webpack-dev-server --host 0.0.0.0`
+14 verbose stack Exit status 1
+14 verbose stack     at EventEmitter.<anonymous> (/usr/lib/node_modules/npm/lib/utils/lifecycle.js:255:16)
+14 verbose stack     at emitTwo (events.js:106:13)
+14 verbose stack     at EventEmitter.emit (events.js:191:7)
+14 verbose stack     at ChildProcess.<anonymous> (/usr/lib/node_modules/npm/lib/utils/spawn.js:40:14)
+14 verbose stack     at emitTwo (events.js:106:13)
+14 verbose stack     at ChildProcess.emit (events.js:191:7)
+14 verbose stack     at maybeClose (internal/child_process.js:920:16)
+14 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:230:5)
+15 verbose pkgid questrar@1.0.0
+16 verbose cwd /home/orar/workspace/npmlab/questrar
+17 error Linux 4.15.0-34-generic
+18 error argv "/usr/bin/node" "/usr/bin/npm" "run" "example-state"
+19 error node v6.14.3
+20 error npm  v3.10.10
+21 error code ELIFECYCLE
+22 error questrar@1.0.0 example-state: `cross-env NODE_ENV=development node_modules/webpack-dev-server --host 0.0.0.0`
+22 error Exit status 1
+23 error Failed at the questrar@1.0.0 example-state script 'cross-env NODE_ENV=development node_modules/webpack-dev-server --host 0.0.0.0'.
+23 error Make sure you have the latest version of node.js and npm installed.
+23 error If you do, this is most likely a problem with the questrar package,
+23 error not with npm itself.
+23 error Tell the author that this fails on your system:
+23 error     cross-env NODE_ENV=development node_modules/webpack-dev-server --host 0.0.0.0
+23 error You can get information on how to open an issue for this project with:
+23 error     npm bugs questrar
+23 error Or if that isn't available, you can get their info via:
+23 error     npm owner ls questrar
+23 error There is likely additional logging output above.
+24 verbose exit [ 1, true ]
