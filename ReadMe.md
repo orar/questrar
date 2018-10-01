@@ -78,7 +78,7 @@ Where you explicitly want to use the request state, you can use the inject param
  
  ```
  const injector = (request: RequestState) => {
-    return { loading: request.state.pending };
+    return { loading: request.data.pending };
  }
  <Request id={anyId} inject={injector} >
     <Button >Fetch Profile</Button>
