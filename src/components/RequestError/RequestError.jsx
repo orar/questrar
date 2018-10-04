@@ -3,9 +3,9 @@ import React from 'react';
 import { findDOMNode } from 'react-dom';
 import type { Node } from 'react';
 import './RequestError.scss';
-import type {Request, RequestActions} from "../../QuestrarTypes";
-import Tooltip from 'react-tooltip';
-
+import type {Request, RequestActions} from "../../index";
+import Tooltip from 'tooltip.js';
+import { Manager, Reference, Popper } from 'react-popper';
 
 
 type Props = {
@@ -33,7 +33,19 @@ type State = {
 class RequestError extends React.Component<Props, State> {
   props: Props;
   state: State = { disabled: true };
-  _ref: Node;
+
+  // Element ref on which a tooltip is attached to.
+  _ref; //= React.createRef();
+
+  _tooltip: Tooltip;
+
+
+  componentWillUnmount() {
+    if(this._tooltip){
+     this._closeTooltip();
+    }
+  }
+
 
   /**
    * Sets the ref of the wrapping error node
@@ -45,23 +57,23 @@ class RequestError extends React.Component<Props, State> {
     this.setState({ disabled: false });
     this._ref = ref;
 
-    Tooltip.show(findDOMNode(this._ref));
-    //Tooltip.rebuild();
+    this._createTooltip({});
   };
 
   /**
-   * Hide the error message and disables tooltip
+   * Close and dispose tooltip
    * @private
    */
-  _hideErrorMessage = () => {
+  _closeTooltip = () => {
     const { id, actions, onCloseError } = this.props;
-    if(typeof onCloseError === "function"){
+    if( this._tooltip._isOpen && typeof onCloseError === "function"){
       onCloseError(id);
     }
-    Tooltip.hide(findDOMNode(this._ref));
-    this.setState({ disabled: true });
+    this._tooltip.hide();
+    this._tooltip.dispose();
     //actions.remove(id);
   };
+
 
 
   _children = () => {
@@ -83,22 +95,46 @@ class RequestError extends React.Component<Props, State> {
     return children;
   };
 
+
   /**
-   * Generate tooltip content message for callback handling
-   *
-   * @param tip Error message
-   * @returns {*}
+   * Adjust placement position of tooltip
    * @private
    */
-  _getContent = (tip: any) => {
-    return (
-      <div onClick={this._hideErrorMessage}>
-        {tip}
-      </div>
-    );
+  _adjustPosition = () => {
+    if (this._ref) {
+      this._ref.getBoundingClientRect()
+    }
+  };
+
+  /**
+   * Creates a success reporting tooltip around child component
+   *
+   * @returns {Tooltip}
+   * @private
+   */
+  _createTooltip = (options: Object) => {
+    const _options = options;
+    _options.html = true;
+    _options.trigger = '';
+    _options.placement = 'top';
+    //_options.title = <div onClick={this._closeTooltip}>{this.props.request.message}</div>;
+    _options.title = this.props.request.message;
+
+    const domNode = findDOMNode(this._ref);
+    this._tooltip = new Tooltip(domNode, _options);
+    this._tooltip.show();
   };
 
 
+  _tooltipp = (t) => {
+    console.log(t);
+    return (
+      <div ref={t.ref} style={t.style} data-placement={t.placement}>
+        {this.props.request.message}
+        <div ref={t.arrowProps.ref} style={t.arrowProps.style}/>
+      </div>
+    )
+  };
 
   render() {
     const {id, errorTooltip, request} = this.props;
@@ -106,26 +142,24 @@ class RequestError extends React.Component<Props, State> {
     if (errorTooltip && request.message) {
 
       return (
-        <div>
-          <span
-            ref={this._setRef}
-            data-for={id}
-            data-type="error"
-            data-event-off="click"
-            data-tip-disable={this.state.disabled}
-            data-tip={request.message}
-          >
-            {this._children()}
+        <Manager>
+          <Reference>
+            {({ ref }) => (
+              <span ref={ref} >
+          {this._children()}
           </span>
-          <Tooltip
-            effect="solid"
-            id={id}
-            html
-            multiline
-            getContent={this._getContent}
-          />
-        </div>
-      )
+            )}
+          </Reference>
+          <Popper
+            placement="top"
+            modifiers={{ preventOverflow: { enabled: false } }}
+            eventsEnabled={true}
+            positionFixed={false}
+          >
+            {this._tooltipp}
+          </Popper>
+        </Manager>
+      );
     }
 
 

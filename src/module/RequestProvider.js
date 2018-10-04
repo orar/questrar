@@ -1,10 +1,10 @@
 // @flow
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import type {Request, ProviderRequestState} from "../QuestrarTypes";
 import type {Node} from "react";
-import {initialRequest} from './common';
+import {FAILED, initialRequest, PENDING, SUCCESS, REMOVE} from './common';
 import { RequestProviderContext } from "./context";
-import {resetRequestFlags} from "./helper";
+import {isFunc, nonEmpty, resetRequestFlags} from "./helper";
 import StateProvider from "./StateProvider";
 
 
@@ -18,32 +18,32 @@ type State = {
 }
 
 
-//TODO: Request Provider needs to update
 /**
- * Provides request state via context to its component tree
+ * Provides request state via context to its sub component tree
  *
  * ```
- * const optionalStateProvider = new ReduxStateProvider(reduxStore);
+ * const optionalStateProvider = createStateProvider(reduxStore);
  *
  * <RequestProvider stateProvider?={optionalStateProvider} >
  *   <App />
  * </RequestProvider
  *```
- * @author Orar
  */
-class RequestProvider extends Component<Props, State> {
+class RequestProvider extends PureComponent<Props, State> {
     props: Props;
     state: State = { data: { } };
 
 
   /**
    * Observe updates from the external store and force a re-render of the component tree
+   * Since changes to the requestState outside of RequestProvider does not effect state nor props,
+   * a forced re-render is needed to apply changes to the component tree when there should be
    */
   componentDidMount() {
     if (this._hasStore()) {
-      if (typeof this.props.stateProvider.observe === 'function') {
-        this.props.stateProvider.observe(update => {
-          if (update) {
+      if (isFunc(this.props.stateProvider.observe)) {
+        this.props.stateProvider.observe(shouldUpdate => {
+          if (shouldUpdate) {
             this.forceUpdate();
           }
         });
@@ -58,13 +58,12 @@ class RequestProvider extends Component<Props, State> {
    * @private
    */
   _hasStore = () => {
-    return !!this.props.stateProvider;
+    return nonEmpty(this.props.stateProvider);
   };
 
   /**
    * Gets requestState from provided store.
    * Instance using redux, store.getState() returns store state
-   * @todo Move function to props. `getRequestStateFromStore` should be provided by the implemented store
    * @returns {*}
    * @private
    */
@@ -80,12 +79,12 @@ class RequestProvider extends Component<Props, State> {
    * @private
    */
   _getRequestStateFromState = () => {
-    return this.state.data;
+    return Object.assign({}, this.state.data);
   };
 
 
   /**
-   * Get final request state from storage
+   * unified get request state from state/store
    * @returns {*}
    * @private
    */
@@ -135,7 +134,10 @@ class RequestProvider extends Component<Props, State> {
    * @private
    */
   _requestSuccessful = (id: string, message?: any) => {
-    this._applyStateChange(id)(r => {
+    if(this._hasStore()){
+      return this.props.stateProvider.updateRequest({ id, message, status: SUCCESS });
+    }
+    const updateSuccess = r => {
       const req = r;
       req.success = true;
       req.successCount += 1;
@@ -144,8 +146,10 @@ class RequestProvider extends Component<Props, State> {
         req.message = message;
       }
       return req;
-    })
+    };
+    this._applyStateChange(id)(updateSuccess)
   };
+
 
   /**
    * Updates a request to failed and increments the failure count of the particular request
@@ -154,7 +158,10 @@ class RequestProvider extends Component<Props, State> {
    * @private
    */
   _requestFailed = (id: string, message?: any) => {
-    this._applyStateChange(id)(r => {
+    if(this._hasStore()){
+      return this.props.stateProvider.updateRequest({ id, message, status: FAILED });
+    }
+    const updateFailed = r => {
       const req = r;
       req.failed = true;
       req.failureCount += 1;
@@ -163,7 +170,8 @@ class RequestProvider extends Component<Props, State> {
         req.message = message;
       }
       return req;
-    })
+    };
+    this._applyStateChange(id)(updateFailed)
   };
 
 
@@ -175,7 +183,10 @@ class RequestProvider extends Component<Props, State> {
    * @private
    */
   _requestPending = (id: string, message?: any) => {
-    this._applyStateChange(id)(r => {
+    if(this._hasStore()){
+      return this.props.stateProvider.updateRequest({ id, message, status: PENDING });
+    }
+    const updatePending = r => {
       const req = r;
       req.pending = true;
 
@@ -183,7 +194,8 @@ class RequestProvider extends Component<Props, State> {
         req.message = message;
       }
       return req;
-    })
+    };
+    this._applyStateChange(id)(updatePending)
   };
 
 
@@ -194,6 +206,9 @@ class RequestProvider extends Component<Props, State> {
    * @private
    */
   _removeRequest = (id: string) => {
+    if(this._hasStore()){
+      return this.props.stateProvider.updateRequest({ id, status: REMOVE });
+    }
     const state = this._getRequestState();
     if(!Object.hasOwnProperty.call(state, id)) return;
 

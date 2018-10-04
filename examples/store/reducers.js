@@ -1,6 +1,6 @@
 // @flow
 import { combineReducers } from 'redux';
-
+import { requestStateReducer } from '../../providers/redux'
 
 
 //Default identity redux reducer
@@ -14,5 +14,6 @@ const identityReducer = (state) => {
 
 
 export default combineReducers({
-  '_APP_': identityReducer
+  '_APP_': identityReducer,
+  ...requestStateReducer
 });

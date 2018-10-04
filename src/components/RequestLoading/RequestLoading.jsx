@@ -4,13 +4,18 @@ import './RequestLoading.scss';
 import Spinner from '../Spinner/Spinner';
 
 type Props = {
-
+  color: string,
 }
 
-const RequestLoading = ({}: Props) => {
+/**
+ * Default loading component to render on request pending/loading
+ * @returns {*}
+ * @constructor
+ */
+const RequestLoading = ({ color }: Props) => {
     return (
         <div className="requestLoadingContainer">
-            <Spinner bounceSize={20} />
+            <Spinner size={20} color={color} />
         </div>
     );
 };

@@ -1,36 +1,148 @@
 // @flow
-import {PENDING, SUCCESS, FAILED, REQUEST_ACTION_TYPE, REPLACE, initialRequest} from "../../src/module/common";
-import type { ProviderRequestState } from "../../src/QuestrarTypes";
-import {isFunc, resetRequestFlags as resetFlags} from "../../src/module/helper";
-import type {ReducerMap, Store} from "redux";
-import isEmpty from "lodash/isEmpty";
+import {PENDING, SUCCESS, FAILED, REPLACE, initialRequest, REMOVE} from "../../src/module/common";
+import type { ProviderRequestState } from "../../src";
+import { REQUEST_ACTION_TYPE } from './common';
+import { nonEmpty, resetRequestFlags as resetFlags} from "../../src/module/helper";
 import invariant from 'invariant';
 
 /**
- * Inject request state reducers into store provided by user
- *
- * @param store User app redux store
- * @param reducer
+ * Sets remove flags on request.
+ * Removes control removal of requestState on close of RequestComponent feature `onCloseError` or `onCloseSuccess`
+ * @param state
+ * @param action
+ * @returns {*}
  */
-export function injectReducers (store: Store, reducer: Object) {
-  invariant(!isEmpty(store), "Redux store not provided");
-  invariant(!isEmpty(reducer.key), "Redux reducer key not provided");
-  invariant(isFunc(reducer.reducer), "Redux reducer function not provided");
+function setRemoves(state, action) {
+  const s = state;
 
-
-  const s = store;
-
-  if(!Object.hasOwnProperty.call(store, 'asyncReducers')){
-    store.asyncReducers = {};
+  if (action.autoRemove) {
+    s.autoRemove = true
+  }
+  if(action.autoRemoveOnSuccess){
+    s.removeOnSuccess = true;
+    if(s.autoRemove) {
+      delete s['autoRemove'];
+    }
   }
 
-  if(Object.hasOwnProperty.call(store.asyncReducers, reducer.key)) return s;
-
-  store.asyncReducers[reducer.key] = reducer.reducer;
-  store.replaceReducer(s.asyncReducers[reducer.key]);
-
-  //return s;
+  if(action.autoRemoveOnFailure){
+    s.removeOnFail = true;
+    if(s.autoRemove) {
+      delete s['autoRemove'];
+    }
+  }
+  return s;
 }
+
+
+
+/**
+ * Get requestState from state by request id
+ * @param state
+ * @param id
+ * @returns {*}
+ */
+function getState(state, id) {
+  if (Object.hasOwnProperty.call(state, id)) {
+    return Object.assign({}, state[id]);
+  }
+  return initialRequest;
+}
+
+
+/**
+ * Set request state message if provided as part of action
+ * @param state
+ * @param action
+ */
+function setMessage(state, action) {
+  if(action.message){
+    state.message = action.message;
+  }
+}
+
+/**
+ * Updates a request to pending
+ *
+ * @returns {{} & RequestState}
+ */
+function handleRequestPending (state, action) {
+  invariant(nonEmpty(action.id), 'request action missing id field');
+
+  const id = action.id;
+
+  const nextReq = resetFlags(getState(state, id));
+  nextReq.id = id;
+  nextReq.pending = true;
+  setMessage(nextReq, action);
+
+  return Object.assign({}, state, { [id]: nextReq });
+}
+
+
+
+/**
+ * Updates a request state to failed
+ * @params state, action
+ * @returns {{} & RequestState}
+ */
+function handleRequestFailed (state, action){
+  invariant(nonEmpty(action.id), 'request state action missing id field');
+
+  const id = action.id;
+
+  const nextReq = resetFlags(getState(state, id));
+  nextReq.id = id;
+  nextReq.failed = true;
+  nextReq.failureCount += 1;
+  setMessage(nextReq, action);
+  setRemoves(nextReq, action);
+
+  return Object.assign({}, state, { [id]: nextReq });
+}
+
+/**
+ * Updates a request state to success.
+ * Autodeletes a request if set to true
+ *
+ * @params state, action
+ * @returns {{} & RequestState}
+ */
+function handleRequestSuccess (state, action) {
+  invariant(nonEmpty(action.id), 'request state action missing id field');
+
+  const id = action.id;
+
+  const nextReq = resetFlags(getState(state, id));
+  nextReq.id = id;
+  nextReq.success = true;
+  nextReq.successCount += 1;
+  setMessage(nextReq, action);
+  setRemoves(nextReq, action);
+
+  return Object.assign({}, state, { [id]: nextReq });
+}
+
+
+/**
+ * Remove request state from redux
+ * @param state
+ * @param action
+ * @returns {*}
+ */
+function removeRequestState (state, action) {
+  invariant(nonEmpty(action.id), 'request action missing id field');
+
+  const id = action.id;
+
+  if (Object.hasOwnProperty.call(state, id)) {
+    const _state = Object.assign({}, state);
+    delete _state[id];
+    return _state;
+  }
+  return Object.assign({}, state);
+}
+
 
 /**
  * Replaces the whole request state with a new state
@@ -43,101 +155,6 @@ const replaceState = (state: ProviderRequestState, action) => {
   return Object.assign({}, action.state);
 };
 
-/**
- * Updates a request to pending
- * @param state
- * @param action
- * @returns {{} & RequestState}
- */
-function handleRequestPending () {
-  invariant(arguments !== 0, 'Provide state and action as arguments, handleRequestFailed(state, action)');
-  const state = arguments[0];
-  const action = arguments.length > 1 ? arguments[1] : {};
-  invariant(action !== null && action !== undefined, 'reducer action missing id field');
-
-  const { id, message } = action;
-
-  const exist = Object.hasOwnProperty.call(state, id);
-  const req = exist ? state[id] : initialRequest;
- 
-  const nextReq = resetFlags(req);
-  nextReq.id = id;
-  nextReq.pending = true;
-  if(message){
-    nextReq.message = message;
-  }
-
-  return Object.assign({}, state, { [id]: nextReq });
-}
-
-
-/**
- * Updates a request state to failed
- * @params state, action
- * @returns {{} & RequestState}
- */
-function handleRequestFailed (){
-  invariant(arguments !== 0, 'Provide state and action as arguments, handleRequestFailed(state, action)');
-  const state = arguments[0];
-  const action = arguments.length > 1 ? arguments[1] : {};
-  invariant(action !== null && action !== undefined, 'reducer action missing id field');
-
-  const { id, message, autoDelete } = action;
-
-  if(autoDelete) {
-    const nextState = Object.assign({}, state);
-    delete nextState[id];
-    return nextState;
-  }
-
-  const idExist = Object.hasOwnProperty.call(state, id);
-  const req = idExist ? state[id] : initialRequest;
- 
-  const nextReq = resetFlags(req);
-  nextReq.id = id;
-  nextReq.failed = true;
-  nextReq.failureCount += 1;
-  if(message){
-    nextReq.message = message;
-  }
-
-  return Object.assign({}, state, { [id]: nextReq });
-}
-
-/**
- * Updates a request state to success.
- * Autodeletes a request if set to true
- * @params state, action
- * @returns {{} & RequestState}
- */
-function handleRequestSuccess (){
-  invariant(arguments !== 0, 'Provide state and action as arguments, handleRequestFailed(state, action)');
-  const state = arguments[0];
-  const action = arguments.length > 1 ? arguments[1] : {};
-  invariant(action !== null && action !== undefined, 'reducer action missing id field');
-
-  const id = action.id;
-
-  if(action.autoDelete) {
-    const nextState = Object.assign({}, state);
-    delete nextState[id];
-    return nextState;
-  }
-
-  const idExist = Object.hasOwnProperty.call(state, id);
-  const req = idExist ? state[id] : initialRequest;
- 
-  const nextReq = resetFlags(req);
-  nextReq.id = id;
-  nextReq.success = true;
-  nextReq.successCount += 1;
-  if(action.message){
-    nextReq.message = action.message;
-  }
-
-  return Object.assign({}, state, { [id]: nextReq });
-}
-
 
 /**
  * Request state reducer for redux
@@ -145,24 +162,28 @@ function handleRequestSuccess (){
  * @param action redux action dispatched
  * @returns {*} Final state
  */
-export default (state: Object, action: Object) => {
+export function rootReducer(state: Object, action: Object) {
   const _state = Object.assign({}, state);
   switch (action.status){
-    case PENDING: {
+    case PENDING:
       return handleRequestPending(_state, action);
-    }
-    case SUCCESS: {
-      return handleRequestSuccess(_state, action);
-    }
 
-    case FAILED: {
+    case SUCCESS:
+      return handleRequestSuccess(_state, action);
+
+    case FAILED:
       return handleRequestFailed(_state, action);
-    }
-    case REPLACE: {
+
+    case REPLACE:
       return replaceState(_state, action);
-    }
+
+    case REMOVE:
+      return removeRequestState(_state, action);
+
     default:{
       return _state;
     }
   }
-};
+}
+
+export default { [REQUEST_ACTION_TYPE]: rootReducer };

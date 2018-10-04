@@ -7,14 +7,23 @@ A request state is typed as
 // @flow
 type RequestState = {
     id: string,
-    pending: boolean | any,  default false
-    success: boolean | any,  default false
-    failed: boolean | any,  default false
+    pending: boolean 
+    success: boolean
+    failed: boolean
+ 
     successCount: number, // default 0
     failureCount: number, // default 0
+    
+    message?: any,
+    
+    autoRemove?: boolean,
+    removeOnSuccess?: boolean,
+    removeOnFail?: boolean
 }
+```
 
-//A default request state
+A default request state
+```
 const defaultRequestState = {
     pending: false
     success: false
@@ -42,7 +51,6 @@ export class AppMain extends React.Component<Props> {
 }
 ```
 Now you can use the `Request` component in any of your component anywhere, anyhow.
-`Request` doesnt wrap your underlying component with any dom element. It either replaces or return as same.
 
 A `Request` component requires an id which would be used to track a request.
 A request id should be a bit unique to a particular subject context. For instance, if you have a user account
@@ -94,38 +102,78 @@ you can try with the `withRequest` HOC and expect the `request` state as a prop.
 ```
  const UserProfile = ({ userId, data, request }) => {
     if(request.data.success){
-        request.actions.remove(userId)
+        const id = request.data.id;
+        request.actions.remove(id)
     }
     
     return (
       <div>
+       <Banner content={request.data.message} />
        { !request.data.pending && <ProfileView data={data} />}
-       <Button loading={request.data.pending} > Fetch User Profile </Button>
+       <Button loading={request.data.pending} >Fetch User Profile</Button>
       </div>
     );
 }
 export withRequest()(UserProfile);
 ```
+```
+type RequestComponentOptions = {
+  id?: string | Array<string> | (props: Props) => (string | Array<string>),
+  mergeIdSources?: boolean = false,
+}
 
-`withRequest` takes an optional list of ids as argument combined with props.id to track
- and return a list of states as prop to the wrapped component.
-Any of props.id or argument is optional. If no id is found, no state is returned.
-If a single id is provided, a single request state is returned instead of an array of single request state
+export withRequest(options?: RequestComponentOptions)(Component)
 
+```
+`withRequest` takes an optional id or optional list of ids or any function
+ that can convert the props of component to an id or list of ids as argument.
 
-In cases where we keep it clean and declarative, we want to make requests outside the component
+`withRequest` automatically takes `props.id` if `options.id` is empty. Thats to say `options.id` has precedence over `props.id`.
+However if you require `options.id` to merge with `props.id`, set `mergeIdSources` to true.
+This will combined with `options.id` and `props.id` with no duplicates and return an object of `{ [id]: RequestState }` as prop to the wrapped component.
+Any of `props.id` or `options.id` is optional. If no id is found, no state is returned.
+
+* Note: If a single id is provided by either `props.id` or `options.id` or both,
+ a single request state is returned instead of an associative array of single request state
+
+Creating a request state outside component
+--
+
+In cases where we want to make fetch requests outside the component
  and track them inside the requesting component or anywhere.
-Then we need to store the whole request state outside the component tree to provide easy access.
+Then we need to store the whole request state outside the component tree to provide easy access across the app.
 
-For instance, with redux, we need to create a StateProvider which would provide us with the requestState.
+* Note: the following examples are using redux
 
+For instance, with redux, since we are going to store the request state in redux, we need to add Redux reducer to our root reducers.
+ and create a StateProvider which would provide us with the requestState to our components.
+  
+```
+import { requestStateReducer } from 'questrar/redux';
+
+const reducers = combineReducers({
+'app': appReducer,
+'some': someReducer,
+
+...requestStateReducer
+});
+
+```
+In case `requestStateReducer` is nested deep in the reducer map, we'd need to provide the reducer path to our StateProvider.
+A `requestStateReducer` path to object should be delimited with a `.`
+
+For instance, `'app.operation.ticket' === { app: { operation: { ticket: { requestStateReducer }}}}`
 
 ```
 import { createStore } from 'redux';
-import { ReduxStateProvider } from 'questrar/redux';
+import type { Store } from 'redux';
+import { Provider as RequestStateProvider } from 'questrar';
+import { createStateProvider } from 'questrar/redux';
 
-const store = createStore(reducers, ...)
-const stateProvider = new ReduxStateProvider(store);
+const store: Store = createStore(reducers, initialState, compose)
+const path = 'app.operation.ticket'; //path to requestStateReducer
+
+const stateProvider = createStateProvider(store, path?: string);
 
 export class AppMain extends React.Component<Props> {
    props: Props;
@@ -141,54 +189,55 @@ export class AppMain extends React.Component<Props> {
 
 ```
 
-The above stores the whole of request state in redux unlike before.
-Then now we can create requests outside and track them inside.
+The above looks like the previous but stores the all of request states in redux unlike before. 
+If you open your redux dev tools you can find requestStates by `'__QUESTRAR_REQUEST_'`
 
+Then that's it, we can now create requests outside and track them inside.
 
 
 ```
-//Create a request action to begin
-import { createRequest } from 'questrar/redux';
+import { createRequestState } from 'questrar/redux';
 
-const fetchUserProfileState = createRequest('REQUEST_ID');
+export const fetchUserProfileState = createRequestState('REQUEST_ID'); //Create a request action to begin
+export const publishPostRequestState = createRequestState();
+export const likePostRequestState = createRequestState();
 ```
 
-In case you will always have access to `fetchUserProfileState`, you can ignore the request id (`createRequest()`). An anon id would be generated.
-Else provide a request id that you can track across scopes.
+In case you will always have access to `fetchUserProfileState`, you can ignore the request id. A unique id would be generated.
+Else provide a request id so that you can recreate across module scopes.
 
-Using the thunk style
+* Using the thunk style
 ```
 fetch('api/user/profile').then(response => {
     dispatch({ type: 'USER_PROFILE_SAVE', payload: response});
-    dispatch(fetchUserProfileState.success(optionalMessage)); //request.data.success === optionalMessage
+    dispatch(fetchUserProfileState.success(optionalMessage)); //request.data.message === optionalMessage
 }).catch(error => {
     ...
-    dispatch(fetchUserProfileState.failed(e.optionalMessage));
+    dispatch(fetchUserProfileState.failed('Sorry, could not load your profile'));
 })
 ```
 
-Using the saga style
+* Using the saga style
 ```
 export function* fetchUserProfileSaga(): Generator<*, *, *> {
     while(true) {
-        const payload = yield takeRequest(fetchUserProfile().type);
+        const { payload } = yield takeRequest(fetchUserProfile().type);
         try {
-            yield put(fetchUserProfileState.pending('any loading text or progress');
-            const response = yield call(fetchApi, 'api/user/profile');
-            yield put({type: 'USER_PROFILE_SAVE', payload: response});
-            yield put(fetchUserProfileState.success()); // request.data.success === true
-        } catch(e) {
-            yield put(fetchUserProfileState.failed(e.message));
+            yield put(fetchUserProfileState.pending('Loading your profile'); //request.data.message === 'Loading your profile'
             
-            // You could also autoDelete on request success or failed
-            yield put(fetchUserProfileState.failed(null, autoDelete));
+            const response = yield call(fetchApi, 'api/user/profile', payload);
+            yield put({type: 'USER_PROFILE_SAVE', payload: response});
+            
+            yield put(fetchUserProfileState.success()); // request.data.success === true
+        } catch(e) {            
+            yield put(fetchUserProfileState.failed('Sorry, could not load your profile'));
         }
     }
 }
 ```
 
-`autoDelete` delete the requestState as on settling, ie either success or failure. No success or failure message would be shown to the user.
- Thus if you are only interested in showing pending state of a request, autoDelete would be helpful to you
 
+Credits
+--
 
 - Inspired by Christian Kaps @akkie

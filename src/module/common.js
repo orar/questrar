@@ -1,8 +1,6 @@
 // @flow
 import React from 'react';
-import type { Request } from "../QuestrarTypes";
-
-export const REQUEST_ACTION_TYPE = '__QUESTRAR_REQUEST_ACTION';
+import type { RequestState } from "../index";
 
 
 //status flags
@@ -10,12 +8,13 @@ export const PENDING = 'pending';
 export const SUCCESS = 'success';
 export const FAILED = 'failed';
 
-//pseudo flags
+//action flags
 export const REPLACE = 'replace';
+export const REMOVE = 'remove';
 
 
-//Initial request provision
-export const initialRequest: Request = {
+//Initial request state
+export const initialRequest: RequestState = {
   pending: false,
   success: false,
   failed: false,

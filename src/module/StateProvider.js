@@ -6,16 +6,9 @@
  */
 export default class StateProvider {
 
-  /**
-   * Initialize state
-   * @returns {null}
-   */
-  initializeState = () => {
-    return null;
-  };
 
   /**
-   * Get the request state
+   * Gets all of the request states in store
    * @returns {{}}
    */
   getState = () => {
@@ -24,12 +17,31 @@ export default class StateProvider {
 
 
   /**
-   * Put request state
+   * Puts request state
+   * Updates all of request states in store
+   *
    * @param state
    * @returns {null}
    */
   putState = (state: Object) => {
     return null
   };
+
+  /**
+   * Updates a specific requestState in store
+   * @param requestStatus
+   * @returns {null}
+   */
+  updateRequest = (requestStatus: Object) => {
+    return null;
+  };
+
+  /**
+   * Observe changes to the request state and re-renders the RequestProvider tree subsequently
+   */
+  observe = (updater: (shouldUpdate: boolean) => any) => {
+    return updater(false);
+  };
+
 
 }

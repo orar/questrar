@@ -6,9 +6,23 @@
   flex-flow: column nowrap;
   align-items: center;
 
-  .profileContent {
+  .profileContent, .profileInfo {
     display: flex;
     flex-flow: column nowrap;
     align-items: center;
+  }
+
+  .profileActions {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 2rem auto;
+  }
+  .profileFailBtn {
+    width: 10rem;
+    cursor: pointer;
+    border-radius: .3rem;
+    border: 1px solid #aaaaaa;
+    background: transparent;
+    color: #aaaaaa;
   }
 }

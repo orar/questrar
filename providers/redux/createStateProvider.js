@@ -1,27 +1,37 @@
 // @flow
 import type {Store} from 'redux';
-import StateProvider from "../../src/module/StateProvider";
-import { injectReducers } from "./RequestReducer";
-import requestReducer from './RequestReducer';
-import { REQUEST_ACTION_TYPE } from "../../src/module/common";
-import type {ProviderRequestState} from "../../src/QuestrarTypes";
+import {FAILED, PENDING, REMOVE, SUCCESS} from "../../src/module/common";
+import type {ProviderRequestState} from "../../src";
+import { REDUX_STATE_PATH, REQUEST_ACTION_TYPE } from './common';
 import { REPLACE } from "../../src/module/common";
+import createRequest from "./createRequest";
+import {nonEmpty} from "../../src/module/helper";
 
 
 /**
- * Create a redux to questrar mapper
+ * Create a redux to questrar request state mapper
  * It uses replace state to sync from provider to redux and back
- * @param store
+ *
+ * if path is more than one level deep in the store state, path should be delimited by a dot (.)
+ * e.g. 'app.operation.ticket' === { app: { operation: { ticket: { requestState }}}}
+ *
+ * @param store The redux store
+ * @param path The store path of request state
  * @returns {{getState: getState, putState: putState}}
  */
-export default function createStateProvider (store: Store) {
-
-  /**
-   * Inject reducers as part of store
-   */
-  injectReducers(store, { key: REQUEST_ACTION_TYPE, reducer: requestReducer });
+export default function createStateProvider (store: Store, path?: string) {
 
   const s = store;
+
+  /**
+   * Redux store absolute path to request state
+   * i.e. user preferred state path + reducer id
+   *
+   * @type {string}
+   * @private
+   */
+  const _path = (path || REDUX_STATE_PATH) + '.' + REQUEST_ACTION_TYPE;
+
 
   /**
    * Gets the redux request state current
@@ -29,15 +39,21 @@ export default function createStateProvider (store: Store) {
    */
   function getState(){
     const state = s.getState();
-    console.log(state);
-    if(Object.hasOwnProperty.call(state, REQUEST_ACTION_TYPE)){
-      return state[REQUEST_ACTION_TYPE];
+    const paths = _path.split('.');
+    let rState = state;
+    for(let i = 0; i < paths.length; i++){
+      if(paths[i] && Object.hasOwnProperty.call(rState, paths[i])){
+        rState = state[paths[i]]
+      }
     }
-    return {};
+    return rState;
   }
 
   /**
-   * Puts the entire request state into redux
+   * Replace the entire request state into redux
+   * CAVEAT: Prone to corrupt request state
+   * TODO: dispatch requestState specific update
+   *
    * @param state
    */
   function putState(state: ProviderRequestState){
@@ -47,8 +63,8 @@ export default function createStateProvider (store: Store) {
   /**
    * Watches the request state and forces update of RequestProvider if there's been a change.
    *
-   * CAVEAT: Updates on any store state change if requestState is not empty
-   * TODO: Implement a requestState change tracker
+   * CAVEAT: Calls update with true on any little update in any store state
+   * TODO: Track changes only on requestState in store
    *
    * @param update
    */
@@ -62,10 +78,37 @@ export default function createStateProvider (store: Store) {
     });
   }
 
-
-  return {
-    getState, putState, observe
+  /**
+   * Dispatch request state specific updates to redux store
+   * @param action
+   */
+  function updateRequest(action: Object) {
+    const req = createRequest(action.id, action);
+    let _action;
+    switch (action.status) {
+      case PENDING:
+        _action = req.pending(action.message);
+        break;
+      case FAILED:
+        _action = req.failed(action.message);
+        break;
+      case SUCCESS:
+        _action = req.success(action.message);
+        break;
+      case REMOVE:
+        _action = req.remove();
+        break;
+      default:
+        break;
+    }
+    if(nonEmpty(_action)){
+      s.dispatch(_action)
+    }
   }
 
-}
 
+  return {
+    getState, putState, observe, updateRequest, path: _path
+  };
+
+}

@@ -1,7 +1,7 @@
 // @flow
 import type {Node} from 'react';
 import React from 'react';
-import type {RequestActions, RequestContext, ProviderRequestState} from "../QuestrarTypes";
+import type { RequestContext, ProviderRequestState} from "../index";
 import {initialRequest} from "./common";
 import { RequestConsumerContext } from "./context";
 import get from 'lodash/get';
@@ -13,7 +13,7 @@ type WrappedComponentProps = {
 
 
 /**
- * HOC Wraps a Request component.
+ * HOC Wraps the Request component.
  * Select a request in the request tree using the request id provided to the Request component
  * @param WrappedComponent
  * @returns {{new(): {props: WrappedComponentProps, _getRequest, context: RequestContext, render(): *}, prototype: {props: WrappedComponentProps, _getRequest, context: RequestContext, render(): *}}}

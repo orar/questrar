@@ -32,7 +32,6 @@ type Props = RequestActions & {
   children: Array<Node> | Node,
 }
 
-//TODO: Simplify renderLoading and renderInitial
 
 /**
  * Renders a Request feedback in/around a component
@@ -51,7 +50,7 @@ type Props = RequestActions & {
  * @param onError         An optional function that should be call with the request state(containing error)
  * @param initialLoading  if true, renders a loading component until request state is successful, even if request has not started.
  * @param renderInitial   An optional component that should be rendered coupled with initialLoading. When initialLoading is true and renderInitial is not provided, loading component falls back to renderLoading falls back to default LoadingComponent provided by Request
- * @param errorTooltip    Switch show error as a tooltip on the child component
+ * @param errorTooltip    If true, show error as a tooltip on the child component
  * @param onCloseError    A function that should be called when request error component is closed/unmounted
  * @param onCloseSuccess  A function that should be called when request success component is closed/unmounted
  * @param inject          If true, Inject component with request state and append request feedback components (tooltips, ..) instead of replacing component with feedback components

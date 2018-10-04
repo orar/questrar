@@ -9,16 +9,27 @@ import { REQUEST_ACTION_TYPE } from "../../src/module/common";
 
 
 const RenderProfile = ({ request }) => {
+  const id = request.data.id;
+
+  const _onClick = () => {
+    request.actions.failed(id, 'Failed Intentionally');
+  };
+
   if(request.data.success){
     const data = request.data.message;
     return (
       <div className="profileContent" >
-        <div>Name: {data.name}</div>
-        <div>Age: {data.age}</div>
-        <div>Universe: {data.university}</div>
-        <div>Planet: {data.homePlanet}</div>
-        <div>Address: {data.address}</div>
-        <div>Spoken Lang: {data.oralLanguage}</div>
+        <div className="profileInfo">
+          <div>Name: {data.name}</div>
+          <div>Age: {data.age}</div>
+          <div>Universe: {data.university}</div>
+          <div>Planet: {data.homePlanet}</div>
+          <div>Address: {data.address}</div>
+          <div>Inter Language: {data.interLanguage}</div>
+        </div>
+        <div className="profileActions">
+          <button onClick={_onClick} className="profileFailBtn">Fail</button>
+        </div>
       </div>
     );
   }
@@ -59,10 +70,10 @@ class Profile extends Component<Props> {
 }
 
 
-//We are using redux-saga and we need to dispatch an action which to be taken by the saga worker function
+//We are using redux-saga and we need to dispatch an action inside ProfileComponent which to be taken by the saga worker function
 const mapStateToProps = (state) => {
   console.log(state);
-  return { data: state[REQUEST_ACTION_TYPE] }
+  return state;
 };
 
 

@@ -1,8 +1,7 @@
 // @flow
 import type { ReducerMap } from 'redux'
-import isEmpty from 'lodash/isEmpty';
 import invariant from 'invariant';
-import type {Request} from "../QuestrarTypes";
+import type {RequestState} from "../index";
 
 /**
  * Extract list values of keys from a base object.
@@ -19,12 +18,12 @@ import type {Request} from "../QuestrarTypes";
  * @returns {*} Returns an empty array if no keys had a match in the base object
  */
 export const arrayValuesOfKeys = (obj: Object, keys: Array<any>, getValue?: (key: any, obj: Object) => any) => {
-  invariant(!isEmpty(obj), 'No object has been provided for keys extraction');
-  invariant(!isEmpty(keys), 'There are no keys provided for values extraction');
+  invariant(nonEmpty(obj), 'No object has been provided for keys extraction');
+  invariant(nonEmpty(keys), 'There are no keys provided for values extraction');
 
   if(typeof keys === 'string') {
 
-    if(typeof getValue === 'function'){
+    if(isFunc(getValue)){
       return [getValue(keys, obj)];
     } else if(Object.hasOwnProperty.call(obj, keys)){
       return [obj[keys]];
@@ -34,7 +33,7 @@ export const arrayValuesOfKeys = (obj: Object, keys: Array<any>, getValue?: (key
 
   const result = [];
   for(let i = 0; i < keys.length; i ++ ){
-    if(typeof getValue === 'function'){
+    if(isFunc(getValue)){
       const value =  getValue(keys[i], obj);
       result.push(value);
     } else if(Object.hasOwnProperty.call(obj, keys[i])){
@@ -53,7 +52,7 @@ export const arrayValuesOfKeys = (obj: Object, keys: Array<any>, getValue?: (key
  * @param req
  * @returns {Request}
  */
-export const resetRequestFlags = (req: Request) => {
+export const resetRequestFlags = (req: RequestState) => {
   const r = req;
   r.pending = false;
   r.success = false;
@@ -72,7 +71,8 @@ export function randomId (length?: number) {
   const rand = Math.random();
   const id = parseInt(rand * Math.pow(10, size)).toString();
   return id.split('').map(i => String.fromCharCode(97 + Number(i))).join('');
-};
+}
+
 
 /**
  * Checks if arg is a function
@@ -96,9 +96,19 @@ export function isObj (obj: any) {
 
 /**
  * Checks if arg is an object and not null
- * @param obj
+ * @param num
  * @returns {any|boolean}
  */
 export function isNumber (num: any) {
   return typeof num === "number";
+}
+
+/**
+ * Assert if value is not null or not undefined
+ *
+ * @param value
+ * @returns {boolean}
+ */
+export function nonEmpty(value: any) {
+  return typeof value !== 'undefined' && value !== null
 }

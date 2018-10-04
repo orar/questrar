@@ -1,10 +1,10 @@
 // @flow
 import React from "react";
-import type {RequestContext, ProviderRequestState} from "../QuestrarTypes";
+import type {RequestContext, ProviderRequestState} from "../index";
 import isEmpty from "lodash/isEmpty";
 import { initialRequest} from "./common";
 import { RequestConsumerContext } from "./context";
-import {arrayValuesOfKeys} from "./helper";
+import {arrayValuesOfKeys, isFunc, nonEmpty} from "./helper";
 
 
 type RequestComponentProps = {
@@ -38,7 +38,7 @@ export default function withRequest(options?: RequestComponentOptions) {
 
         if(options) {
           //options.id takes precedence over props.id
-          if (typeof options.id === "function") {
+          if (isFunc(options.id)) {
             const _id = options.id(this.props);
             if(_id) {
               const __id = Array.isArray(_id) ? _id : [_id];
@@ -50,6 +50,7 @@ export default function withRequest(options?: RequestComponentOptions) {
             id = id.concat(_id);
           }
 
+          //combine props.id if mergeIdSources set true or options.id is empty
           if((options.mergeIdSources || id.length === 0) && this.props.id) {
             const _id = Array.isArray(this.props.id) ? this.props.id : [this.props.id];
             id = id.concat(_id);
@@ -72,7 +73,7 @@ export default function withRequest(options?: RequestComponentOptions) {
 
         if (isEmpty(requestObj)) {
 
-          //Return a single request state instead of an object map
+          //Return a single request state instead of an object map of id: requestState
           if (ids.length === 1) {
             return Object.assign({}, initialRequest, { id: ids[0] });
           }
@@ -84,9 +85,10 @@ export default function withRequest(options?: RequestComponentOptions) {
           }, {});
         }
 
+        //extract all requestStates by ids
         const requests = arrayValuesOfKeys(requestObj, ids, (k, o) => {
           if (Object.hasOwnProperty.call(o, k)) {
-            return Object.assign({}, o[k], {id: k});
+            return Object.assign({}, o[k], { id: k });
           }
           return Object.assign({}, initialRequest, {id: k});
         });
@@ -94,10 +96,10 @@ export default function withRequest(options?: RequestComponentOptions) {
         //Return a single request state instead of an object map
         if (ids.length === 1) {
           const _req = requests.find(r => r.id === ids[0]);
-          console.log(requests);
-          if(_req){
-            return Object.assign({}, _req, { id: ids[0] });
+          if(nonEmpty(_req)){
+            return _req;
           }
+          return Object.assign({}, initialRequest, { id: ids[0] });
         }
 
         return requests.reduce((acc, req) => {

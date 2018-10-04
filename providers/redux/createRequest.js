@@ -1,103 +1,101 @@
 // @flow
-import isNull from 'lodash/isNull';
-import isUndefined from 'lodash/isUndefined';
-import isEmpty from 'lodash/isEmpty';
-import type {RequestState} from "../../src/QuestrarTypes";
-import { REQUEST_ACTION_TYPE, SUCCESS, FAILED, PENDING } from "../../src/module/common";
-import {randomId} from "../../src/module/helper";
+import type {RequestState} from "../../src";
+import {SUCCESS, FAILED, PENDING, REMOVE} from "../../src/module/common";
+import { REQUEST_ACTION_TYPE } from './common';
+import {isNumber, nonEmpty, randomId} from "../../src/module/helper";
 
 
 /**
  * Configuration type for request action
  */
 export type RequestActionOptions = {
-    modifier: (payload: any) => any,
-    autoDelete: boolean,
+  modifier?: (payload: any) => any,
+  autoRemove?: boolean,
 
-    autoDeleteOnSuccess: boolean,
-    autoDeleteOnFailure: boolean,
+  autoRemoveOnSuccess?: boolean,
+  autoRemoveOnFailure?: boolean,
 }
 
 export type RequestOptions = {
-    autoDelete: boolean,
-    inject: (r: RequestState) => Object,
+  autoRemove: boolean,
+  inject: (r: RequestState) => Object,
 }
 
 
 /**
- * Todo: Listen to redux events from inside action or add requestActionId
- * @param type
+ * Creates a redux requestState action to update request state in redux store
+ *
+ * @param id
  * @param options
  * @returns {function(Object=, string=, RequestOptions=)}
  */
-const createRequest = (type?: string, options?: RequestActionOptions) => {
-    const reduxActionType = REQUEST_ACTION_TYPE;
+export function createRequest (id?: string, options?: RequestActionOptions) {
+  const reduxActionType = REQUEST_ACTION_TYPE;
 
-    const isStaticType = !isNull(type) && (typeof type === 'string' || typeof type === 'number');
-    const hasOptions = !isEmpty(options);
-    const isAutoDelete = hasOptions && !isNull(options.autoDelete) && !isUndefined(options.autoDelete) ? options.autoDelete : false;
+  const isStaticType = nonEmpty(id) && (typeof id === 'string' || isNumber(id));
+  const hasOptions = nonEmpty(options);
 
-    const requestId = isStaticType ? type : randomId();
-    const autoDelete = isStaticType ? isAutoDelete : true;
+  const autoRemove = hasOptions && options.autoRemove;
+  const autoRemoveOnSuccess = hasOptions && options.autoRemoveOnSuccess;
+  const autoRemoveOnFailure = hasOptions && options.autoRemoveOnFailure;
 
-    const pending = ( message: any) => {
-        const action = { type: reduxActionType,  id: requestId, status: PENDING };
+  const requestId = isStaticType ? id : randomId();
 
-        if(typeof message !== 'undefined' && message !== null){
-            action.message = message
-        }
-
-        return action;
-    };
-
-    const success = ( message?: any) => {
-        const action = { type: reduxActionType, id: requestId, status: SUCCESS };
-        if(typeof message !== 'undefined' && message !== null){
-            action.message = message
-        }
-
-        return action;
-    };
-
-    const failed = ( message?: any) => {
-        const action = { type: reduxActionType, id: requestId, status: FAILED};
-
-        if(typeof message !== 'undefined' && message !== null){
-            action.message = message
-        }
-
-        return action;
-    };
-
-    //change to function prototype
-    function actionCreator (/*payload?: Object, requestOptions?: RequestOptions*/) {
-        /*const action = { type: requestId };
-        if(autoDelete){
-            action.autoDelete = autoDelete;
-        }
-        if(typeof payload !== 'undefined' ) {
-            action.payload = payload;
-        }
-
-        if(!isEmpty(requestOptions)){
-            action.requestOptions = requestOptions;
-        }
-        */
-
-        return requestId;
+  const initAction = (rId, status, message?) => {
+    const _action = { type: reduxActionType, id: rId, status };
+    if(nonEmpty(message)){
+      _action.message = message
     }
+    return _action;
+  };
 
-    actionCreator.toString = () => {
-        return requestId;
-    };
 
-    actionCreator.pending = pending;
-    actionCreator.success = success;
-    actionCreator.failed = failed;
-    actionCreator.id = requestId;
+  const pending = ( message?: any) => {
+    return initAction(requestId, PENDING, message);
+  };
 
-    return actionCreator;
-};
+  const success = ( message?: any, remove?: boolean) => {
+    const action = initAction(requestId, SUCCESS, message);
+    if(nonEmpty(remove)){
+      action.autoRemoveOnSuccess = remove
+    } else {
+      action.autoRemoveOnSuccess = autoRemoveOnFailure
+    }
+    return Object.assign(action, { autoRemove, autoRemoveOnSuccess })
+  };
+
+  const failed = ( message?: any, remove?: boolean) => {
+    const action = initAction(requestId, FAILED, message);
+    if(nonEmpty(remove)){
+      action.autoRemoveOnFailure = remove
+    } else {
+      action.autoRemoveOnFailure = autoRemoveOnFailure
+    }
+    return Object.assign(action, { autoRemove })
+  };
+
+  const remove = () => {
+    return initAction(requestId, REMOVE);
+  };
+
+  function actionCreator () {
+    return requestId;
+  }
+
+  actionCreator.toString = () => {
+    return requestId;
+  };
+
+  actionCreator.id = requestId;
+
+  actionCreator.pending = pending;
+  actionCreator.success = success;
+  actionCreator.failed = failed;
+
+  actionCreator.remove = remove;
+
+  return actionCreator;
+}
 
 
 
