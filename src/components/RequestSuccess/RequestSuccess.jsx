@@ -2,13 +2,13 @@
 import React from 'react';
 import type { Node } from 'react';
 import './RequestSuccess.scss';
-import type {RequestActions, Request, RequestProp} from "../../QuestrarTypes";
-import Tooltip from 'react-tooltip';
-
+import type {RequestActions, RequestState, RequestProp} from "../../index";
+import Floater from 'react-floater';
+import {isFunc} from "../../module/helper";
 
 type Props = {
   id: string,
-  request: Request,
+  request: RequestState,
   actions: RequestActions,
   success?: boolean | string,
   children: Array<Node> | Node,
@@ -19,22 +19,37 @@ type Props = {
 }
 
 type State = {
-  visible: boolean
+  open: boolean
 }
 
 class RequestSuccess extends React.Component<Props, State> {
   props: Props;
-  state: State = { visible: true };
+  state: State = { open: true };
 
   _defaultSuccessMessage = 'Request Successful';
 
-  _onVisibleChange = () => {
-    const { actions, id, onCloseSuccess } = this.props;
-      this.setState({ visible: !this.state.visible });
-      if(typeof onCloseSuccess === 'function'){
-        onCloseSuccess(id)
-      }
-      //actions.remove(id);
+
+  componentWillUnmount() {
+    this._closeTooltip();
+  }
+
+
+  /**
+   * Close tooltip
+   * @private
+   */
+  _closeTooltip = () => {
+    const { id, actions, onCloseSuccess, request } = this.props;
+
+    //handle callback
+    if( this.state.open && isFunc(onCloseSuccess)){
+      onCloseSuccess(id);
+    }
+    //remove request if set to autoRemove
+    if(this.state.open && (request.autoRemove || request.removeOnSuccess)){
+      actions.remove(id);
+    }
+    this.setState({ open: false });
   };
 
 
@@ -57,38 +72,68 @@ class RequestSuccess extends React.Component<Props, State> {
     return children;
   };
 
-  _getContent = (tip: any) => {
+  /**
+   * Creates a failure reporting tooltip around child component
+   *
+   * @returns {Tooltip}
+   * @private
+   */
+  _createTooltip = () => {
     return (
-      <div onClick={this._onVisibleChange}>
-        {tip}
+      <div className="tooltipContentWrap" onClick={this._closeTooltip}>
+        {this.props.request.message}
       </div>
-    );
+    )
+  };
+
+  _styles = () => {
+    return {
+      floater: {
+        filter: 'unset',
+        maxWidth: 'content-box',
+      },
+      container: {
+        cursor: 'auto',
+        backgroundColor: '#71aa6f',
+        color: '#fff',
+        minHeight: 20,
+        padding: 5,
+        borderRadius: 3
+      },
+      arrow: {
+        color: '#78b176',
+        display: 'inline-flex',
+        length: 7,
+        position: 'absolute',
+        spread: 14,
+      },
+    };
   };
 
 
   render() {
-    const {id, success, children, successTooltip, successReplace} = this.props;
+    const { children, successTooltip, successReplace, request} = this.props;
+
 
     if(successReplace) {
       return (
         <div className="requestSuccessContainer">
-          <div>{success || this._defaultSuccessMessage}</div>
+          <div>{request.message ? request.message : this._defaultSuccessMessage}</div>
         </div>
       );
     }
-    if (successTooltip && success) {
+
+    if (successTooltip && request.message) {
       return (
-        <div>
-          <span
-            data-event-off="click"
-            data-tip-disable={this.state.visible}
-            data-for={id}
-            data-tip={success}
-          >
-            {this._children()}
-          </span>
-          <Tooltip id={id} getContent={this._getContent} />
-        </div>
+        <Floater
+          offset={1}
+          open={this.state.open}
+          content={this._createTooltip()}
+          placement="auto"
+          styles={this._styles()}
+        >
+          <span>{this._children()}</span>
+        </Floater>
       );
     }
 

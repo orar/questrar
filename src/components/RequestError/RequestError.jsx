@@ -1,27 +1,27 @@
 // @flow
 import React from 'react';
-import { findDOMNode } from 'react-dom';
 import type { Node } from 'react';
 import './RequestError.scss';
-import type {Request, RequestActions} from "../../index";
-import Tooltip from 'tooltip.js';
-import { Manager, Reference, Popper } from 'react-popper';
+import type { RequestActions, RequestState} from "../../index";
+import Floater from 'react-floater';
+import {isFunc} from "../../module/helper";
 
 
 type Props = {
   id: string,
-  request: Request,
+  request: RequestState,
   actions: RequestActions,
   failure?: boolean | string,
   children: Array<Node> | Node,
   errorTooltip?: boolean,
   onCloseError?: (data: any) => any,
+  passiveOnError: boolean,
   inject?: boolean | (request: Request) => Object,
 
 }
 
 type State = {
-  disabled: boolean
+  open: boolean
 }
 
 
@@ -32,46 +32,31 @@ type State = {
  */
 class RequestError extends React.Component<Props, State> {
   props: Props;
-  state: State = { disabled: true };
-
-  // Element ref on which a tooltip is attached to.
-  _ref; //= React.createRef();
-
-  _tooltip: Tooltip;
+  state: State = { open: true };
 
 
+  //close tooltip on unmount
   componentWillUnmount() {
-    if(this._tooltip){
-     this._closeTooltip();
-    }
+    this._closeTooltip();
   }
 
 
   /**
-   * Sets the ref of the wrapping error node
-   * @param ref
-   * @private
-   */
-  _setRef = (ref: Node) => {
-    console.log('setting ref');
-    this.setState({ disabled: false });
-    this._ref = ref;
-
-    this._createTooltip({});
-  };
-
-  /**
-   * Close and dispose tooltip
+   * Close tooltip
    * @private
    */
   _closeTooltip = () => {
-    const { id, actions, onCloseError } = this.props;
-    if( this._tooltip._isOpen && typeof onCloseError === "function"){
+    const { id, actions, onCloseError, request } = this.props;
+
+    //handle callback
+    if( this.state.open && isFunc(onCloseError)){
       onCloseError(id);
     }
-    this._tooltip.hide();
-    this._tooltip.dispose();
-    //actions.remove(id);
+    //remove request if set to autoRemove
+    if(this.state.open && (request.autoRemove || request.removeOnFail)){
+      actions.remove(id);
+    }
+    this.setState({ open: false });
   };
 
 
@@ -81,7 +66,7 @@ class RequestError extends React.Component<Props, State> {
     const injection = { request: { data: request, actions }};
 
     if(React.isValidElement(children)) {
-      //Map requestState to child props via inject function
+      //Transform requestState to child props via inject function
       if(typeof inject === 'function'){
         const params = inject(injection);
         const paramProps = params && typeof params === 'object' ? params : { request: params };
@@ -97,71 +82,64 @@ class RequestError extends React.Component<Props, State> {
 
 
   /**
-   * Adjust placement position of tooltip
-   * @private
-   */
-  _adjustPosition = () => {
-    if (this._ref) {
-      this._ref.getBoundingClientRect()
-    }
-  };
-
-  /**
-   * Creates a success reporting tooltip around child component
+   * Creates a failure reporting tooltip around child component
    *
    * @returns {Tooltip}
    * @private
    */
-  _createTooltip = (options: Object) => {
-    const _options = options;
-    _options.html = true;
-    _options.trigger = '';
-    _options.placement = 'top';
-    //_options.title = <div onClick={this._closeTooltip}>{this.props.request.message}</div>;
-    _options.title = this.props.request.message;
-
-    const domNode = findDOMNode(this._ref);
-    this._tooltip = new Tooltip(domNode, _options);
-    this._tooltip.show();
-  };
-
-
-  _tooltipp = (t) => {
-    console.log(t);
+  _createTooltip = () => {
     return (
-      <div ref={t.ref} style={t.style} data-placement={t.placement}>
+      <div className="tooltipContentWrap" onClick={this._closeTooltip}>
         {this.props.request.message}
-        <div ref={t.arrowProps.ref} style={t.arrowProps.style}/>
       </div>
     )
   };
 
+  _styles = () => {
+    return {
+      floater: {
+        filter: 'unset',
+        maxWidth: 'content-box',
+      },
+      container: {
+        cursor: 'auto',
+        backgroundColor: '#b1462a',
+        color: '#fff',
+        minHeight: 20,
+        padding: 5,
+        borderRadius: 3
+      },
+      arrow: {
+        color: '#b1462a',
+        display: 'inline-flex',
+        length: 7,
+        position: 'absolute',
+        spread: 14,
+      },
+    };
+  };
+
   render() {
-    const {id, errorTooltip, request} = this.props;
+    const { errorTooltip, request, passiveOnError } = this.props;
 
     if (errorTooltip && request.message) {
 
       return (
-        <Manager>
-          <Reference>
-            {({ ref }) => (
-              <span ref={ref} >
-          {this._children()}
-          </span>
-            )}
-          </Reference>
-          <Popper
-            placement="top"
-            modifiers={{ preventOverflow: { enabled: false } }}
-            eventsEnabled={true}
-            positionFixed={false}
-          >
-            {this._tooltipp}
-          </Popper>
-        </Manager>
+        <Floater
+          offset={1}
+          open={this.state.open}
+          content={this._createTooltip()}
+          placement="auto"
+          styles={this._styles()}
+        >
+          <span>{this._children()}</span>
+        </Floater>
       );
     }
 
+    if(passiveOnError){
+      return this._children();
+    }
 
     if(request.message) {
       return (

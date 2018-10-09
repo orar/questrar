@@ -35,6 +35,7 @@ type Props = RequestActions & {
 
 /**
  * Renders a Request feedback in/around a component
+ * TODO: Change error to fail
  *
  * `renderLoading` and `renderInitial` differ.
  * `renderInitial` loading serves the purpose of rendering once a unique loading component to subsequent loading times
@@ -44,19 +45,24 @@ type Props = RequestActions & {
  * @param request         A request state specified by the rId
  * @param actions         Actions to manage state of request
  *
- * @param children        The wrapped component
- * @param renderError     An optional error component that should be rendered if current request fails
  * @param renderLoading   An optional loading component that should be rendered whiles request is in flight
- * @param onError         An optional function that should be call with the request state(containing error)
  * @param initialLoading  if true, renders a loading component until request state is successful, even if request has not started.
  * @param renderInitial   An optional component that should be rendered coupled with initialLoading. When initialLoading is true and renderInitial is not provided, loading component falls back to renderLoading falls back to default LoadingComponent provided by Request
+ * @param passivePending  If true, render children as loading element
+ *
+ * @param renderError     An optional error component that should be rendered if current request fails
+ * @param onError         An optional function that should be call with the request state(containing error)
+ * @param passiveOnError    If true, render children on request state failure
  * @param errorTooltip    If true, show error as a tooltip on the child component
  * @param onCloseError    A function that should be called when request error component is closed/unmounted
+
  * @param onCloseSuccess  A function that should be called when request success component is closed/unmounted
- * @param inject          If true, Inject component with request state and append request feedback components (tooltips, ..) instead of replacing component with feedback components
- * @param passivePending  If true, render children as loading element
  * @param successTooltip  Show a success description as a tooltip on the child component
  * @param successReplace  Replaces children with success component
+ *
+ * @param children        The wrapped component
+ * @param inject          If true, Inject component with request state and append request feedback components (tooltips, ..) instead of replacing component with feedback components
+ *
  * @returns {*}
  * @constructor
  */
@@ -70,6 +76,7 @@ const RequestComponent = ({
                             errorTooltip,
                             onCloseError,
                             onError,
+                            passiveOnError,
 
                             renderLoading,
                             passivePending,
@@ -122,7 +129,7 @@ const RequestComponent = ({
   
   //if request isPending, keep child as loading element. Dont replace child.
   if(request.pending && passivePending) {
-    const singleChild = React.Children.toArray(children).length === 1;
+    const singleChild = React.Children.count(children) === 1;
 
     //Inject element with request state and actions if it's single child
     if (singleChild && isFunc(inject) ) {
@@ -174,6 +181,7 @@ const RequestComponent = ({
         errorTooltip={errorTooltip}
         inject={inject}
         actions={actions}
+        passiveOnError={passiveOnError}
       >
         {children}
       </RequestError>
@@ -182,9 +190,27 @@ const RequestComponent = ({
 
   //Successful request
   if (request.success) {
-    const singleChild = React.Children.toArray(children).length === 1;
+
+    if(successTooltip || successReplace){
+      return (
+        <RequestSuccess
+          id={id}
+          request={request}
+          success={request.success}
+          successReplace={successReplace}
+          successTooltip={successTooltip}
+          onCloseSuccess={onCloseSuccess}
+          inject={inject}
+          actions={actions}
+        >
+          {children}
+        </RequestSuccess>
+      );
+    }
+
+    const singleChild = React.Children.count(children) === 1;
     //Map requestState to child props via inject function
-    if(singleChild &&isFunc(inject)){
+    if(singleChild && isFunc(inject)){
       const params = inject(injection);
       const paramProps = isObj(params) ? params : { request: params };
       // $FlowFixMe
@@ -196,20 +222,7 @@ const RequestComponent = ({
       return React.cloneElement(children, injection);
     }
 
-    return (
-      <RequestSuccess
-        id={id}
-        request={request}
-        success={request.success}
-        successReplace={successReplace}
-        successTooltip={successTooltip}
-        onCloseSuccess={onCloseSuccess}
-        inject={inject}
-        actions={actions}
-      >
-      {children}
-    </RequestSuccess>
-    )
+    return children;
   }
 
   // Until the request is successful, render a loading component

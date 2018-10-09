@@ -4,7 +4,6 @@ import  Request  from "components/Request";
 import { Button } from 'semantic-ui-react';
 import './Common.scss';
 import withRequest from "../../src/module/withRequest";
-import Tooltip from 'react-tooltip';
 
 type Props = {
   id: string,
@@ -47,7 +46,7 @@ export const DeleteButton = ({ id, request }: Props) => {
 
         r.actions.pending(r.data.id, 'Checking Trash Bin compatibility');
         setTimeout(() => {
-          r.actions.failed(dataId, "Trash Bin failure! Sorry, you deserve a golden Bin. Try again next year :)")
+          r.actions.failed(dataId, "Trash Bin failure! Sorry, you deserve a golden Bin")
         }, 2000)
       }
     }
@@ -68,7 +67,7 @@ export const DeleteButton = ({ id, request }: Props) => {
       </div>
 
       <div className="warnButtonWrap">
-        <Request id={dId} insertion="delete button --" errorTooltip inject={_mapRequestStateToButtonProps}  >
+        <Request id={dId} insertion="delete button --" errorTooltip successReplace inject={_mapRequestStateToButtonProps}  >
           <Button className="deleteButton">
             Delete yourself
           </Button>
