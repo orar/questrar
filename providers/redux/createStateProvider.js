@@ -1,7 +1,7 @@
 // @flow
-import type {Store} from 'redux';
+//import type {Store} from 'redux';
 import {FAILED, PENDING, REMOVE, SUCCESS} from "../../src/module/common";
-import type {ProviderRequestState} from "../../src";
+//import type {ProviderRequestState} from "../../src/index";
 import { REDUX_STATE_PATH, REQUEST_ACTION_TYPE } from './common';
 import { REPLACE } from "../../src/module/common";
 import createRequest from "./createRequest";

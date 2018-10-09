@@ -1,4 +1,4 @@
-import { Request, RequestProvider, withRequest } from 'index';
+import { Request, RequestProvider, withRequest } from 'src/index';
 
 
 describe('(Entry) index', () => {

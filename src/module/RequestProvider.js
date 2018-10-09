@@ -1,11 +1,11 @@
 // @flow
 import React, { PureComponent } from 'react';
-import type {Request, ProviderRequestState} from "../QuestrarTypes";
+import type {Request, ProviderRequestState} from "../index";
 import type {Node} from "react";
 import {FAILED, initialRequest, PENDING, SUCCESS, REMOVE} from './common';
 import { RequestProviderContext } from "./context";
 import {isFunc, nonEmpty, resetRequestFlags} from "./helper";
-import StateProvider from "./StateProvider";
+import type { StateProvider } from "../index";
 
 
 type Props = {

@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import type { Node } from 'react';
-import type {Request, RequestActions, RequestProp} from "../QuestrarTypes";
+import type { RequestState, RequestActions, RequestProps } from "../index";
 import RequestError from "./RequestError/RequestError";
 import RequestLoading from "./RequestLoading/RequestLoading";
 import RequestSuccess from './RequestSuccess';
@@ -11,22 +11,24 @@ import invariant from 'invariant';
 
 type Props = RequestActions & {
   id: string,
-
+  request: RequestState,
+  actions: RequestActions,
   renderInitial?: Node | (request: Request) => any,
   renderLoading?: Node | (request: Request) => any,
   passivePending?: boolean,
-  initialLoading?: boolean,
+  initialPending?: boolean,
 
-  onError?: (request: Request) => any,
-  renderError?: Node | (request: Request) => any,
-  errorTooltip?: boolean,
+  onFailure?: (request: RequestState) => any,
+  renderError?: Node | (request: RequestState) => any,
+  failTooltip?: boolean,
+  passiveOnFailure?: boolean,
   onCloseError?: () => any,
 
   onCloseSuccess?: () => any,
   successReplace?: boolean,
   successTooltip?: boolean,
 
-  inject?: boolean | (request: RequestProp) => Object,
+  inject?: boolean | (request: RequestProps) => Object,
   append?: boolean,
 
   children: Array<Node> | Node,
@@ -46,15 +48,15 @@ type Props = RequestActions & {
  * @param actions         Actions to manage state of request
  *
  * @param renderLoading   An optional loading component that should be rendered whiles request is in flight
- * @param initialLoading  if true, renders a loading component until request state is successful, even if request has not started.
- * @param renderInitial   An optional component that should be rendered coupled with initialLoading. When initialLoading is true and renderInitial is not provided, loading component falls back to renderLoading falls back to default LoadingComponent provided by Request
+ * @param initialPending  if true, renders a loading component until request state is successful, even if request has not started.
+ * @param renderInitial   An optional component that should be rendered coupled with initialPending. When initialPending is true and renderInitial is not provided, loading component falls back to renderLoading falls back to default LoadingComponent provided by Request
  * @param passivePending  If true, render children as loading element
  *
- * @param renderError     An optional error component that should be rendered if current request fails
- * @param onError         An optional function that should be call with the request state(containing error)
- * @param passiveOnError    If true, render children on request state failure
- * @param errorTooltip    If true, show error as a tooltip on the child component
- * @param onCloseError    A function that should be called when request error component is closed/unmounted
+ * @param renderFailure     An optional error component that should be rendered if current request fails
+ * @param onFailure         An optional function that should be call with the request state(containing error)
+ * @param passiveOnFailure    If true, render children on request state failure
+ * @param failTooltip    If true, show error as a tooltip on the child component
+ * @param onCloseFailure    A function that should be called when request error component is closed/unmounted
 
  * @param onCloseSuccess  A function that should be called when request success component is closed/unmounted
  * @param successTooltip  Show a success description as a tooltip on the child component
@@ -72,15 +74,15 @@ const RequestComponent = ({
                             actions,
                             children,
 
-                            renderError,
-                            errorTooltip,
-                            onCloseError,
-                            onError,
-                            passiveOnError,
+                            renderFailure,
+                            failTooltip,
+                            onCloseFailure, //not full implemented
+                            onFailure,
+                            passiveOnFailure,
 
                             renderLoading,
                             passivePending,
-                            initialLoading,
+                            initialPending,
                             renderInitial,
 
                             successTooltip,
@@ -120,8 +122,8 @@ const RequestComponent = ({
       return React.cloneElement(renderLoading, injection);
     }
 
-    if(renderInitial){
-      return renderInitial
+    if(React.isValidElement(renderLoading)){
+      return renderLoading
     }
 
     return <RequestLoading />;
@@ -149,26 +151,26 @@ const RequestComponent = ({
 
   //When request has failed
   if(request.failed) {
-    //call onError callback
-    if (isFunc(onError)) {
-      onError(request)
+    //call onFailure callback
+    if (isFunc(onFailure)) {
+      onFailure(request)
     }
     //Render error
-    if (isFunc(renderError)) {
-      return renderError(request)
+    if (isFunc(renderFailure)) {
+      return renderFailure(request)
     }
 
     // Render custom error component but map request state to props
     // of error component through inject function
-    if (renderError) {
+    if (React.isValidElement(renderFailure)) {
       if (isFunc(inject)) {
         const params = inject(injection);
         const paramProps = isObj(params) ? params : { request: params };
         // $FlowFixMe
-        return React.cloneElement(renderError, paramProps);
+        return React.cloneElement(renderFailure, paramProps);
       }
 
-      return inject ? React.cloneElement(renderError, request) : renderError;
+      return inject ? React.cloneElement(renderFailure, request) : renderFailure;
     }
 
 
@@ -176,12 +178,12 @@ const RequestComponent = ({
       <RequestError
         id={id}
         request={request}
-        onCloseError={onCloseError}
+        onCloseError={onCloseFailure}
         failure={request.failed}
-        errorTooltip={errorTooltip}
+        errorTooltip={failTooltip}
         inject={inject}
         actions={actions}
-        passiveOnError={passiveOnError}
+        passiveOnError={passiveOnFailure}
       >
         {children}
       </RequestError>
@@ -227,7 +229,7 @@ const RequestComponent = ({
 
   // Until the request is successful, render a loading component
   // Usually used when if there is no data the underlying component may have rendering issues
-  if(initialLoading) {
+  if(initialPending) {
 
     if(isFunc(renderInitial)) {
       return renderInitial(injection)
@@ -240,7 +242,7 @@ const RequestComponent = ({
       return renderLoading;
     }
 
-    if(renderInitial){
+    if(React.isValidElement(renderInitial)){
       return renderInitial
     }
 

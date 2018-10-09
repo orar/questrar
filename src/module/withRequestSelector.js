@@ -6,6 +6,8 @@ import {initialRequest} from "./common";
 import { RequestConsumerContext } from "./context";
 import get from 'lodash/get';
 
+
+
 type WrappedComponentProps = {
   id: string,
 }
@@ -31,8 +33,8 @@ export default function withRequestSelector (WrappedComponent: Object) {
      */
     _getRequest = (state: ProviderRequestState) => {
 
-      if(this.props.id) {
-        return get(state, this.props.id, initialRequest);
+      if(this.props.id && Object.hasOwnProperty.call(state, this.props.id)) {
+        return state[this.props.id];
       }
       return initialRequest;
     };

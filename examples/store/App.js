@@ -1,6 +1,6 @@
 //flow
 import React from 'react';
-import { Provider as RequestStateProvider } from "../../src";
+import { Provider as RequestStateProvider } from "../../src/index";
 import { Provider as ReduxStoreProvider } from 'react-redux'
 import { createStateProvider } from '../../providers/redux/index';
 import createStore from './createStore';

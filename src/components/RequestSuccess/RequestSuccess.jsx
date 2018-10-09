@@ -2,7 +2,7 @@
 import React from 'react';
 import type { Node } from 'react';
 import './RequestSuccess.scss';
-import type {RequestActions, RequestState, RequestProp} from "../../index";
+import type { RequestState, RequestActions, RequestProps } from "../../index";
 import Floater from 'react-floater';
 import {isFunc} from "../../module/helper";
 
@@ -15,7 +15,7 @@ type Props = {
   successTooltip?: boolean,
   successReplace?: boolean,
   onCloseSuccess: (id: any) => any,
-  inject?: boolean | (request: RequestProp) => Object,
+  inject?: boolean | (request: RequestProps) => Object,
 }
 
 type State = {

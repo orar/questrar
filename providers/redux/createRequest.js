@@ -1,5 +1,5 @@
 // @flow
-import type {RequestState} from "../../src";
+//import type {RequestState} from "../../src/index";
 import {SUCCESS, FAILED, PENDING, REMOVE} from "../../src/module/common";
 import { REQUEST_ACTION_TYPE } from './common';
 import {isNumber, nonEmpty, randomId} from "../../src/module/helper";

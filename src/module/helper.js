@@ -1,5 +1,4 @@
 // @flow
-import type { ReducerMap } from 'redux'
 import invariant from 'invariant';
 import type {RequestState} from "../index";
 
@@ -46,8 +45,8 @@ export const arrayValuesOfKeys = (obj: Object, keys: Array<any>, getValue?: (key
 
 
 /**
- * Reset a request flags to initialRequest flags.
- * Setting pending, success and fail to false
+ * Reset a request flags to initial state.
+ * Setting pending, success and failed to false
  *
  * @param req
  * @returns {Request}
@@ -57,6 +56,9 @@ export const resetRequestFlags = (req: RequestState) => {
   r.pending = false;
   r.success = false;
   r.failed = false;
+  if(r.message) {
+    delete r.message
+  }
   return r;
 };
 

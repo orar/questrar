@@ -1,6 +1,6 @@
 // @flow
 import {PENDING, SUCCESS, FAILED, REPLACE, initialRequest, REMOVE} from "../../src/module/common";
-import type { ProviderRequestState } from "../../src";
+//import type { ProviderRequestState } from "../../src/index";
 import { REQUEST_ACTION_TYPE } from './common';
 import { nonEmpty, resetRequestFlags as resetFlags} from "../../src/module/helper";
 import invariant from 'invariant';

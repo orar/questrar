@@ -78,7 +78,7 @@ export default function withRequest(options?: RequestComponentOptions) {
             return Object.assign({}, initialRequest, { id: ids[0] });
           }
 
-          //prefill all with initial request
+          //prefill all with initial request states
           return ids.reduce((acc, id) => {
             const iniReq = Object.assign({}, initialRequest, { id: id });
             return Object.assign({}, acc, {[id]: iniReq});

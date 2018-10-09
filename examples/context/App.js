@@ -1,6 +1,6 @@
 //flow
 import React from 'react';
-import { Provider as RequestStateProvider } from "index";
+import { Provider as RequestStateProvider } from "src/index";
 import ProfilePage from './ProfilePage';
 //import 'semantic-ui-css/semantic.css';
 
