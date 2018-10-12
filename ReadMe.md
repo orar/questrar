@@ -15,12 +15,12 @@ And? Why?
 --
 We often tend to show a loading circle or gear icon on our buttons and pages and overlays when a particular request is in flight.
 And as soon as the request settles, the loading icon is cleared off and the
-content of the processed request (either successful or failed), is show to the user.
-This is very nice when user sees request loading especially when network is a throttling to make the user calm and comfortable.
+content of the processed request (either successful or failed), is shown to the user.
+This is very nice when user sees request loading especially when network is throttling to make the user calm and comfortable.
 This is often limited to a particular scope and often a particular element too.
 And if you are working with React, you would have to pass props around or declare a higher parent to pass request states among children.
 If we got the chance to hide some buttons somewhere, alert a notification,
-show a loading icon and many of that at once and seamlessly just because of a common(:precious) single request,
+show a loading icon and many of those at once and seamlessly just because of a common(:precious) single request,
 then why not make it better with more control and accessibility with Questrar?
 
 
@@ -87,7 +87,7 @@ export class AppMain extends React.Component<Props> {
     }
 }
 ```
-Now you can use the `Request` component in any of your component anywhere deep, anyhow deep.
+Now you can use the `Request` component in any of your components anywhere deep, anyhow deep.
 
 A `Request` component requires an id which would be used to track a request.
 An id is recommended to be a `string` or `number`. 
@@ -96,13 +96,15 @@ An id is recommended to be a `string` or `number`.
 A request id should be a bit unique to a particular subject context. For instance, if you have a user account
 which can have many queries to api, (fetch user, edit user, delete user, upload photo), 
 its bearable not to use a single request id (which obviously may be userId) for all these actions on the user.
-Instead, you can just tweak to do
+Instead, you can just concat to do
  ```js
  const fetchProfileRequestId = `${userId}_fetch`;
  const updateRequestId = `${userId}_update`;
  const deleteUserId = `${userId}_delete`
 ```
 The consequence of using same id looks like showing a pending delete when indeed user is uploading a photo.
+
+
 You don't have to create a request inside a component.
 You just provide an id. If the id has no requestState, a default one is returned.
 
@@ -121,13 +123,13 @@ export const UserProfile = ({ userId, data }) => {
 }
 ```
 
-Where you explicitly want to use the request state, you can use the inject parameter on `Request`;
+Where you explicitly want to use the request state object, you can use the inject parameter on `Request`;
 
 ```jsx harmony
 <Request id={stringOrNumberId} initialPending inject />
 ```
 
-`inject` can be a bool or a function with signature `(request: RequestProp) => {"anyParam": params} | request`
+`inject` can be a boolean or a function with signature `(request: RequestProp) => {"anyParam": params} | request`
  which would be recieved by the underlying component.
  
 ```jsx harmony
@@ -148,7 +150,7 @@ Where you explicitly want to use the request state, you can use the inject param
 }
 ```
 
-At some point where the `Request` component isnt that helpful to use with your component, 
+At some point where the `Request` component isn't that helpful to use with your component, 
 you can try with the `withRequest` HOC and expect the `request` state as a prop.
 
 
@@ -190,8 +192,9 @@ export withRequest(options?: RequestComponentOptions)(Component)
 
 `withRequest` automatically takes `props.id` if `options.id` is empty. Thats to say `options.id` has precedence over `props.id`.
 However, if you require `options.id` to merge with `props.id`, set `mergeIdSources` to true.
-This will join `options.id` with `props.id` with no duplicates and
- return an object similar to `RequestProp` type to the component as `props.request` typed as
+This will merge `options.id` with `props.id` with no duplicates and
+ return an object similar to `RequestProp` type to the component as `props.request` but typed as
+
  ```typescript
  { data: { [id: string | number]: RequestState }, //instead of data: RequestState
    actions: {
@@ -389,9 +392,9 @@ API
 | --- | --- | --- | --- | ---|
 |`id`                      | `string\|number` | no | random string | Request state id which would be used to manage request state across modules. If not provide, a random id is generated |
 |`options`                 | `object` | no | `undefined` | see below |
-|`options.autoRemove`      | `boolean` | `undefined` | Auto remove request state from store after error or success reporting component is umounted |
-|`options.removeOnFail`    | `boolean` | `undefined` | Auto remove request state from store after error reporting component is umounted |
-|`options.removeOnSuccess` | `boolean` | `undefined` | Auto remove request state from store after success reporting component is umounted |
+|`options.autoRemove`      | `boolean` | no | `undefined` | Auto remove request state from store after error or success reporting component is umounted |
+|`options.removeOnFail`    | `boolean` | no | `undefined` | Auto remove request state from store after error reporting component is umounted |
+|`options.removeOnSuccess` | `boolean` | no | `undefined` | Auto remove request state from store after success reporting component is umounted |
 
 * A request state can also be removed manually. 
 ```jsx harmony 
