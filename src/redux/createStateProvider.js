@@ -1,11 +1,11 @@
 // @flow
-//import type {Store} from 'redux';
-import {FAILED, PENDING, REMOVE, SUCCESS} from "../../src/module/common";
-//import type {ProviderRequestState} from "../../src/index";
+import type {Store} from 'redux';
+import {FAILED, PENDING, REMOVE, SUCCESS} from "../module/common";
+import type {ProviderRequestState} from "../index";
 import { REDUX_STATE_PATH, REQUEST_ACTION_TYPE } from './common';
-import { REPLACE } from "../../src/module/common";
+import { REPLACE } from "../module/common";
 import createRequest from "./createRequest";
-import {nonEmpty} from "../../src/module/helper";
+import {nonEmpty} from "../module/helper";
 
 
 /**

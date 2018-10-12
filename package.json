@@ -2,9 +2,10 @@
   "name": "questrar",
   "version": "1.0.1",
   "description": "A simple React request state manager and request reporting",
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "jsnext:main": "dist/index.es.js",
+  "main": "dist/questrar.js",
+  "unpkg": "dist/questrar.min.js",
+  "module": "esm/questrar-esm.js",
+  "jsnext:main": "esm/questrar-esm.js",
   "author": "Bastin George",
   "license": "MIT",
   "private": false,
@@ -13,28 +14,42 @@
   },
   "files": [
     "dist",
-    "index.d.ts"
+    "es",
+    "esm",
+    "redux",
+    "lib",
+    "src/**/*.d.ts"
   ],
   "scripts": {
-    "clean": "rimraf ./dist",
-    "test:local": "cross-env NODE_ENV=test karma",
-    "test": "cross-env CI=1 react-scripts test --env=jsdom",
-    "test:watch": "react-scripts test --env=jsdom",
+    "clean": "rimraf ./dist ./es ./esm ./lib",
+    "test:local": "cross-env NODE_ENV=test karma start karma.config.js",
+    "test": "cross-env CI=1 karma start karma.config.js",
     "build": "rollup -c",
+    "build:flow": "yarn flow-remove-types src/ -d es/ -q -a -p",
     "start": "rollup -c -w",
-    "prepare": "yarn clean && yarn run build",
+    "prepare": "yarn clean && yarn build:flow && yarn build",
     "predeploy": "cd example && yarn install && yarn run build",
     "deploy": "gh-pages -d example/build",
-    "prepublish": "yarn clean && yarn build"
+    "prepublish": "yarn prepare"
   },
   "peerDependencies": {
+    "invariant": "^2.2.4",
+    "lodash": "^4.17.10",
     "prop-types": "^15.6.2",
     "react": "^0.16.0",
-    "react-dom": "^0.16.0"
+    "react-dom": "^0.16.0",
+    "react-floater": "^0.5.5",
+    "styled-components": "^3.4.9"
   },
-  "dependencies": {
-    "react-floater": "^0.5.5"
+  "externals": {
+    "prop-types": "PropTypes",
+    "react": "React",
+    "react-dom": "ReactDom",
+    "react-floater": "ReactFloater",
+    "lodash": "Lodash",
+    "styled-components": "styled"
   },
+  "dependencies": {},
   "repository": {
     "type": "git",
     "url": "https://github.com/orarr/questrar.git"
@@ -64,6 +79,7 @@
     "enzyme": "^3.6.0",
     "enzyme-adapter-react-16": "^1.5.0",
     "flow-bin": "^0.76.0",
+    "flow-remove-types": "^1.2.3",
     "gh-pages": "^2.0.1",
     "invariant": "^2.2.4",
     "karma": "^3.0.0",
@@ -73,16 +89,20 @@
     "karma-mocha": "^1.3.0",
     "karma-mocha-reporter": "^2.2.5",
     "karma-requirejs": "^1.1.0",
+    "karma-rollup-preprocessor": "^6.0.1",
     "karma-safari-launcher": "^1.0.0",
     "karma-sourcemap-loader": "^0.3.7",
     "lodash": "^4.17.10",
+    "mocha": "^5.2.0",
     "node-sass": "^4.9.3",
     "postcss-loader": "^3.0.0",
     "prop-types": "^15.6.2",
     "react": "^16.5.2",
     "react-addons-test-utils": "^15.6.2",
     "react-dom": "^16.5.2",
+    "react-floater": "^0.5.5",
     "redux": "^4.0.0",
+    "requirejs": "^2.3.6",
     "rimraf": "^2.6.2",
     "rollup": "^0.66.4",
     "rollup-plugin-analyzer": "^2.1.0",
@@ -90,6 +110,7 @@
     "rollup-plugin-commonjs": "^9.1.8",
     "rollup-plugin-copy": "^0.2.3",
     "rollup-plugin-flow": "^1.1.1",
+    "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-postcss": "^1.6.2",

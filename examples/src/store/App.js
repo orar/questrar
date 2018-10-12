@@ -1,8 +1,8 @@
 //flow
 import React from 'react';
-import { Provider as RequestStateProvider } from "../../src/index";
+import { Provider as RequestStateProvider  } from 'questrar'
 import { Provider as ReduxStoreProvider } from 'react-redux'
-import { createStateProvider } from '../../providers/redux/index';
+import { createStateProvider } from 'questrar/redux';
 import createStore from './createStore';
 import ProfileApp from './Profile';
 

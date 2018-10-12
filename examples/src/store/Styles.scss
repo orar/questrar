@@ -12,6 +12,25 @@
     align-items: center;
   }
 
+  .profileItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 700px;
+
+    span {
+      flex: 1 1 0;
+      display: flex;
+      justify-content: flex-start;
+      margin: 5px;
+    }
+
+    .label {
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+
   .profileActions {
     display: flex;
     justify-content: space-evenly;

@@ -1,8 +1,8 @@
 // @flow
 import React from 'react';
 import type { Node } from 'react';
-import './RequestSuccess.scss';
-import type { RequestState, RequestActions, RequestProps } from "../../index";
+import { SuccessContainer } from './RequestSuccessStyle';
+import type { RequestState, RequestActions, RequestProp } from "../../index";
 import Floater from 'react-floater';
 import {isFunc} from "../../module/helper";
 
@@ -15,7 +15,9 @@ type Props = {
   successTooltip?: boolean,
   successReplace?: boolean,
   onCloseSuccess: (id: any) => any,
-  inject?: boolean | (request: RequestProps) => Object,
+  inject?: boolean | (request: RequestProp) => Object,
+  color?: string
+
 }
 
 type State = {
@@ -53,6 +55,11 @@ class RequestSuccess extends React.Component<Props, State> {
   };
 
 
+  /**
+   * Recreates children if inject is set true
+   * @returns {Props.children}
+   * @private
+   */
   _children = () => {
     const { children, request, inject, actions } = this.props;
     const injection = { request: { data: request, actions }};
@@ -112,14 +119,14 @@ class RequestSuccess extends React.Component<Props, State> {
 
 
   render() {
-    const { children, successTooltip, successReplace, request} = this.props;
+    const { children, successTooltip, successReplace, request, color} = this.props;
 
 
     if(successReplace) {
       return (
-        <div className="requestSuccessContainer">
+        <SuccessContainer color={color}>
           <div>{request.message ? request.message : this._defaultSuccessMessage}</div>
-        </div>
+        </SuccessContainer>
       );
     }
 
@@ -138,7 +145,6 @@ class RequestSuccess extends React.Component<Props, State> {
     }
 
     return children;
-
   };
 }
 

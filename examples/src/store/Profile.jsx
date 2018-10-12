@@ -1,12 +1,9 @@
 // @flow
 import React, { Component } from 'react';
-import  Request  from "components/Request";
+import  { Request }  from "questrar";
 import { fetchProfileState } from "./createStore";
-import type {RequestState} from "../../src/QuestrarTypes";
 import './Styles.scss';
 import { connect } from 'react-redux';
-import { REQUEST_ACTION_TYPE } from "../../src/module/common";
-
 
 const RenderProfile = ({ request }) => {
   const id = request.data.id;
@@ -20,12 +17,13 @@ const RenderProfile = ({ request }) => {
     return (
       <div className="profileContent" >
         <div className="profileInfo">
-          <div>Name: {data.name}</div>
-          <div>Age: {data.age}</div>
-          <div>Universe: {data.university}</div>
-          <div>Planet: {data.homePlanet}</div>
-          <div>Address: {data.address}</div>
-          <div>Inter Language: {data.interLanguage}</div>
+          <div className="profileItem"><span className="label">Name:</span><span> {data.name}</span></div>
+          <div className="profileItem"><span className="label">Genetic code:</span><span> {data.gcode}</span></div>
+          <div className="profileItem"><span className="label">Age:</span><span> {data.age}</span></div>
+          <div className="profileItem"><span className="label">Universe:</span><span> {data.university}</span></div>
+          <div className="profileItem"><span className="label">Planet:</span><span> {data.homePlanet}</span></div>
+          <div className="profileItem"><span className="label">Address:</span><span> {data.address}</span></div>
+          <div className="profileItem"><span className="label">Extraterrestrial Language:</span><span> {data.interLanguage}</span></div>
         </div>
         <div className="profileActions">
           <button onClick={_onClick} className="profileFailBtn">Fail</button>
@@ -60,7 +58,7 @@ class Profile extends Component<Props> {
 
     render() {
         return (
-            <div className="profileContainer">
+            <div style={{ paddingTop: 32 }} className="profileContainer">
               <Request id={fetchProfileState.id} initialLoading inject >
                 <RenderProfile />
               </Request>

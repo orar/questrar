@@ -1,8 +1,8 @@
 // @flow
 import { createStore, compose, applyMiddleware } from 'redux';
-import { createRequestState } from '../../providers/redux'
+import { createRequestState } from 'questrar/redux'
 import { sagaMiddleware, profileSaga } from './sagas';
-import {isFunc} from "../../src/module/helper";
+import {isFunc} from "../../../src/module/helper";
 import reducers from './reducers';
 
 

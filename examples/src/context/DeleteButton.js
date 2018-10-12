@@ -1,9 +1,9 @@
 // @flow
 import React from 'react';
-import  Request  from "components/Request";
+import  { Request, withRequest }  from "questrar";
 import { Button } from 'semantic-ui-react';
 import './Common.scss';
-import withRequest from "../../src/module/withRequest";
+
 
 type Props = {
   id: string,
@@ -67,7 +67,13 @@ export const DeleteButton = ({ id, request }: Props) => {
       </div>
 
       <div className="warnButtonWrap">
-        <Request id={dId} insertion="delete button --" errorTooltip successReplace inject={_mapRequestStateToButtonProps}  >
+        <Request
+          id={dId}
+          errorTooltip
+          successReplace
+          inject={_mapRequestStateToButtonProps}
+
+        >
           <Button className="deleteButton">
             Delete yourself
           </Button>

@@ -5,18 +5,22 @@ import postcss from 'rollup-plugin-postcss'
 import resolve from 'rollup-plugin-node-resolve'
 import url from 'rollup-plugin-url'
 import { plugin as analyze } from 'rollup-plugin-analyzer';
-import pkg from './package.json'
 import { uglify } from 'rollup-plugin-uglify';
+import builtins from 'rollup-plugin-node-builtins';
+
+import pkg from './package.json'
+import reduxPkg from './redux/package.json';
 
 
-const peerDeps = Object.keys(pkg.peerDependencies);
 
-const makeConfig = ({input, output, minify}) => ({
-  input: 'src/index.js',
+const peerDeps = Object.keys(pkg.externals);
+
+const makeConfig = ({input, output, minify, dependencies}) => ({
+  input,
   output: {
     ...output,
     },
-  external: peerDeps,
+  external: Array.isArray(dependencies) ? dependencies : [],
   plugins: [
     external(),
     analyze({ limit: 1 }),
@@ -34,7 +38,12 @@ const makeConfig = ({input, output, minify}) => ({
         moduleDirectory: 'node_modules'
       }
     }),
-    commonjs(),
+    commonjs({
+      include: 'node_modules/**',
+      namedExports: {
+        'node_modules/react-is/index.js': ['isValidElementType']
+      }
+    }),
     minify && uglify({
       compress: {
         pure_getters: true,
@@ -43,28 +52,61 @@ const makeConfig = ({input, output, minify}) => ({
         warnings: false,
       },
     })
-  ]
+  ].filter(Boolean)
 });
 
 
 
 export default [
   makeConfig({
-    input: 'src/index.js',
+    input: 'es/index.js',
     minify: true,
-    output:
-      {
-        file: pkg.main,
+    output: {
+        file: pkg.unpkg,
         format: 'umd',
         name: 'Questrar',
-        sourcemap: true
-      }
+        sourcemap: true,
+        globals: pkg.externals
+      },
+    dependencies: peerDeps
   }),
   makeConfig({
-    input: 'src/index.js',
+    input: 'es/index.js',
     output: {
-      file: pkg.module,
-      format: 'esm',
+      file: pkg.main,
+      format: 'umd',
+      name: 'Questrar',
+      sourcemap: true,
+      globals: pkg.externals
+    },
+    dependencies: peerDeps
+  }),
+ makeConfig({
+    input: 'es/index.js',
+    output: {
+      file: 'questrar-esm.js',
+      dir: 'esm',
+      format: 'es',
+      sourcemap: true
+    },
+   dependencies: peerDeps
+  }),
+ makeConfig({
+    input: 'es/redux/index.js',
+    output: {
+      file: 'questrar-redux-esm.js',
+      dir: 'esm',
+      format: 'es',
+      sourcemap: true
+    },
+   dependencies: peerDeps
+  }),
+  makeConfig({
+    input: 'es/redux/index.js',
+    output: {
+      file: "questrar-redux-cjs.js",
+      dir: 'lib',
+      format: 'cjs',
       sourcemap: true
     }
   })

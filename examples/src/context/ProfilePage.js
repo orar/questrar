@@ -1,6 +1,6 @@
 // @flow
 import React, { Component } from 'react';
-import  Request  from "components/Request";
+import  { Request }  from "questrar";
 import DeleteButton from './DeleteButton';
 
 type Props = {
@@ -16,12 +16,12 @@ type State = {
 * @author Orar
 * @date   9/29/18, 9:36 AM
 */
-class ProfilePage extends Component<Props, State> {
+export class ProfilePage extends Component<Props, State> {
     props: Props;
     state: State = { loading: true };
 
-    id = 'user02932';
-    subId = 'del_45332';
+    id = '102932';
+    subId = 'del_102932';
 
     _timeout = setTimeout(() => {
       this.setState({ loading: false });
@@ -42,6 +42,7 @@ class ProfilePage extends Component<Props, State> {
         );
     }
 }
+
 
 
 export default ProfilePage;

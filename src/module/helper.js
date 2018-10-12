@@ -16,7 +16,7 @@ import type {RequestState} from "../index";
  * @param getValue Retrieve or transform the resulting value if provided as a function
  * @returns {*} Returns an empty array if no keys had a match in the base object
  */
-export const arrayValuesOfKeys = (obj: Object, keys: Array<any>, getValue?: (key: any, obj: Object) => any) => {
+export const arrayValuesOfKeys = (obj: Object, keys: Array<string | number>, getValue?: (key: any, obj: Object) => any) => {
   invariant(nonEmpty(obj), 'No object has been provided for keys extraction');
   invariant(nonEmpty(keys), 'There are no keys provided for values extraction');
 
@@ -68,11 +68,9 @@ export const resetRequestFlags = (req: RequestState) => {
  * @param length
  * @returns {string}
  */
-export function randomId (length?: number) {
-  const size = typeof length === 'number' && length < 15 && length > 0 ? length : 10;
+export function randomId () {
   const rand = Math.random();
-  const id = parseInt(rand * Math.pow(10, size)).toString();
-  return id.split('').map(i => String.fromCharCode(97 + Number(i))).join('');
+  return rand.toString().split('.')[2];
 }
 
 

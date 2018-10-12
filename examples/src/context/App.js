@@ -1,8 +1,7 @@
 //flow
 import React from 'react';
-import { Provider as RequestStateProvider } from "src/index";
+import { Provider as RequestStateProvider } from "questrar";
 import ProfilePage from './ProfilePage';
-//import 'semantic-ui-css/semantic.css';
 
 type Props = {
 
@@ -17,11 +16,7 @@ const style = {
 
 };
 
-export class App extends React.Component<Props> {
-  props: Props;
-
-
-  render(){
+const App = () => {
 
     return (
       <div style={style} className="contextStateAppContainer">
@@ -30,8 +25,6 @@ export class App extends React.Component<Props> {
         </RequestStateProvider>
       </div>
     );
-  }
-
-}
+};
 
 export default App;

@@ -4,29 +4,43 @@ Creating a state provider
 Questrar looks agnostic to your app storage implementation. The above implementation used redux as the storage of the app.
 You could also create your implementation and provide as a prop to `RequestStateProvider`
 
-```
+```js
 function createOtherStateProvider() {
     
-    getState = () => {
-        return state;
-    }
+    const getState = () => {
+        return state; //get state from storage
+    };
     
-    putState = (wholeRequestStateData) => {} //replaces state
+    const putState = (wholeRequestStateData) => {}; //replaces entire state
     
-    observe = (reRender: (shouldUpdate: boolean) => void) => {
-       return state.hasChanged ? reRender(true) : reRender(false);
-    }
+    /**
+    * Observe store changes and updates the Provider if it should
+    * @param reRender
+    */
+    const observe = (updateProvider: (shouldUpdate: boolean) => void) => {
+       return store.state.hasChanged ? updateProvider(true) : updateProvider(false);
+    };
     
-    updateRequest = (requestStatus) => {
+    /**
+    * Syncs request state changes from component tree
+    * Pushes an update of a particular requestState to store
+    * Consider using status(pending, failed, success, remove) to switch type of update
+    * @param requestStatus
+    */
+    const updateRequest = (requestStatus) => {
         const { id, status, message? } = requestStatus;
         updateRequestById(id, status, message)
+    };
+    
+    return {
+      getState, putState, observe, updateRequest,
     }
 }
 ```
 
 And then 
 
-```
+```jsx harmony
 import { Provider } from 'questrar';
 
 const stateProvider = createOtherStateProvider();

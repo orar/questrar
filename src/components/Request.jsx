@@ -1,9 +1,9 @@
 // @flow
 import React from 'react';
 import type { Node } from 'react';
-import type { RequestState, RequestActions, RequestProps } from "../index";
+import type { RequestState, RequestActions, RequestProp } from "../index";
 import RequestError from "./RequestError/RequestError";
-import RequestLoading from "./RequestLoading/RequestLoading";
+import RequestPending from "./RequestPending/RequestPending";
 import RequestSuccess from './RequestSuccess';
 import withRequestSelector from '../module/withRequestSelector';
 import {isFunc, isObj} from "../module/helper";
@@ -28,10 +28,11 @@ type Props = RequestActions & {
   successReplace?: boolean,
   successTooltip?: boolean,
 
-  inject?: boolean | (request: RequestProps) => Object,
+  inject?: boolean | (request: RequestProp) => Object,
   append?: boolean,
 
   children: Array<Node> | Node,
+  color: string,
 }
 
 
@@ -64,6 +65,7 @@ type Props = RequestActions & {
  *
  * @param children        The wrapped component
  * @param inject          If true, Inject component with request state and append request feedback components (tooltips, ..) instead of replacing component with feedback components
+ * @param color                 Color of font text and icon
  *
  * @returns {*}
  * @constructor
@@ -73,6 +75,7 @@ const RequestComponent = ({
                             request,
                             actions,
                             children,
+                            inject,
 
                             renderFailure,
                             failTooltip,
@@ -89,20 +92,12 @@ const RequestComponent = ({
                             successReplace,
                             onCloseSuccess,
 
-                            inject
+                            color
+
                           }: Props) => {
 
 
   invariant(id !== null && id !== undefined, 'No request state id is provided as a prop');
-
-  //if(id !== null && id !== undefined) return children;
-
-  //Map generic request state actions to request id
-  /*const mappedActions = {
-    pending: (message?: any) => actions.pending(id, message),
-    failed: (message?: any) => actions.failed(id, message),
-    success: (message?: any) => actions.success(id, message),
-  };*/
 
   const injection = { request: { data: request, actions }};
 
@@ -126,7 +121,7 @@ const RequestComponent = ({
       return renderLoading
     }
 
-    return <RequestLoading />;
+    return <RequestPending color={color} />;
   }
   
   //if request isPending, keep child as loading element. Dont replace child.
@@ -149,7 +144,7 @@ const RequestComponent = ({
     return children;
   }
 
-  //When request has failed
+  // When request has failed
   if(request.failed) {
     //call onFailure callback
     if (isFunc(onFailure)) {
@@ -184,6 +179,7 @@ const RequestComponent = ({
         inject={inject}
         actions={actions}
         passiveOnError={passiveOnFailure}
+        color={color}
       >
         {children}
       </RequestError>
@@ -204,6 +200,7 @@ const RequestComponent = ({
           onCloseSuccess={onCloseSuccess}
           inject={inject}
           actions={actions}
+          color={color}
         >
           {children}
         </RequestSuccess>
@@ -246,7 +243,7 @@ const RequestComponent = ({
       return renderInitial
     }
 
-    return <RequestLoading />;
+    return <RequestPending color={color} />;
   }
 
   if (inject) {

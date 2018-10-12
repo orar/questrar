@@ -13,6 +13,7 @@ export const sagaMiddleware = createSagaMiddleware();
 const profile = {
   name: 'Sag Amid Leware',
   age: 25,
+  gcode: 'er4fioxx',
   university: 'Solar',
   homePlanet: 'Mars',
   address: 'Oxide 34 street, Meltpoint, Nalpole Crater, Mars',

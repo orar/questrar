@@ -45,7 +45,7 @@ export class RequestSelectorProps {
     actions: RequestActions;
 }
 
-export interface RequestProps {
+export interface RequestProp {
     data: RequestState;
     actions: RequestActions;
 }

@@ -1,8 +1,8 @@
 // @flow
-import {PENDING, SUCCESS, FAILED, REPLACE, initialRequest, REMOVE} from "../../src/module/common";
-//import type { ProviderRequestState } from "../../src/index";
+import {PENDING, SUCCESS, FAILED, REPLACE, initialRequest, REMOVE} from "../module/common";
+import type { ProviderRequestState } from "../index";
 import { REQUEST_ACTION_TYPE } from './common';
-import { nonEmpty, resetRequestFlags as resetFlags} from "../../src/module/helper";
+import { nonEmpty, resetRequestFlags as resetFlags} from "../module/helper";
 import invariant from 'invariant';
 
 /**
@@ -12,7 +12,7 @@ import invariant from 'invariant';
  * @param action
  * @returns {*}
  */
-function setRemoves(state, action) {
+export function setRemoves(state, action) {
   const s = state;
 
   if (action.autoRemove) {
@@ -23,6 +23,7 @@ function setRemoves(state, action) {
     if(s.autoRemove) {
       delete s['autoRemove'];
     }
+    return s;
   }
 
   if(action.autoRemoveOnFailure){
@@ -30,7 +31,9 @@ function setRemoves(state, action) {
     if(s.autoRemove) {
       delete s['autoRemove'];
     }
+    return s;
   }
+
   return s;
 }
 
@@ -42,7 +45,7 @@ function setRemoves(state, action) {
  * @param id
  * @returns {*}
  */
-function getState(state, id) {
+export function getState(state, id) {
   if (Object.hasOwnProperty.call(state, id)) {
     return Object.assign({}, state[id]);
   }
@@ -55,7 +58,7 @@ function getState(state, id) {
  * @param state
  * @param action
  */
-function setMessage(state, action) {
+export function setMessage(state, action) {
   if(action.message){
     state.message = action.message;
   }
@@ -66,7 +69,7 @@ function setMessage(state, action) {
  *
  * @returns {{} & RequestState}
  */
-function handleRequestPending (state, action) {
+export function handleRequestPending (state, action) {
   invariant(nonEmpty(action.id), 'request action missing id field');
 
   const id = action.id;
@@ -86,7 +89,7 @@ function handleRequestPending (state, action) {
  * @params state, action
  * @returns {{} & RequestState}
  */
-function handleRequestFailed (state, action){
+export function handleRequestFailed (state, action){
   invariant(nonEmpty(action.id), 'request state action missing id field');
 
   const id = action.id;
@@ -108,7 +111,7 @@ function handleRequestFailed (state, action){
  * @params state, action
  * @returns {{} & RequestState}
  */
-function handleRequestSuccess (state, action) {
+export function handleRequestSuccess (state, action) {
   invariant(nonEmpty(action.id), 'request state action missing id field');
 
   const id = action.id;
@@ -130,7 +133,7 @@ function handleRequestSuccess (state, action) {
  * @param action
  * @returns {*}
  */
-function removeRequestState (state, action) {
+export function removeRequestState (state, action) {
   invariant(nonEmpty(action.id), 'request action missing id field');
 
   const id = action.id;
@@ -151,7 +154,7 @@ function removeRequestState (state, action) {
  * @param action
  * @returns {*}
  */
-const replaceState = (state: ProviderRequestState, action) => {
+export const replaceState = (state: ProviderRequestState, action) => {
   return Object.assign({}, action.state);
 };
 

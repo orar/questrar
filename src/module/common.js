@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-//import type { RequestState } from "../index";
+import type { RequestState } from "../index";
 
 
 //status flags

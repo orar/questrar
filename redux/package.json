@@ -1,0 +1,7 @@
+{
+  "name": "questrar/redux",
+  "private": true,
+  "main": "../lib/questrar-redux-cjs.js",
+  "module": "../esm/questrar-redux-esm.js",
+  "jsnext:main": "../esm/questrar-redux-esm.js"
+}

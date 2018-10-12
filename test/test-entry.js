@@ -17,7 +17,7 @@ chai.use(shallowDeepEqual);
 
 global.chai = chai;
 global.expect = chai.expect;
-global.should = chai.should();
+//global.should = chai.should();
 global.sinon = sinon;
 
 

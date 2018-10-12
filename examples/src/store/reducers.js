@@ -1,6 +1,6 @@
 // @flow
 import { combineReducers } from 'redux';
-import { requestStateReducer } from '../../providers/redux'
+import { requestStateReducer } from 'questrar/redux'
 
 
 //Default identity redux reducer

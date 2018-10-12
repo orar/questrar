@@ -1,42 +1,73 @@
 
-import { randomId, arrayValuesOfKeys, resetRequestFlags } from "../../src/module/helper";
+import { randomId, arrayValuesOfKeys, resetRequestFlags, isFunc, isNumber, isObj, nonEmpty } from "../../src/module/helper";
 import { initialRequest } from "../../src/module/common";
 
 describe('[helper]', () => {
 
-  it('(Function) Should return a unique string of size 10', () => {
-    const id = randomId(10);
+  it('(randomId) Should return a unique string of size 10', () => {
+    const id = randomId();
     expect(typeof id === "string");
-    expect(id.length === 10);
-  });
-
-  it('(Function) Should return a unique with all chars between a and h', () => {
-    const aCode = 'a'.charCodeAt(0);
-    const hCode = 'h'.charCodeAt(0);
-    const id = randomId(10).split('');
-    id.map(i => {
-      expect(aCode <= i.charCodeAt(0) && i.charCodeAt(0) <= hCode).to.be.true
-    });
   });
 
 
-  it('(Function) Should extract array values of keys subset of an object', () => {
+  it('(arrayValuesOfKeys) Should extract array values of keys subset of an object', () => {
     const mockObj = { a: 'exA', b: 'ExB', c:234, d: { e: 'subset1', f: true }};
-    const keys = ['a', 'b', 'c', 'd'];
+    const keys = ['a', 'd'];
     const result = arrayValuesOfKeys(mockObj, keys );
+
     expect(result.length).to.be.equal(keys.length);
+    expect(result).to.include(mockObj.a);
+    expect(result).to.include(mockObj.d)
   });
 
 
-  it('(Function) Should reset all flags of a request state', () => {
+  it('(resetRequestFlags) Should reset all flags of a request state', () => {
     const req = initialRequest;
     req.success = true;
     req.failed = false;
+    req.message = 'Reset this message property';
     const reset = resetRequestFlags(req);
 
-    expect(reset.isPending).to.be.false;
-    expect(reset.success).to.be.false;
+    expect(reset.pending).to.be.false;
     expect(reset.failed).to.be.false;
+    expect(reset.success).to.be.false;
+    expect(reset.message).to.be.undefined
   });
 
+  it('(isNumber) should verify if an argument is a number', () => {
+    const func = () => {};
+    let str = 'not a function';
+    const num = 342;
+
+    expect(isNumber(num)).to.be.true;
+    expect(isNumber(func)).to.be.false;
+    expect(isNumber(str)).to.be.false;
+  });
+
+  it('(isFunc) should verify if an argument is a function', () => {
+    const func = () => {};
+    function f() {}
+    let notFunc = 'not a function';
+
+    expect(isFunc(f)).to.be.true;
+    expect(isFunc(func)).to.be.true;
+    expect(isFunc(notFunc)).to.be.false;
+  });
+
+  it('(isObj) should verify if an argument is an object', () => {
+    const func = () => {};
+    let str = 'not a function';
+    const obj = {};
+    let obj1 = { a: 3 };
+
+    expect(isObj(func)).to.be.false;
+    expect(isObj(str)).to.be.false;
+    expect(isObj(obj)).to.be.true;
+    expect(isObj(obj1)).to.be.true;
+  });
+
+  it('(nonEmpty) should verify an argument is not empty', () => {
+    const all = ['', {}, [], "", 2];
+    all.forEach(a => expect(nonEmpty(a)).to.be.true);
+  });
 });

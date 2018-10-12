@@ -1,8 +1,8 @@
 // @flow
-//import type {RequestState} from "../../src/index";
-import {SUCCESS, FAILED, PENDING, REMOVE} from "../../src/module/common";
+import type {RequestState} from "../index";
+import {SUCCESS, FAILED, PENDING, REMOVE} from "../module/common";
 import { REQUEST_ACTION_TYPE } from './common';
-import {isNumber, nonEmpty, randomId} from "../../src/module/helper";
+import {isNumber, nonEmpty, randomId} from "../module/helper";
 
 
 /**
@@ -29,7 +29,7 @@ export type RequestOptions = {
  * @param options
  * @returns {function(Object=, string=, RequestOptions=)}
  */
-export function createRequest (id?: string, options?: RequestActionOptions) {
+export function createRequest (id?: string | number, options?: RequestActionOptions) {
   const reduxActionType = REQUEST_ACTION_TYPE;
 
   const isStaticType = nonEmpty(id) && (typeof id === 'string' || isNumber(id));

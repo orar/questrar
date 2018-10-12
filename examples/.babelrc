@@ -1,0 +1,24 @@
+{
+  "presets": [
+    "env",
+    "react",
+    "flow"
+  ],
+  "plugins": [
+    "transform-class-properties",
+    "transform-es2015-classes",
+    "transform-object-rest-spread",
+    "syntax-dynamic-import",
+  ],
+  "env": {
+    "test": {
+      "plugins": [
+        ["istanbul", {
+          "exclude": [
+            "**/*.spec.js"
+          ]
+        }]
+      ]
+    }
+  }
+}

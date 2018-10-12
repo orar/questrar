@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import type { Node } from 'react';
-import './RequestError.scss';
+import { ErrorContainer } from './RequestErrorStyle';
 import type { RequestActions, RequestState} from "../../index";
 import Floater from 'react-floater';
 import {isFunc} from "../../module/helper";
@@ -17,7 +17,7 @@ type Props = {
   onCloseError?: (data: any) => any,
   passiveOnError: boolean,
   inject?: boolean | (request: Request) => Object,
-
+  color?: string
 }
 
 type State = {
@@ -120,7 +120,7 @@ class RequestError extends React.Component<Props, State> {
   };
 
   render() {
-    const { errorTooltip, request, passiveOnError } = this.props;
+    const { errorTooltip, request, passiveOnError, color } = this.props;
 
     if (errorTooltip && request.message) {
 
@@ -143,16 +143,16 @@ class RequestError extends React.Component<Props, State> {
 
     if(request.message) {
       return (
-        <div className="requestErrorContainer">
+        <ErrorContainer color={color}>
           <div>{request.message}</div>
-        </div>
+        </ErrorContainer>
       );
     }
 
     return (
-      <div className="requestErrorContainer">
+      <ErrorContainer color={color}>
         <div>An error occurred. Please try again later.</div>
-      </div>
+      </ErrorContainer>
     );
 
   };

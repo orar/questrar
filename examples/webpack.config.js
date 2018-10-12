@@ -9,20 +9,18 @@ const htmlConfig = {
 };
 
 
-const isDevelopment = process.env.NODE_ENV === 'production';
 const isProduction = process.env.NODE_ENV === 'production';
 
 
 module.exports = () => {
   return {
-    entry: path.resolve(__dirname, 'app.js'),
+    entry: 'app.js',
     devtool: 'inline-source-map',
     mode: process.env.NODE_ENV,
 
     devServer: {
       port: 3000,
-      hot: true,
-      inline: true
+
     },
 
     output: {
@@ -55,9 +53,8 @@ module.exports = () => {
     },
     resolve: {
       modules: [
-        path.resolve(__dirname, '../src'),
-        //path.resolve(__dirname, '../providers'),
-        path.resolve(__dirname, '../node_modules')
+        path.resolve(__dirname, 'src'),
+        path.resolve(__dirname, 'node_modules'),
       ],
       // Can require('file') instead of require('file.js') etc.
       extensions: ['.js', '.jsx', '.json']
