@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import  { Request }  from "questrar";
 import DeleteButton from './DeleteButton';
+import './Common.scss';
 
 type Props = {
 
@@ -29,7 +30,7 @@ export class ProfilePage extends Component<Props, State> {
 
     render() {
       return (
-        <div>
+        <div style={{ height: '150vh'}}>
           <Request id='user02932' initialLoading={this.state.loading} >
             <div>
               <div>Profile</div>

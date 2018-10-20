@@ -4,7 +4,6 @@ import React from 'react';
 import type { RequestContext, ProviderRequestState} from "../index";
 import {initialRequest} from "./common";
 import { RequestConsumerContext } from "./context";
-import get from 'lodash/get';
 
 
 

@@ -6,6 +6,7 @@ import './Styles.scss';
 import { connect } from 'react-redux';
 
 const RenderProfile = ({ request }) => {
+  console.log(request);
   const id = request.data.id;
 
   const _onClick = () => {

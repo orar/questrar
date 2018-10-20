@@ -2,9 +2,9 @@
 import React from 'react';
 import type { Node } from 'react';
 import { ErrorContainer } from './RequestErrorStyle';
-import type { RequestActions, RequestState} from "../../index";
+import type { RequestActions, RequestState } from "../../index";
 import Floater from 'react-floater';
-import {isFunc} from "../../module/helper";
+import { isFunc, isObj } from "../../module/helper";
 
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
   errorTooltip?: boolean,
   onCloseError?: (data: any) => any,
   passiveOnError: boolean,
-  inject?: boolean | (request: Request) => Object,
+  inject?: boolean | (request: RequestState) => Object,
   color?: string
 }
 
@@ -40,16 +40,15 @@ class RequestError extends React.Component<Props, State> {
     this._closeTooltip();
   }
 
-
   /**
-   * Close tooltip
+   * Close tooltip and call backs
    * @private
    */
   _closeTooltip = () => {
     const { id, actions, onCloseError, request } = this.props;
 
     //handle callback
-    if( this.state.open && isFunc(onCloseError)){
+    if(this.state.open && isFunc(onCloseError)){
       onCloseError(id);
     }
     //remove request if set to autoRemove
@@ -60,16 +59,20 @@ class RequestError extends React.Component<Props, State> {
   };
 
 
-
+  /**
+   * Recreates children if needed for request props injection
+   * @returns {Props.children}
+   * @private
+   */
   _children = () => {
     const { children, request, inject, actions } = this.props;
     const injection = { request: { data: request, actions }};
 
     if(React.isValidElement(children)) {
       //Transform requestState to child props via inject function
-      if(typeof inject === 'function'){
+      if(isFunc(inject)){
         const params = inject(injection);
-        const paramProps = params && typeof params === 'object' ? params : { request: params };
+        const paramProps = isObj(params) ? params : { request: params };
         //$FlowFixMe
         return React.cloneElement(children, paramProps);
       }
@@ -82,40 +85,60 @@ class RequestError extends React.Component<Props, State> {
 
 
   /**
-   * Creates a failure reporting tooltip around child component
+   * Creates tooltip content
    *
    * @returns {Tooltip}
    * @private
    */
-  _createTooltip = () => {
+  _createContent = () => {
+    const { request } = this.props;
+
     return (
-      <div className="tooltipContentWrap" onClick={this._closeTooltip}>
-        {this.props.request.message}
+      <div style={{width: '100%', filter: 'none'}} className="q-tooltip-content-failed" onClick={this._closeTooltip}>
+        {!!request.message.body ? request.message.body : request.message}
       </div>
     )
   };
 
+  /**
+   * Creates a tooltip title
+   *
+   * @returns {Tooltip}
+   * @private
+   */
+  _createTitle = () => {
+    const { request } = this.props;
+
+    if(request.message.title) {
+      return React.isValidElement(request.message.title) ? request.message.title : (
+        <div className="q-tooltip-title-failed" style={{width: '100%', marginBottom: 10}}>
+          {request.message.title}
+        </div>
+      )
+    }
+  };
+
+  //Error tooltip styles
   _styles = () => {
     return {
-      floater: {
-        filter: 'unset',
-        maxWidth: 'content-box',
+      tooltip: {
+        filter: "none"
       },
       container: {
-        cursor: 'auto',
-        backgroundColor: '#b1462a',
-        color: '#fff',
-        minHeight: 20,
-        padding: 5,
-        borderRadius: 3
+        cursor: "pointer",
+        backgroundColor: "#aa2f23",
+        borderRadius: 5,
+        color: "#fff",
+        filter: "none",
+        minHeight: "none",
+        maxWidth: "none",
+        padding: 0,
       },
       arrow: {
-        color: '#b1462a',
-        display: 'inline-flex',
-        length: 7,
-        position: 'absolute',
-        spread: 14,
-      },
+        color: "#aa2f23",
+        length: 8,
+        spread: 10
+      }
     };
   };
 
@@ -125,15 +148,16 @@ class RequestError extends React.Component<Props, State> {
     if (errorTooltip && request.message) {
 
       return (
-        <Floater
-          offset={1}
-          open={this.state.open}
-          content={this._createTooltip()}
-          placement="auto"
-          styles={this._styles()}
-        >
-          <span>{this._children()}</span>
-        </Floater>
+          <Floater
+            title={this._createTitle()}
+            open={this.state.open}
+            content={this._createContent()}
+            placement="auto"
+            offset={0}
+            styles={this._styles()}
+          >
+            {this._children()}
+          </Floater>
       );
     }
 
@@ -141,10 +165,24 @@ class RequestError extends React.Component<Props, State> {
       return this._children();
     }
 
+    if(React.isValidElement(request.message)) {
+      return request.message;
+    }
+
+    if(isObj(request.message)) {
+      return (
+        <ErrorContainer color={color}>
+          {request.message.title}
+          {request.message.body}
+        </ErrorContainer>
+      );
+    }
+
+
     if(request.message) {
       return (
         <ErrorContainer color={color}>
-          <div>{request.message}</div>
+          {request.message}
         </ErrorContainer>
       );
     }

@@ -409,4 +409,4 @@ reqState.success("I'm reincarnated") // recreates in store from a fresh request 
 Credits
 --
 
-- Inspired by Christian Kaps @akkie
+- Inspired by Christian Kaps [@akkie](http://github.com/akkie)

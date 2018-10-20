@@ -1,9 +1,11 @@
 // @flow
 import {PENDING, SUCCESS, FAILED, REPLACE, initialRequest, REMOVE} from "../module/common";
-import type { ProviderRequestState } from "../index";
 import { REQUEST_ACTION_TYPE } from './common';
-import { nonEmpty, resetRequestFlags as resetFlags} from "../module/helper";
+import { nonEmpty, resetRequestFlags as resetFlags, randomId} from "../module/helper";
 import invariant from 'invariant';
+import type {RequestState, ReduxRequestState, ProviderRequestState} from "../index";
+
+
 
 /**
  * Sets remove flags on request.
@@ -12,7 +14,7 @@ import invariant from 'invariant';
  * @param action
  * @returns {*}
  */
-export function setRemoves(state, action) {
+export function setRemoves(state: Object, action: Object) {
   const s = state;
 
   if (action.autoRemove) {
@@ -45,7 +47,7 @@ export function setRemoves(state, action) {
  * @param id
  * @returns {*}
  */
-export function getState(state, id) {
+export function getState(state: ProviderRequestState, id: string | number) {
   if (Object.hasOwnProperty.call(state, id)) {
     return Object.assign({}, state[id]);
   }
@@ -58,7 +60,7 @@ export function getState(state, id) {
  * @param state
  * @param action
  */
-export function setMessage(state, action) {
+export function setMessage(state: RequestState, action: Object) {
   if(action.message){
     state.message = action.message;
   }
@@ -69,17 +71,19 @@ export function setMessage(state, action) {
  *
  * @returns {{} & RequestState}
  */
-export function handleRequestPending (state, action) {
+export function handleRequestPending (state: ReduxRequestState, action: Object): ReduxRequestState {
   invariant(nonEmpty(action.id), 'request action missing id field');
 
   const id = action.id;
+  const stateId = Symbol(id);
 
-  const nextReq = resetFlags(getState(state, id));
+  const nextReq = resetFlags(getState(state.data, id));
   nextReq.id = id;
   nextReq.pending = true;
   setMessage(nextReq, action);
 
-  return Object.assign({}, state, { [id]: nextReq });
+  const data = Object.assign({}, state.data, { [id]: nextReq });
+  return { id: stateId, data };
 }
 
 
@@ -89,19 +93,22 @@ export function handleRequestPending (state, action) {
  * @params state, action
  * @returns {{} & RequestState}
  */
-export function handleRequestFailed (state, action){
+export function handleRequestFailed (state: ReduxRequestState, action: Object){
   invariant(nonEmpty(action.id), 'request state action missing id field');
 
   const id = action.id;
+  const stateId = Symbol(id);
 
-  const nextReq = resetFlags(getState(state, id));
+
+  const nextReq = resetFlags(getState(state.data, id));
   nextReq.id = id;
   nextReq.failed = true;
   nextReq.failureCount += 1;
   setMessage(nextReq, action);
   setRemoves(nextReq, action);
 
-  return Object.assign({}, state, { [id]: nextReq });
+  const data = Object.assign({}, state.data, { [id]: nextReq });
+  return { id: stateId, data };
 }
 
 /**
@@ -111,10 +118,11 @@ export function handleRequestFailed (state, action){
  * @params state, action
  * @returns {{} & RequestState}
  */
-export function handleRequestSuccess (state, action) {
+export function handleRequestSuccess (state: ReduxRequestState, action: Object): ReduxRequestState {
   invariant(nonEmpty(action.id), 'request state action missing id field');
 
   const id = action.id;
+  const stateId = Symbol(id);
 
   const nextReq = resetFlags(getState(state, id));
   nextReq.id = id;
@@ -123,7 +131,8 @@ export function handleRequestSuccess (state, action) {
   setMessage(nextReq, action);
   setRemoves(nextReq, action);
 
-  return Object.assign({}, state, { [id]: nextReq });
+  const data = Object.assign({}, state.data, { [id]: nextReq });
+  return { id: stateId, data };
 }
 
 
@@ -133,15 +142,16 @@ export function handleRequestSuccess (state, action) {
  * @param action
  * @returns {*}
  */
-export function removeRequestState (state, action) {
+export function removeRequestState (state: ReduxRequestState, action: Object): ReduxRequestState {
   invariant(nonEmpty(action.id), 'request action missing id field');
 
+  const stateId = Symbol();
   const id = action.id;
 
-  if (Object.hasOwnProperty.call(state, id)) {
-    const _state = Object.assign({}, state);
-    delete _state[id];
-    return _state;
+  if (Object.hasOwnProperty.call(state.data, id)) {
+    const data = Object.assign({}, state.data);
+    delete data[id];
+    return { id: stateId, data };
   }
   return Object.assign({}, state);
 }
@@ -154,8 +164,10 @@ export function removeRequestState (state, action) {
  * @param action
  * @returns {*}
  */
-export const replaceState = (state: ProviderRequestState, action) => {
-  return Object.assign({}, action.state);
+export const replaceState = (state: ProviderRequestState, action: Object) => {
+  const stateId = Symbol();
+
+  return Object.assign({}, { data: action.state, id: stateId });
 };
 
 
@@ -165,8 +177,8 @@ export const replaceState = (state: ProviderRequestState, action) => {
  * @param action redux action dispatched
  * @returns {*} Final state
  */
-export function rootReducer(state: Object, action: Object) {
-  const _state = Object.assign({}, state);
+export function rootReducer(state: ReduxRequestState, action: Object) {
+  const _state = Object.assign({ data: {} }, state);
   switch (action.status){
     case PENDING:
       return handleRequestPending(_state, action);

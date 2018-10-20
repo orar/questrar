@@ -4,8 +4,10 @@
 //==========================================
 
 
-
-export class RequestState {
+/**
+ * Request state type of a single request
+ */
+export declare interface RequestState {
     id?: string;
 
     pending: boolean;
@@ -22,36 +24,44 @@ export class RequestState {
     removeOnFail?: boolean;
 }
 
-
-export interface ProviderRequestState {
-    [s: string]: RequestState
-}
-
-export interface RequestActions {
+/**
+ * Request actions for turning request states
+ */
+export declare interface RequestActions {
     success (id: string, message?: any): any;
     failed (id: string, message?: any): any;
     pending (id: string, message?: any): any;
     remove (id: string, message?: any): any;
 }
 
-export class RequestContext {
+
+export declare interface ProviderRequestState {
+    [s: string]: RequestState
+}
+
+
+
+export declare interface RequestContext {
     data: { [s: string]: RequestState };
     actions: RequestActions
 }
 
 
-export class RequestSelectorProps {
+export declare interface RequestSelectorProps {
     request: RequestState;
     actions: RequestActions;
 }
 
-export interface RequestProp {
+/**
+ * Request object received by inject functions and props
+ */
+export declare interface RequestProp {
     data: RequestState;
     actions: RequestActions;
 }
 
 
-export interface StateProvider {
+export declare interface StateProvider {
 
     /**
      * Gets all of the request states in store
@@ -80,4 +90,20 @@ export interface StateProvider {
      */
     observe (updater: (shouldUpdate: boolean) => any): void
 
+    /**
+     * Releases all resources before unmounting RequestProvider (componentWillUnmount)
+     */
+    release (): void
+
+}
+
+
+
+// ===============
+// redux
+// ==============
+
+export declare interface ReduxRequestState {
+    id: Symbol,
+    data: ProviderRequestState
 }

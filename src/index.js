@@ -5,6 +5,3 @@ import withRequest from './module/withRequest';
 
 export { Request, Provider, withRequest };
 
-import * as redux from './redux';
-
-export { redux };

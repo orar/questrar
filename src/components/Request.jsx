@@ -43,7 +43,7 @@ type Props = RequestActions & {
  * `renderLoading` and `renderInitial` differ.
  * `renderInitial` loading serves the purpose of rendering once a unique loading component to subsequent loading times
  * `renderLoading` is used when no `renderInitial` provided and also for all subsequent load
- * 
+ *
  * @param id             A request Id
  * @param request         A request state specified by the rId
  * @param actions         Actions to manage state of request
@@ -123,7 +123,7 @@ const RequestComponent = ({
 
     return <RequestPending color={color} />;
   }
-  
+
   //if request isPending, keep child as loading element. Dont replace child.
   if(request.pending && passivePending) {
     const singleChild = React.Children.count(children) === 1;

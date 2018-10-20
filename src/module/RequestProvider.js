@@ -40,17 +40,22 @@ class RequestProvider extends PureComponent<Props, State> {
    * a forced re-render is needed to apply changes to the component tree when there should be
    */
   componentDidMount() {
-    if (this._hasStore()) {
-      if (isFunc(this.props.stateProvider.observe)) {
-        this.props.stateProvider.observe(shouldUpdate => {
-          if (shouldUpdate) {
-            this.forceUpdate();
-          }
-        });
-      }
+    const { stateProvider  } = this.props;
+    if (this._hasStore() && isFunc(stateProvider.observe)) {
+      stateProvider.observe(shouldUpdate => {
+        if (shouldUpdate) {
+          this.forceUpdate();
+        }
+      });
     }
   }
 
+  componentWillUnmount() {
+    const { stateProvider  } = this.props;
+    if (this._hasStore()) {
+      stateProvider.release();
+    }
+  }
 
   /**
    * Checks if provider has external request state store

@@ -18,7 +18,7 @@
     "esm",
     "redux",
     "lib",
-    "src/**/*.d.ts"
+    "*.d.ts"
   ],
   "scripts": {
     "clean": "rimraf ./dist ./es ./esm ./lib",
@@ -33,23 +33,20 @@
     "prepublish": "yarn prepare"
   },
   "peerDependencies": {
-    "invariant": "^2.2.4",
-    "lodash": "^4.17.10",
     "prop-types": "^15.6.2",
     "react": "^0.16.0",
     "react-dom": "^0.16.0",
-    "react-floater": "^0.5.5",
     "styled-components": "^3.4.9"
   },
   "externals": {
     "prop-types": "PropTypes",
     "react": "React",
     "react-dom": "ReactDom",
-    "react-floater": "ReactFloater",
-    "lodash": "Lodash",
     "styled-components": "styled"
   },
-  "dependencies": {},
+  "dependencies": {
+    "react-floater": "^0.5.5"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/orarr/questrar.git"
@@ -114,6 +111,7 @@
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-postcss": "^1.6.2",
+    "rollup-plugin-size-snapshot": "^0.7.0",
     "rollup-plugin-strip": "^1.2.0",
     "rollup-plugin-uglify": "^6.0.0",
     "rollup-plugin-url": "^2.0.0",
