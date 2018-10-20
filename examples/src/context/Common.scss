@@ -64,3 +64,39 @@
     background-color: #ffc8ca;
   }
 }
+
+.q-tooltip-title-success, .q-tooltip-title-failed{
+  font-weight: 600;
+  filter: none;
+  font-size: 16px;
+  background-color: #8c0000;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  text-align: center;
+}
+
+.requestFailedTitle {
+  font-weight: 600;
+  filter: none;
+  font-size: 16px;
+  background-color: #8c0000;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  text-align: center;
+}
+
+.requestFailedContent, .q-tooltip-content-failed {
+  filter: none;
+  font-size: 14px;
+  padding: 5px;
+  text-align: center;
+
+}
+
+.q-tooltip-content-success {
+
+}

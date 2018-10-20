@@ -2,6 +2,7 @@
 import React from 'react';
 import  { Request, withRequest }  from "questrar";
 import { Button } from 'semantic-ui-react';
+import { isObj } from "../../../src/module/helper";
 import './Common.scss';
 
 
@@ -17,7 +18,7 @@ export const DeleteButton = ({ id, request }: Props) => {
 
   const deleteStatus = () => {
     //console.log(request);
-    if(request && request.data.message) {
+    if(request && !isObj(request.data.message)) {
       return <div className="deleteStatus">{request.data.message}...</div>
     }
   };
@@ -44,10 +45,18 @@ export const DeleteButton = ({ id, request }: Props) => {
         // Hack: corrected by immutably copying the id value. Setting it to const
         const dataId = r.data.id;
 
+        const title = "Trash Bin Failure!";
+        const body ="Sorry, you deserve a golden Bin";
+
+
         r.actions.pending(r.data.id, 'Checking Trash Bin compatibility');
-        setTimeout(() => {
-          r.actions.failed(dataId, "Trash Bin failure! Sorry, you deserve a golden Bin")
-        }, 2000)
+        try {
+          setTimeout(() => {
+            r.actions.failed(dataId, { title, body })
+          }, 2000)
+        } catch(e) {
+          console.log(e)
+        }
       }
     }
   };
@@ -69,8 +78,7 @@ export const DeleteButton = ({ id, request }: Props) => {
       <div className="warnButtonWrap">
         <Request
           id={dId}
-          errorTooltip
-          successReplace
+          failTooltip
           inject={_mapRequestStateToButtonProps}
 
         >

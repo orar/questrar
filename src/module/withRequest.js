@@ -1,10 +1,9 @@
 // @flow
 import React from "react";
 import type {RequestContext, ProviderRequestState} from "../index";
-import isEmpty from "lodash/isEmpty";
 import { initialRequest} from "./common";
 import { RequestConsumerContext } from "./context";
-import {arrayValuesOfKeys, isFunc, nonEmpty} from "./helper";
+import {arrayValuesOfKeys, isFunc, nonEmpty, isEmptyObj} from "./helper";
 
 
 type RequestComponentProps = {
@@ -71,7 +70,7 @@ export default function withRequest(options?: RequestComponentOptions) {
 
         if (!Array.isArray(ids) || ids.length === 0) return {};
 
-        if (isEmpty(requestObj)) {
+        if (isEmptyObj(requestObj)) {
 
           //Return a single request state instead of an object map of id: requestState
           if (ids.length === 1) {
@@ -81,7 +80,7 @@ export default function withRequest(options?: RequestComponentOptions) {
           //prefill all with initial request states
           return ids.reduce((acc, id) => {
             const iniReq = Object.assign({}, initialRequest, { id: id });
-            return Object.assign({}, acc, {[id]: iniReq});
+            return Object.assign({}, acc, { [id]: iniReq });
           }, {});
         }
 

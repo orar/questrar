@@ -4,13 +4,14 @@ import type { Node } from 'react';
 import { SuccessContainer } from './RequestSuccessStyle';
 import type { RequestState, RequestActions, RequestProp } from "../../index";
 import Floater from 'react-floater';
-import {isFunc} from "../../module/helper";
+import {isFunc, isObj } from "../../module/helper";
+
 
 type Props = {
   id: string,
   request: RequestState,
   actions: RequestActions,
-  success?: boolean | string,
+  success?: boolean,
   children: Array<Node> | Node,
   successTooltip?: boolean,
   successReplace?: boolean,
@@ -66,9 +67,9 @@ class RequestSuccess extends React.Component<Props, State> {
 
     if(React.isValidElement(children)) {
       //Map requestState to child props via inject function
-      if(typeof inject === 'function'){
+      if(isFunc(inject)){
         const params = inject(injection);
-        const paramProps = params && typeof params === 'object' ? params : { request: params };
+        const paramProps = isObj(params) ? params : { request: params };
         //$FlowFixMe
         return React.cloneElement(children, paramProps);
       }
@@ -80,40 +81,64 @@ class RequestSuccess extends React.Component<Props, State> {
   };
 
   /**
-   * Creates a failure reporting tooltip around child component
+   * Creates tooltip content
    *
    * @returns {Tooltip}
    * @private
    */
-  _createTooltip = () => {
+  _createContent = () => {
+    const { request } = this.props;
+
     return (
-      <div className="tooltipContentWrap" onClick={this._closeTooltip}>
-        {this.props.request.message}
+      <div
+        style={{width: '100%', filter: 'none'}}
+        className="q-tooltip-content-success"
+        onClick={this._closeTooltip}
+      >
+        {!!request.message.body ? request.message.body : request.message}
       </div>
     )
   };
 
+  /**
+   * Creates a tooltip title
+   *
+   * @returns {Tooltip}
+   * @private
+   */
+  _createTitle = () => {
+    const { request } = this.props;
+
+    if(request.message.title) {
+      return React.isValidElement(request.message.title) ? request.message.title : (
+        <div className="q-tooltip-title-success" style={{width: '100%' }}>
+          {request.message.title}
+        </div>
+      )
+    }
+  };
+
+  //Success tooltip styles
   _styles = () => {
     return {
-      floater: {
-        filter: 'unset',
-        maxWidth: 'content-box',
+      tooltip: {
+        filter: "none"
       },
       container: {
-        cursor: 'auto',
-        backgroundColor: '#71aa6f',
-        color: '#fff',
-        minHeight: 20,
-        padding: 5,
-        borderRadius: 3
+        cursor: "pointer",
+        backgroundColor: "#529c4f",
+        borderRadius: 5,
+        color: "#fff",
+        filter: "none",
+        minHeight: "none",
+        maxWidth: "none",
+        padding: 0,
       },
       arrow: {
-        color: '#78b176',
-        display: 'inline-flex',
-        length: 7,
-        position: 'absolute',
-        spread: 14,
-      },
+        color: "#529c4f",
+        length: 8,
+        spread: 10
+      }
     };
   };
 
@@ -123,9 +148,14 @@ class RequestSuccess extends React.Component<Props, State> {
 
 
     if(successReplace) {
+
+      if(React.isValidElement(request.message)) {
+        return request.message;
+      }
+
       return (
         <SuccessContainer color={color}>
-          <div>{request.message ? request.message : this._defaultSuccessMessage}</div>
+          <div>{request.message && !isObj(request.message) ? request.message : this._defaultSuccessMessage}</div>
         </SuccessContainer>
       );
     }
@@ -133,13 +163,14 @@ class RequestSuccess extends React.Component<Props, State> {
     if (successTooltip && request.message) {
       return (
         <Floater
-          offset={1}
+          offset={0}
           open={this.state.open}
-          content={this._createTooltip()}
+          title={this._createTitle()}
+          content={this._createContent()}
           placement="auto"
           styles={this._styles()}
         >
-          <span>{this._children()}</span>
+          {this._children()}
         </Floater>
       );
     }

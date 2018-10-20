@@ -1,7 +1,7 @@
 
 Creating a state provider
 --
-Questrar looks agnostic to your app storage implementation. The above implementation used redux as the storage of the app.
+Questrar is agnostic to your app storage implementation. The above implementation used redux as the storage of the app.
 You could also create your implementation and provide as a prop to `RequestStateProvider`
 
 ```js
@@ -14,8 +14,8 @@ function createOtherStateProvider() {
     const putState = (wholeRequestStateData) => {}; //replaces entire state
     
     /**
-    * Observe store changes and updates the Provider if it should
-    * @param reRender
+    * Observes store changes and updates the Provider if it should
+    * @param updateProvider
     */
     const observe = (updateProvider: (shouldUpdate: boolean) => void) => {
        return store.state.hasChanged ? updateProvider(true) : updateProvider(false);

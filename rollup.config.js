@@ -7,7 +7,7 @@ import url from 'rollup-plugin-url'
 import { plugin as analyze } from 'rollup-plugin-analyzer';
 import { uglify } from 'rollup-plugin-uglify';
 import builtins from 'rollup-plugin-node-builtins';
-
+import { sizeSnapshot } from "rollup-plugin-size-snapshot";
 import pkg from './package.json'
 import reduxPkg from './redux/package.json';
 
@@ -23,7 +23,7 @@ const makeConfig = ({input, output, minify, dependencies}) => ({
   external: Array.isArray(dependencies) ? dependencies : [],
   plugins: [
     external(),
-    analyze({ limit: 1 }),
+
     postcss({
       modules: true
     }),
@@ -51,7 +51,8 @@ const makeConfig = ({input, output, minify, dependencies}) => ({
         unsafe_comps: true,
         warnings: false,
       },
-    })
+    }),
+    sizeSnapshot()
   ].filter(Boolean)
 });
 

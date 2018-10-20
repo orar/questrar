@@ -80,7 +80,7 @@ export function randomId () {
  * @param func
  * @returns {boolean}
  */
-export function isFunc (func: any) {
+export function isFunc (func: any):%checks {
   return typeof func === "function";
 }
 
@@ -89,8 +89,8 @@ export function isFunc (func: any) {
  * @param obj
  * @returns {any|boolean}
  */
-export function isObj (obj: any) {
-  return !!obj && typeof obj === "object";
+export function isObj (obj: any):%checks {
+  return obj.constructor == Object
 }
 
 
@@ -99,7 +99,7 @@ export function isObj (obj: any) {
  * @param num
  * @returns {any|boolean}
  */
-export function isNumber (num: any) {
+export function isNumber (num: any):%checks {
   return typeof num === "number";
 }
 
@@ -109,6 +109,18 @@ export function isNumber (num: any) {
  * @param value
  * @returns {boolean}
  */
-export function nonEmpty(value: any) {
+export function nonEmpty(value: any):%checks {
   return typeof value !== 'undefined' && value !== null
+}
+
+
+export function isEmptyObj(value: any) {
+  if(!nonEmpty(value)) return false;
+
+  for (let key in value) {
+    if (Object.hasOwnProperty.call(value, key)) {
+      return false;
+    }
+  }
+  return true;
 }
