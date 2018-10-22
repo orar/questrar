@@ -4,7 +4,7 @@ import { initialRequest } from "../../src/module/common";
 
 describe('[helper]', () => {
 
-  it('(randomId) Should return a unique string of size 10', () => {
+  it('(randomId) Should always return a unique string', () => {
     const id = randomId();
     expect(typeof id === "string");
   });

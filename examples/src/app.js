@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import App from './store/App';
+import App from './context/App';
 
 
 const MOUNT_NODE = document.getElementById('app');

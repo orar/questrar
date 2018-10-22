@@ -1,10 +1,10 @@
 // @flow
 import React from 'react';
 import type { Node } from 'react';
-import { SuccessContainer } from './RequestSuccessStyle';
 import type { RequestState, RequestActions, RequestProp } from "../../index";
-import Floater from 'react-floater';
-import {isFunc, isObj } from "../../module/helper";
+import Popover from 'react-popover';
+import { isFunc, isObj, nonEmpty } from "../../module/helper";
+import './RequestSuccess.scss';
 
 
 type Props = {
@@ -17,7 +17,8 @@ type Props = {
   successReplace?: boolean,
   onCloseSuccess: (id: any) => any,
   inject?: boolean | (request: RequestProp) => Object,
-  color?: string
+  color?: string,
+  className?: string
 
 }
 
@@ -29,7 +30,7 @@ class RequestSuccess extends React.Component<Props, State> {
   props: Props;
   state: State = { open: true };
 
-  _defaultSuccessMessage = 'Request Successful';
+  _defaultSuccessMessage = 'Successful';
 
 
   componentWillUnmount() {
@@ -46,7 +47,7 @@ class RequestSuccess extends React.Component<Props, State> {
 
     //handle callback
     if( this.state.open && isFunc(onCloseSuccess)){
-      onCloseSuccess(id);
+      onCloseSuccess({ data: request, actions });
     }
     //remove request if set to autoRemove
     if(this.state.open && (request.autoRemove || request.removeOnSuccess)){
@@ -68,7 +69,7 @@ class RequestSuccess extends React.Component<Props, State> {
     if(React.isValidElement(children)) {
       //Map requestState to child props via inject function
       if(isFunc(inject)){
-        const params = inject(injection);
+        const params = inject(injection.request);
         const paramProps = isObj(params) ? params : { request: params };
         //$FlowFixMe
         return React.cloneElement(children, paramProps);
@@ -88,63 +89,29 @@ class RequestSuccess extends React.Component<Props, State> {
    */
   _createContent = () => {
     const { request } = this.props;
-
-    return (
-      <div
-        style={{width: '100%', filter: 'none'}}
-        className="q-tooltip-content-success"
-        onClick={this._closeTooltip}
-      >
-        {!!request.message.body ? request.message.body : request.message}
-      </div>
-    )
-  };
-
-  /**
-   * Creates a tooltip title
-   *
-   * @returns {Tooltip}
-   * @private
-   */
-  _createTitle = () => {
-    const { request } = this.props;
-
+    let title;
     if(request.message.title) {
-      return React.isValidElement(request.message.title) ? request.message.title : (
-        <div className="q-tooltip-title-success" style={{width: '100%' }}>
+      title = React.isValidElement(request.message.title) ? request.message.title : (
+        <div className="q-tooltip-title-success" >
           {request.message.title}
         </div>
       )
     }
+
+    const message = request.message.body ? request.message.body : request.message;
+
+    return (
+      <div className="q-tooltip-content-success" onClick={this._closeTooltip}>
+        {title}
+        {message}
+      </div>
+    )
   };
 
-  //Success tooltip styles
-  _styles = () => {
-    return {
-      tooltip: {
-        filter: "none"
-      },
-      container: {
-        cursor: "pointer",
-        backgroundColor: "#529c4f",
-        borderRadius: 5,
-        color: "#fff",
-        filter: "none",
-        minHeight: "none",
-        maxWidth: "none",
-        padding: 0,
-      },
-      arrow: {
-        color: "#529c4f",
-        length: 8,
-        spread: 10
-      }
-    };
-  };
 
 
   render() {
-    const { children, successTooltip, successReplace, request, color} = this.props;
+    const { children, successTooltip, successReplace, request, className = '' } = this.props;
 
 
     if(successReplace) {
@@ -154,24 +121,24 @@ class RequestSuccess extends React.Component<Props, State> {
       }
 
       return (
-        <SuccessContainer color={color}>
-          <div>{request.message && !isObj(request.message) ? request.message : this._defaultSuccessMessage}</div>
-        </SuccessContainer>
+        <div className="successContainer">
+          <div>{nonEmpty(request.message) && !isObj(request.message) ? request.message : this._defaultSuccessMessage}</div>
+        </div>
       );
     }
 
     if (successTooltip && request.message) {
+      const classNames = `requestSuccessPopover ${className}`;
+
       return (
-        <Floater
-          offset={0}
-          open={this.state.open}
-          title={this._createTitle()}
-          content={this._createContent()}
-          placement="auto"
-          styles={this._styles()}
+        <Popover
+          isOpen={this.state.open}
+          preferPlace="right"
+          body={this._createContent()}
+          className={classNames}
         >
           {this._children()}
-        </Floater>
+        </Popover>
       );
     }
 

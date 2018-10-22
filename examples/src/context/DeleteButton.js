@@ -28,9 +28,8 @@ export const DeleteButton = ({ id, request }: Props) => {
    * Maps requestState to button props
    *
    */
-  const _mapRequestStateToButtonProps = (arg) => {
-    const r = arg.request;
-    //console.log(r);
+  const _mapRequestStateToButtonProps = (r) => {
+    console.log(r);
 
     return {
       loading: r.data.pending,
@@ -52,7 +51,7 @@ export const DeleteButton = ({ id, request }: Props) => {
         r.actions.pending(r.data.id, 'Checking Trash Bin compatibility');
         try {
           setTimeout(() => {
-            r.actions.failed(dataId, { title, body })
+            r.actions.success(dataId, { title, body })
           }, 2000)
         } catch(e) {
           console.log(e)
@@ -79,8 +78,9 @@ export const DeleteButton = ({ id, request }: Props) => {
         <Request
           id={dId}
           failTooltip
+          successTooltip
           inject={_mapRequestStateToButtonProps}
-
+          className="skinWrapper"
         >
           <Button className="deleteButton">
             Delete yourself

@@ -69,6 +69,7 @@ export default function createStateProvider (store: Store, path?: string) {
   function getState(){
     const state = getRawState();
     if(nonEmpty(state) && nonEmpty(state.data) ){
+      console.log('state.data', state.data);
       return state.data;
     }
     return {};

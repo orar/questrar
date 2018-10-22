@@ -1,8 +1,7 @@
 // @flow
 import React from 'react';
-import { PendingContainer } from './RequestPendingStyle';
 import Spinner from '../Spinner/Spinner';
-
+import './RequestPending.scss';
 type Props = {
   color?: string,
 }
@@ -14,9 +13,9 @@ type Props = {
  */
 const RequestPending = ({ color }: Props) => {
     return (
-        <PendingContainer>
+        <div className="pendingContainer">
             <Spinner size={20} color={color} />
-        </PendingContainer>
+        </div>
     );
 };
 

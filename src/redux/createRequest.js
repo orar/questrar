@@ -32,14 +32,15 @@ export type RequestOptions = {
 export function createRequest (id?: string | number, options?: RequestActionOptions) {
   const reduxActionType = REQUEST_ACTION_TYPE;
 
-  const isStaticType = nonEmpty(id) && (typeof id === 'string' || isNumber(id));
+  const isStatic = nonEmpty(id) && (typeof id === 'string' || isNumber(id));
   const hasOptions = nonEmpty(options);
 
   const autoRemove = hasOptions && options.autoRemove;
   const autoRemoveOnSuccess = hasOptions && options.autoRemoveOnSuccess;
   const autoRemoveOnFailure = hasOptions && options.autoRemoveOnFailure;
 
-  const requestId = isStaticType ? id : randomId();
+  const requestId = isStatic ? id : randomId();
+
 
   const initAction = (rId, status, message?) => {
     const _action = { type: reduxActionType, id: rId, status };

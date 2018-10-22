@@ -8,6 +8,7 @@ import RequestSuccess from './RequestSuccess';
 import withRequestSelector from '../module/withRequestSelector';
 import {isFunc, isObj} from "../module/helper";
 import invariant from 'invariant';
+import './Request.scss';
 
 type Props = RequestActions & {
   id: string,
@@ -33,6 +34,7 @@ type Props = RequestActions & {
 
   children: Array<Node> | Node,
   color: string,
+  className: string,
 }
 
 
@@ -92,8 +94,8 @@ const RequestComponent = ({
                             successReplace,
                             onCloseSuccess,
 
-                            color
-
+                            color,
+                            className
                           }: Props) => {
 
 
@@ -107,7 +109,7 @@ const RequestComponent = ({
       return renderLoading(request)
     }
     if (renderLoading && isFunc(inject)) {
-      const params = inject(injection);
+      const params = inject(injection.request);
       const paramProps = isObj(params) ? params : { request: params };
       // $FlowFixMe
       return React.cloneElement(renderLoading, paramProps);
@@ -132,7 +134,7 @@ const RequestComponent = ({
     if (singleChild && isFunc(inject) ) {
       // Render child but map request state to props
       // of error component through inject function provided
-      const params = inject(injection);
+      const params = inject(injection.request);
       const paramProps = isObj(params) ? params : { request: params };
       //$FlowFixMe
       return React.cloneElement(children, paramProps);
@@ -159,7 +161,7 @@ const RequestComponent = ({
     // of error component through inject function
     if (React.isValidElement(renderFailure)) {
       if (isFunc(inject)) {
-        const params = inject(injection);
+        const params = inject(injection.request);
         const paramProps = isObj(params) ? params : { request: params };
         // $FlowFixMe
         return React.cloneElement(renderFailure, paramProps);
@@ -179,7 +181,7 @@ const RequestComponent = ({
         inject={inject}
         actions={actions}
         passiveOnError={passiveOnFailure}
-        color={color}
+        className={className}
       >
         {children}
       </RequestError>
@@ -200,7 +202,7 @@ const RequestComponent = ({
           onCloseSuccess={onCloseSuccess}
           inject={inject}
           actions={actions}
-          color={color}
+          className={className}
         >
           {children}
         </RequestSuccess>
@@ -210,7 +212,7 @@ const RequestComponent = ({
     const singleChild = React.Children.count(children) === 1;
     //Map requestState to child props via inject function
     if(singleChild && isFunc(inject)){
-      const params = inject(injection);
+      const params = inject(injection.request);
       const paramProps = isObj(params) ? params : { request: params };
       // $FlowFixMe
       return React.cloneElement(children, paramProps);
@@ -251,7 +253,7 @@ const RequestComponent = ({
     const singleChild = React.Children.toArray(children).length === 1;
     //Map requestState to child props via inject function
     if(singleChild && isFunc(inject)){
-      const params = inject(injection);
+      const params = inject(injection.request);
       const paramProps = isObj(params) ? params : { request: params };
       // $FlowFixMe
       return React.cloneElement(children, paramProps);

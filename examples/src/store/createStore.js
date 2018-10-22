@@ -8,7 +8,7 @@ import reducers from './reducers';
 
 
 //Create a free request state action creator for profile fetch with an id: PROFILE_FETCH_REQUEST_STATE
-export const fetchProfileState = createRequestState('PROFILE_FETCH_REQUEST_STATE');
+export const fetchProfileState = createRequestState();
 
 
 

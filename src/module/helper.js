@@ -70,7 +70,7 @@ export const resetRequestFlags = (req: RequestState) => {
  */
 export function randomId () {
   const rand = Math.random();
-  return rand.toString().split('.')[2];
+  return rand.toString().split('.')[1];
 }
 
 

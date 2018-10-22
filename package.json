@@ -27,7 +27,7 @@
     "build": "rollup -c",
     "build:flow": "yarn flow-remove-types src/ -d es/ -q -a -p",
     "start": "rollup -c -w",
-    "prepare": "yarn clean && yarn build:flow && yarn build",
+    "prepare": "yarn clean && yarn build",
     "predeploy": "cd example && yarn install && yarn run build",
     "deploy": "gh-pages -d example/build",
     "prepublish": "yarn prepare"
@@ -45,7 +45,7 @@
     "styled-components": "styled"
   },
   "dependencies": {
-    "react-floater": "^0.5.5"
+    "react-popover": "^0.5.10"
   },
   "repository": {
     "type": "git",
@@ -97,29 +97,23 @@
     "react": "^16.5.2",
     "react-addons-test-utils": "^15.6.2",
     "react-dom": "^16.5.2",
-    "react-floater": "^0.5.5",
     "redux": "^4.0.0",
     "requirejs": "^2.3.6",
     "rimraf": "^2.6.2",
     "rollup": "^0.66.4",
-    "rollup-plugin-analyzer": "^2.1.0",
     "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-commonjs": "^9.1.8",
-    "rollup-plugin-copy": "^0.2.3",
     "rollup-plugin-flow": "^1.1.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-resolve": "^3.4.0",
     "rollup-plugin-peer-deps-external": "^2.2.0",
     "rollup-plugin-postcss": "^1.6.2",
     "rollup-plugin-size-snapshot": "^0.7.0",
-    "rollup-plugin-strip": "^1.2.0",
     "rollup-plugin-uglify": "^6.0.0",
     "rollup-plugin-url": "^2.0.0",
     "sass": "^1.14.0",
-    "sass-loader": "^7.1.0",
     "sinon": "^6.3.4",
     "sinon-chai": "^3.2.0",
-    "style-loader": "^0.23.0",
     "styled-components": "^3.4.9",
     "typescript": "^2.9.2"
   },

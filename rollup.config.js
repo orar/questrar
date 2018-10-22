@@ -1,16 +1,13 @@
 import babel from 'rollup-plugin-babel'
 import commonjs from 'rollup-plugin-commonjs'
 import external from 'rollup-plugin-peer-deps-external'
-import postcss from 'rollup-plugin-postcss'
+import postcss from 'rollup-plugin-postcss';
 import resolve from 'rollup-plugin-node-resolve'
 import url from 'rollup-plugin-url'
-import { plugin as analyze } from 'rollup-plugin-analyzer';
 import { uglify } from 'rollup-plugin-uglify';
 import builtins from 'rollup-plugin-node-builtins';
 import { sizeSnapshot } from "rollup-plugin-size-snapshot";
-import pkg from './package.json'
-import reduxPkg from './redux/package.json';
-
+import pkg from './package.json';
 
 
 const peerDeps = Object.keys(pkg.externals);
@@ -23,9 +20,9 @@ const makeConfig = ({input, output, minify, dependencies}) => ({
   external: Array.isArray(dependencies) ? dependencies : [],
   plugins: [
     external(),
-
+    builtins(),
     postcss({
-      modules: true
+      ///modules: true,
     }),
     url(),
     babel({
@@ -60,7 +57,7 @@ const makeConfig = ({input, output, minify, dependencies}) => ({
 
 export default [
   makeConfig({
-    input: 'es/index.js',
+    input: 'src/index.js',
     minify: true,
     output: {
         file: pkg.unpkg,
@@ -72,7 +69,7 @@ export default [
     dependencies: peerDeps
   }),
   makeConfig({
-    input: 'es/index.js',
+    input: 'src/index.js',
     output: {
       file: pkg.main,
       format: 'umd',
@@ -83,7 +80,7 @@ export default [
     dependencies: peerDeps
   }),
  makeConfig({
-    input: 'es/index.js',
+    input: 'src/index.js',
     output: {
       file: 'questrar-esm.js',
       dir: 'esm',
@@ -93,7 +90,7 @@ export default [
    dependencies: peerDeps
   }),
  makeConfig({
-    input: 'es/redux/index.js',
+    input: 'src/redux/index.js',
     output: {
       file: 'questrar-redux-esm.js',
       dir: 'esm',
@@ -103,7 +100,7 @@ export default [
    dependencies: peerDeps
   }),
   makeConfig({
-    input: 'es/redux/index.js',
+    input: 'src/redux/index.js',
     output: {
       file: "questrar-redux-cjs.js",
       dir: 'lib',
