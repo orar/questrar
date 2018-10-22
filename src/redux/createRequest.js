@@ -1,6 +1,6 @@
 // @flow
 import type {RequestState} from "../index";
-import {SUCCESS, FAILED, PENDING, REMOVE} from "../module/common";
+import {SUCCESS, FAILED, PENDING, REMOVE, CLEAN, DIRTY} from "../module/common";
 import { REQUEST_ACTION_TYPE } from './common';
 import {isNumber, nonEmpty, randomId} from "../module/helper";
 
@@ -75,6 +75,22 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
     return Object.assign(action, { autoRemove })
   };
 
+  /**
+   * Update request as clean
+   * @returns {{type: string, id: *, status: *}}
+   */
+  const clean = () => {
+    return initAction(requestId, CLEAN);
+  };
+
+  /**
+   * Make request dirty (clean === false)
+   * @returns {{type: string, id: *, status: *}}
+   */
+  const dirty = () => {
+    return initAction(requestId, DIRTY);
+  };
+
   const remove = () => {
     return initAction(requestId, REMOVE);
   };
@@ -92,6 +108,9 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
   actionCreator.pending = pending;
   actionCreator.success = success;
   actionCreator.failed = failed;
+
+  actionCreator.clean = clean;
+  actionCreator.dirty = dirty;
 
   actionCreator.remove = remove;
 

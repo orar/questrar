@@ -1,7 +1,7 @@
 // @flow
-import {PENDING, SUCCESS, FAILED, REPLACE, initialRequest, REMOVE} from "../module/common";
+import {PENDING, SUCCESS, FAILED, REPLACE, CLEAN, DIRTY, initialRequest, REMOVE} from "../module/common";
 import { REQUEST_ACTION_TYPE } from './common';
-import { nonEmpty, resetRequestFlags as resetFlags, randomId} from "../module/helper";
+import { nonEmpty, resetRequestFlags as resetFlags} from "../module/helper";
 import invariant from 'invariant';
 import type {RequestState, ReduxRequestState, ProviderRequestState} from "../index";
 
@@ -80,7 +80,46 @@ export function handleRequestPending (state: ReduxRequestState, action: Object):
   const nextReq = resetFlags(getState(state.data, id));
   nextReq.id = id;
   nextReq.pending = true;
+  nextReq.clean = true;
   setMessage(nextReq, action);
+
+  const data = Object.assign({}, state.data, { [id]: nextReq });
+  return { id: stateId, data };
+}
+
+/**
+ * Updates a request to clean state
+ *
+ * @returns {{} & RequestState}
+ */
+export function handleRequestClean (state: ReduxRequestState, action: Object): ReduxRequestState {
+  invariant(nonEmpty(action.id), 'request action missing id field');
+
+  const id = action.id;
+  const stateId = Symbol(id);
+
+  const nextReq = resetFlags(getState(state.data, id));
+  nextReq.id = id;
+  nextReq.clean = true;
+
+  const data = Object.assign({}, state.data, { [id]: nextReq });
+  return { id: stateId, data };
+}
+
+/**
+ * Updates a request to dirty state
+ *
+ * @returns {{} & RequestState}
+ */
+export function handleRequestDirty (state: ReduxRequestState, action: Object): ReduxRequestState {
+  invariant(nonEmpty(action.id), 'request action missing id field');
+
+  const id = action.id;
+  const stateId = Symbol(id);
+
+  const nextReq = resetFlags(getState(state.data, id));
+  nextReq.id = id;
+  nextReq.clean = false;
 
   const data = Object.assign({}, state.data, { [id]: nextReq });
   return { id: stateId, data };
@@ -188,6 +227,12 @@ export function rootReducer(state: ReduxRequestState, action: Object) {
 
     case FAILED:
       return handleRequestFailed(_state, action);
+
+    case CLEAN:
+      return handleRequestClean(_state, action);
+
+    case DIRTY:
+      return handleRequestDirty(_state, action);
 
     case REPLACE:
       return replaceState(_state, action);

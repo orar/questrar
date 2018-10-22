@@ -90,7 +90,7 @@ export function isFunc (func: any):%checks {
  * @returns {any|boolean}
  */
 export function isObj (obj: any):%checks {
-  return obj.constructor == Object
+  return nonEmpty(obj) && obj.constructor == Object
 }
 
 

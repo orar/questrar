@@ -2,7 +2,7 @@
 import React, { PureComponent } from 'react';
 import type {Request, ProviderRequestState} from "../index";
 import type {Node} from "react";
-import {FAILED, initialRequest, PENDING, SUCCESS, REMOVE} from './common';
+import {FAILED, initialRequest, PENDING, SUCCESS, REMOVE, CLEAN, DIRTY} from './common';
 import { RequestProviderContext } from "./context";
 import {isFunc, nonEmpty, resetRequestFlags} from "./helper";
 import type { StateProvider } from "../index";
@@ -194,6 +194,7 @@ class RequestProvider extends PureComponent<Props, State> {
     const updatePending = r => {
       const req = r;
       req.pending = true;
+      req.clean = true;
 
       if(message){
         req.message = message;
@@ -203,6 +204,37 @@ class RequestProvider extends PureComponent<Props, State> {
     this._applyStateChange(id)(updatePending)
   };
 
+  /**
+   * Set request to clean
+   * @param id Request id
+   * @private
+   */
+  _requestClean = (id: string) => {
+    if(this._hasStore()){
+      return this.props.stateProvider.updateRequest({ id, status: CLEAN });
+    }
+    const makeClean = r => {
+      r.clean = true;
+      return r;
+    };
+    this._applyStateChange(id)(makeClean)
+  };
+
+  /**
+   * Set request to clean falsey
+   * @param id Request id
+   * @private
+   */
+  _requestDirty = (id: string) => {
+    if(this._hasStore()){
+      return this.props.stateProvider.updateRequest({ id, status: DIRTY });
+    }
+    const makeClean = r => {
+      r.clean = false;
+      return r;
+    };
+    this._applyStateChange(id)(makeClean)
+  };
 
   /**
    * Removes request from request state
@@ -232,7 +264,9 @@ class RequestProvider extends PureComponent<Props, State> {
       success: this._requestSuccessful,
       failed: this._requestFailed,
       pending: this._requestPending,
-      remove: this._removeRequest
+      remove: this._removeRequest,
+      clean: this._requestClean,
+      dirty: this._requestDirty
     };
   };
 

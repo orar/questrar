@@ -11,6 +11,8 @@ export const FAILED = 'failed';
 //action flags
 export const REPLACE = 'replace';
 export const REMOVE = 'remove';
+export const CLEAN = 'clean';
+export const DIRTY = 'clean';
 
 
 //Initial request state
@@ -20,5 +22,6 @@ export const initialRequest: RequestState = {
   failed: false,
   successCount: 0,
   failureCount: 0,
-  message: ''
+  message: '',
+  clean: true,
 };

@@ -53,7 +53,7 @@ class RequestError extends React.Component<Props, State> {
     //remove request if set to autoRemove
     if(this.state.open && (request.autoRemove || request.removeOnFail)){
       actions.remove(id);
-    }
+    } else {  actions.dirty(id) }
     this.setState({ open: false });
   };
 

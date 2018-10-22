@@ -10,7 +10,7 @@ import {isFunc, isObj} from "../module/helper";
 import invariant from 'invariant';
 import './Request.scss';
 
-type Props = RequestActions & {
+type Props = {
   id: string,
   request: RequestState,
   actions: RequestActions,
@@ -61,13 +61,15 @@ type Props = RequestActions & {
  * @param failTooltip    If true, show error as a tooltip on the child component
  * @param onCloseFailure    A function that should be called when request error component is closed/unmounted
 
+ * @param onSuccess       A function that should be called immediately when request successful
  * @param onCloseSuccess  A function that should be called when request success component is closed/unmounted
  * @param successTooltip  Show a success description as a tooltip on the child component
  * @param successReplace  Replaces children with success component
  *
  * @param children        The wrapped component
  * @param inject          If true, Inject component with request state and append request feedback components (tooltips, ..) instead of replacing component with feedback components
- * @param color                 Color of font text and icon
+ * @param className       Class name of the popover body
+ * @param color           Color of loading icon
  *
  * @returns {*}
  * @constructor
@@ -90,6 +92,7 @@ const RequestComponent = ({
                             initialPending,
                             renderInitial,
 
+                            onSuccess,
                             successTooltip,
                             successReplace,
                             onCloseSuccess,
@@ -149,8 +152,9 @@ const RequestComponent = ({
   // When request has failed
   if(request.failed) {
     //call onFailure callback
-    if (isFunc(onFailure)) {
-      onFailure(request)
+    if (isFunc(onFailure) && request.clean) {
+      onFailure(request);
+      actions.dirty(request.id);
     }
     //Render error
     if (isFunc(renderFailure)) {
@@ -190,6 +194,11 @@ const RequestComponent = ({
 
   //Successful request
   if (request.success) {
+    //call onFailure callback
+    if (isFunc(onSuccess) && request.clean) {
+      onSuccess(request);
+      actions.dirty(request.id);
+    }
 
     if(successTooltip || successReplace){
       return (

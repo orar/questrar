@@ -61,7 +61,8 @@ const defaultRequestState: RequestState = {
     success: false,
     failed: false,
     successCount: 0,
-    failureCount: 0
+    failureCount: 0,
+    clean: true,
 }
 ```
 
@@ -371,10 +372,10 @@ API
 |`renderFailure`    | `Node` or  `(requestProp) => Node` | no | `undefined` | Render on request failure |
 |`passiveOnFailure` | `boolean` | no | `false` | Just like `passivePending`. Do not show any visual sign of failure, no failure message, no `renderFailure` rendering |
 |`failTooltip`      | `boolean` | no | `false` | Show a responsive error tooltip/popup with `request.data.message` around the underlying component (if its not an array) signifying request failure. Stackoverflow error message like feature. Tooltip only closes onClick|
-|`onCloseFailure`   | `(id) => void` | no | `undefined` | A callback function called when failure component is unmounted. For instance when user closes tooltip |
+|`onCloseFailure`   | `(requestProp) => void` | no | `undefined` | A callback function called when failure component is unmounted. For instance when user closes tooltip |
 |`successTooltip`   | `boolean` | no | `false` | Just line `failTooltip`, renders a tooltip on underlying component |
 |`successReplace`   | `boolean` | no | `false` | Overrides `successTooltip`. Replace the underlying component with `request.data.message`|
-|`onCloseSuccess`   | `(id) => void`| no | `undefined` | Callback called when request success component (tooltip) is unmounted|
+|`onCloseSuccess`   | `(requestProp) => void`| no | `undefined` | Callback called when request success component (tooltip) is unmounted|
 
 
 

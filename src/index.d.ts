@@ -17,6 +17,8 @@ export declare interface RequestState {
     successCount: number;
     failureCount: number;
 
+    clean: boolean,
+
     message?: any;
 
     autoRemove?: boolean;
@@ -32,6 +34,9 @@ export declare interface RequestActions {
     failed (id: string, message?: any): any;
     pending (id: string, message?: any): any;
     remove (id: string, message?: any): any;
+
+    clean (id: string): any;
+    dirty (id: string): any;
 }
 
 
