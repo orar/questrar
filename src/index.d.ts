@@ -8,11 +8,11 @@
  * Request state type of a single request
  */
 export declare interface RequestState {
-    id?: string;
+    id?: string | number;
 
     pending: boolean;
-    success: boolean | string;
-    failed: boolean | string;
+    success: boolean;
+    failed: boolean;
 
     successCount: number;
     failureCount: number;
@@ -30,13 +30,13 @@ export declare interface RequestState {
  * Request actions for turning request states
  */
 export declare interface RequestActions {
-    success (id: string, message?: any): any;
-    failed (id: string, message?: any): any;
-    pending (id: string, message?: any): any;
-    remove (id: string, message?: any): any;
+    success (id: string | number, message?: any): any;
+    failed (id: string | number, message?: any): any;
+    pending (id: string | number, message?: any): any;
+    remove (id: string | number, message?: any): any;
 
-    clean (id: string): any;
-    dirty (id: string): any;
+    clean (id: string | number): any;
+    dirty (id: string | number): any;
 }
 
 
