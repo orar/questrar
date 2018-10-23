@@ -2,7 +2,7 @@
 import React from 'react';
 import  { Request, withRequest }  from "questrar";
 import { Button } from 'semantic-ui-react';
-import { isObj } from "../../../src/module/helper";
+import { isObj } from "../helper";
 import './Common.scss';
 
 
@@ -38,10 +38,6 @@ export const DeleteButton = ({ id, request }: Props) => {
       onClick: (evt: SyntheticEvent<MouseEvent>) => {
         evt.preventDefault();
 
-        // TODO: Unusual behavior: switch of context causing a failed update on another RequestState
-        // Initially, `r.data.id` is what's expected. After pending update is called, id changes to another request state id
-        // causing the failed update to be called on another request state instead of delete button request state
-        // Hack: corrected by immutably copying the id value. Setting it to const
         const dataId = r.data.id;
 
         const title = "Trash Bin Failure!";

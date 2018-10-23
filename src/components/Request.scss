@@ -4,6 +4,8 @@ $bgColor: #fff;
 .Popover-body {
   background-color: $bgColor;
   border-radius: 5px;
+  font-size: 14px;
+  max-width: 400px;
 }
 
 
@@ -41,7 +43,6 @@ $bgColor: #fff;
 
 
 .q-tooltip-content-failed, .q-tooltip-content-success {
-  font-size: 14px;
   padding: 5px;
   text-align: center;
   cursor: pointer;

@@ -42,7 +42,14 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
   const requestId = isStatic ? id : randomId();
 
 
-  const initAction = (rId, status, message?) => {
+  /**
+   * Creates an action to update a request in redux store
+   * @param rId Request id
+   * @param status Update status of request
+   * @param message Optional message for current update
+   * @returns {{type: string, id: (string|number), status: string}}
+   */
+  const initAction = (rId: string | number, status: string, message?: any) => {
     const _action = { type: reduxActionType, id: rId, status };
     if(nonEmpty(message)){
       _action.message = message
@@ -51,10 +58,22 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
   };
 
 
+  /**
+   * Creates a pending request action
+   * @param message Optional message for update pending
+   * @returns {{type: string, id: (string|number), status: string}}
+   */
   const pending = ( message?: any) => {
     return initAction(requestId, PENDING, message);
   };
 
+
+  /**
+   * Creates a request successful action
+   * @param message Optional message for update
+   * @param remove Removes request on close success
+   * @returns {{type: string, id: (string|number), status: string} & {autoRemove: boolean, autoRemoveOnSuccess: boolean}}
+   */
   const success = ( message?: any, remove?: boolean) => {
     const action = initAction(requestId, SUCCESS, message);
     if(nonEmpty(remove)){
@@ -65,6 +84,13 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
     return Object.assign(action, { autoRemove, autoRemoveOnSuccess })
   };
 
+  /**
+   *
+   * Creates a request failed action
+   * @param message Optional message for update
+   * @param remove Removes request on close failure
+   * @returns {{type: string, id: (string|number), status: string} & {autoRemove: boolean}}
+   */
   const failed = ( message?: any, remove?: boolean) => {
     const action = initAction(requestId, FAILED, message);
     if(nonEmpty(remove)){
@@ -76,7 +102,7 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
   };
 
   /**
-   * Update request as clean
+   * Creates action to set request as clean
    * @returns {{type: string, id: *, status: *}}
    */
   const clean = () => {
@@ -84,17 +110,25 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
   };
 
   /**
-   * Make request dirty (clean === false)
+   * Creates action to set request as dirty (clean === false)
    * @returns {{type: string, id: *, status: *}}
    */
   const dirty = () => {
     return initAction(requestId, DIRTY);
   };
 
+  /**
+   * Creates an action to remove a specific request state
+   * @returns {{type: string, id: (string|number), status: string}}
+   */
   const remove = () => {
     return initAction(requestId, REMOVE);
   };
 
+  /**
+   * Action binder function
+   * @returns {*}
+   */
   function actionCreator () {
     return requestId;
   }

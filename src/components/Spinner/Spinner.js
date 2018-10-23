@@ -1,30 +1,27 @@
 // @flow
 import React from 'react';
 import {isNumber} from "../../module/helper";
-import { Gear, Cog } from "./SpinnerStyle";
-
+import './Spinner.scss';
 
 type Props = {
     size: number,
   color?: string,
 }
 
-const Spinner = ({ size, color }: Props) => {
+const Spinner = ({ size }: Props) => {
     const style = {};
     const _size = isNumber(size) ? size : 40;
     Object.assign(style, { width: _size, height: _size });
 
     const cogs = Array(11).fill(1);
 
-
     return (
-      <Gear style={style} >
+      <div className="sk-fading-circle" style={style} >
         {cogs.map((c, i) => {
-            const rotate = (i + 1) * 30;
-            const delay = (cogs.length - i) * -1 / 10; // -1.1, -1.0, -0.9, -0.8 ... -0.1
-            return <Cog key={`${i}`} rotate={rotate} delay={delay} color={color} />
+          const className  = `sk-circle sk-circle${i + 2}`;
+          return <div className={className} key={`${i}`} />
         })}
-      </Gear>
+      </div>
     );
 };
 
