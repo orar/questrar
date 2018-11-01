@@ -8,14 +8,16 @@
  * Request state type of a single request
  */
 export declare interface RequestState {
-    id?: string;
+    id?: string | number;
 
     pending: boolean;
-    success: boolean | string;
-    failed: boolean | string;
+    success: boolean;
+    failed: boolean;
 
     successCount: number;
     failureCount: number;
+
+    clean: boolean,
 
     message?: any;
 
@@ -28,10 +30,13 @@ export declare interface RequestState {
  * Request actions for turning request states
  */
 export declare interface RequestActions {
-    success (id: string, message?: any): any;
-    failed (id: string, message?: any): any;
-    pending (id: string, message?: any): any;
-    remove (id: string, message?: any): any;
+    success (id: string | number, message?: any): any;
+    failed (id: string | number, message?: any): any;
+    pending (id: string | number, message?: any): any;
+    remove (id: string | number, message?: any): any;
+
+    clean (id: string | number): any;
+    dirty (id: string | number): any;
 }
 
 
@@ -103,7 +108,30 @@ export declare interface StateProvider {
 // redux
 // ==============
 
+export declare interface CreateRequestOptions {
+    //modifier?: (payload: any) => any,
+    autoRemove?: boolean,
+
+    autoRemoveOnSuccess?: boolean,
+    autoRemoveOnFailure?: boolean,
+}
+
 export declare interface ReduxRequestState {
     id: Symbol,
     data: ProviderRequestState
+}
+
+
+export declare function createRequestState(id: string | number, options?: CreateRequestOptions): CreateRequest;
+
+
+
+export declare interface CreateRequest {
+    id: string | number,
+    pending: (message?: any) => { type: string, payload: { id: string | number, status: string, message?: any }}
+    success: (message?: any, remove?: boolean) => { type: string, payload: { id: string | number, status: string, message?: any }}
+    failed: (message?: any, remove?: boolean) => { type: string, payload: { id: string | number, status: string, message?: any }}
+    remove: () => { type: string, payload: { id: string | number, status: string }}
+    dirty: () => { type: string, payload: { id: string | number, status: string }}
+    clean: () => { type: string, payload: { id: string | number, status: string }}
 }

@@ -1,0 +1,884 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/components/Request.jsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">All files</a> / <a href="index.html">src/components</a> Request.jsx
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">77.14% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>54/70</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">57.61% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>53/92</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/1</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">77.14% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>54/70</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line medium'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244
+245
+246
+247
+248
+249
+250
+251
+252
+253
+254
+255
+256
+257
+258
+259
+260
+261
+262
+263
+264
+265
+266
+267
+268
+269
+270
+271
+272
+273
+274</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">40x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">40x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">21x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">19x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">18x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">14x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">11x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// @flow
+import React from 'react';
+import type { Node } from 'react';
+import invariant from 'invariant';
+import type { RequestState, RequestActions, RequestProp } from '../index';
+import RequestError from './RequestError/RequestError';
+import RequestPending from './RequestPending/RequestPending';
+import RequestSuccess from './RequestSuccess';
+import withRequestSelector from '../module/withRequestSelector';
+import { isFunc, isObj } from '../module/helper';
+import './Request.scss';
+&nbsp;
+type Props = {
+  id: string,
+  request: RequestState,
+  actions: RequestActions,
+  renderPendOnMount?: Node | (request: RequestProp) =&gt; any,
+  renderPending?: Node | (request: RequestProp) =&gt; any,
+  passivePending?: boolean,
+  pendOnMount?: boolean,
+&nbsp;
+  onFailure?: (request: RequestState) =&gt; any,
+  renderOnFail?: Node | (request: RequestState) =&gt; any,
+  popoverOnFail?: boolean,
+  passiveOnFail?: boolean,
+  onCloseFailure?: () =&gt; any,
+&nbsp;
+  onSuccess?: (request: RequestState) =&gt; any,
+  onCloseSuccess?: () =&gt; any,
+  successReplace?: boolean,
+  popoverOnSuccess?: boolean,
+&nbsp;
+  inject?: boolean | (request: RequestProp) =&gt; Object,
+&nbsp;
+  children: Array&lt;Node&gt; | Node,
+  className: string,
+}
+&nbsp;
+/* eslint-disable max-len */
+/**
+ * Renders a Request feedback in/around a component
+ * TODO: Change error to fail
+ *
+ * `renderLoading` and `renderInitial` differ.
+ * `renderInitial` loading serves the purpose of rendering once a unique loading component to subsequent loading times
+ * `renderLoading` is used when no `renderInitial` provided and also for all subsequent load
+ *
+ * @param id                A request Id
+ * @param request           A request state specified by the rId
+ * @param actions           Actions to manage state of request
+ *
+ * @param renderLoading     An optional loading component that should be rendered whiles request is in flight
+ * @param pendOnMount       If true, renders a loading component until request state is successful, even if request has not started.
+ * @param renderPendOnMount   An optional component that should be rendered coupled with initialPending. When initialPending is true and renderInitial is not provided, loading component falls back to renderLoading falls back to default LoadingComponent provided by Request
+ * @param passivePending    If true, render children as loading element
+ *
+ * @param renderOnFail      An optional error component that should be rendered if current request fails
+ * @param onFailure         An optional function that should be call with the request state(containing error)
+ * @param passiveOnFail     If true, render children on request state failure
+ * @param popoverOnFail     If true, show error as a tooltip on the child component
+ * @param onCloseFailure    A function that should be called when request error component is closed/unmounted
+&nbsp;
+ * @param onSuccess         A function that should be called immediately when request successful
+ * @param onCloseSuccess    A function that should be called when request success component is closed/unmounted
+ * @param popoverOnSuccess  Show a success description as a tooltip on the child component
+ * @param successReplace    Replaces children with success component
+ *
+ * @param children          The wrapped component
+ * @param inject            If true, Inject component with request state and append request feedback components (tooltips, ..) instead of replacing component with feedback components
+ * @param className         Class name of the popover body
+ *
+ * @returns {*}
+ * @constructor
+ */
+export const Request = ({
+  id,
+  request,
+  actions,
+  children,
+  inject,
+&nbsp;
+  renderOnFail,
+  popoverOnFail,
+  onCloseFailure, // not full implemented
+  onFailure,
+  passiveOnFail,
+&nbsp;
+  renderPending,
+  passivePending,
+  pendOnMount,
+  renderPendOnMount,
+&nbsp;
+  onSuccess,
+  popoverOnSuccess,
+  successReplace,
+  onCloseSuccess,
+&nbsp;
+  className,
+}: Props) =&gt; {
+  invariant(id !== null &amp;&amp; id !== undefined, 'No request state id is provided as a prop');
+&nbsp;
+  const injection = { request: { data: request, actions } };
+&nbsp;
+  // if request isPending, replace child with loading element
+  if (request.pending &amp;&amp; !passivePending) {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (isFunc(renderPending)) {
+      return renderPending(request)
+    }
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (renderPending &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >isFunc(inject))</span> {
+      const params = inject(injection.request);
+      const paramProps = <span class="cstat-no" title="statement not covered" >isObj(params) ? params : { request: params };</span>
+      // $FlowFixMe
+      return React.cloneElement(renderPending, paramProps);
+    }
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (renderPending &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >inject)</span> { // $FlowFixMe
+      return React.cloneElement(renderPending, injection);
+    }
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (React.isValidElement(renderPending)) {
+      return renderPending
+    }
+&nbsp;
+    return &lt;RequestPending /&gt;;
+  }
+&nbsp;
+  // if request isPending, keep child as loading element. Dont replace child.
+  if (request.pending &amp;&amp; passivePending) {
+    const singleChild = React.Children.count(children) === 1;
+&nbsp;
+    // Inject element with request state and actions if it's single child
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (singleChild &amp;&amp; isFunc(inject)) {
+      // Render child but map request state to props
+      // of error component through inject function provided
+      const params = inject(injection.request);
+      const paramProps = isObj(params) ? params : <span class="branch-1 cbranch-no" title="branch not covered" >{ request: params };</span>
+      // $FlowFixMe
+      return React.cloneElement(children, paramProps);
+    }
+<span class="cstat-no" title="statement not covered" >    if (singleChild &amp;&amp; inject) {</span>
+      // Inject element if it's a child -- $FlowFixMe
+      return React.cloneElement(children, injection);
+    }
+<span class="cstat-no" title="statement not covered" >    return children;</span>
+  }
+&nbsp;
+  // When request has failed
+  if (request.failed) {
+    // call onFailure callback
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (isFunc(onFailure) &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >request.clean)</span> {
+<span class="cstat-no" title="statement not covered" >      onFailure(request);</span>
+<span class="cstat-no" title="statement not covered" >      actions.dirty(id);</span>
+    }
+    // Render error
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (isFunc(renderOnFail)) {
+      return renderOnFail(request)
+    }
+&nbsp;
+    // Render custom error component but map request state to props
+    // of error component through inject function
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (React.isValidElement(renderOnFail)) {
+<span class="cstat-no" title="statement not covered" >      if (isFunc(inject)) {</span>
+        const params = <span class="cstat-no" title="statement not covered" >inject(injection.request);</span>
+        const paramProps = isObj(params) ? params : { request: params };
+        // $FlowFixMe
+        return React.cloneElement(renderOnFail, paramProps);
+      }
+      // $FlowFixMe
+      return inject ? React.cloneElement(renderOnFail, request) : renderOnFail;
+    }
+&nbsp;
+&nbsp;
+    return (
+      &lt;RequestError
+        id={id}
+        request={request}
+        onCloseFailure={onCloseFailure}
+        popoverOnFail={popoverOnFail}
+        inject={inject}
+        actions={actions}
+        passiveOnFail={passiveOnFail}
+        className={className}
+      &gt;
+        {children}
+      &lt;/RequestError&gt;
+    );
+  }
+&nbsp;
+  // Successful request
+  if (request.success) {
+    // call onFailure callback
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (isFunc(onSuccess) &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >request.clean)</span> {
+<span class="cstat-no" title="statement not covered" >      onSuccess(request);</span>
+      actions.dirty(request.id);
+    }
+&nbsp;
+    if (popoverOnSuccess || successReplace) {
+      return (
+        &lt;RequestSuccess
+          id={id}
+          request={request}
+          successReplace={successReplace}
+          popoverOnSuccess={popoverOnSuccess}
+          onCloseSuccess={onCloseSuccess}
+          inject={inject}
+          actions={actions}
+          className={className}
+        &gt;
+          {children}
+        &lt;/RequestSuccess&gt;
+      );
+    }
+&nbsp;
+    const singleChild = React.Children.count(children) === 1;
+    // Map requestState to child props via inject function
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (singleChild &amp;&amp; isFunc(inject)) {
+      const params = <span class="cstat-no" title="statement not covered" >inject(injection.request);</span>
+      const paramProps = <span class="cstat-no" title="statement not covered" >isObj(params) ? params : { request: params };</span>
+      // $FlowFixMe
+      return React.cloneElement(children, paramProps);
+    }
+&nbsp;
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (inject &amp;&amp; singleChild) {
+      // $FlowFixMe
+      return React.cloneElement(children, injection);
+    }
+&nbsp;
+    return children;
+  }
+&nbsp;
+  // Until the request is successful, render a loading component
+  // Usually used when if there is no data the underlying component may have rendering issues
+  if (pendOnMount) {
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (isFunc(renderPendOnMount)) {
+      return renderPendOnMount(injection)
+    }
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (!renderPendOnMount &amp;&amp; renderPending) {
+      if (isFunc(renderPending)) {
+<span class="cstat-no" title="statement not covered" >        return renderPending(injection)</span>
+      }
+<span class="cstat-no" title="statement not covered" >      return renderPending;</span>
+    }
+&nbsp;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (React.isValidElement(renderPendOnMount)) {
+<span class="cstat-no" title="statement not covered" >      return renderPendOnMount</span>
+    }
+&nbsp;
+    return &lt;RequestPending /&gt;;
+  }
+&nbsp;
+  if (inject) {
+    const singleChild = React.Children.count(children) === 1;
+&nbsp;
+    // Map requestState to child props via inject function
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (singleChild &amp;&amp; isFunc(inject)) {
+      const params = <span class="cstat-no" title="statement not covered" >inject(injection.request);</span>
+      const paramProps = <span class="cstat-no" title="statement not covered" >isObj(params) ? params : { request: params };</span>
+      // $FlowFixMe
+<span class="cstat-no" title="statement not covered" >      return React.cloneElement(children, paramProps);</span>
+    }
+&nbsp;
+    <span class="missing-if-branch" title="else path not taken" >E</span>if (singleChild) {
+      // $FlowFixMe
+      return React.cloneElement(children, injection);
+    }
+  }
+&nbsp;
+  // After everything falls through, return children
+  return children;
+};
+&nbsp;
+export default withRequestSelector(Request);
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Nov 01 2018 18:20:16 GMT+0000 (Greenwich Mean Time)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

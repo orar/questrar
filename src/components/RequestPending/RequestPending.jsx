@@ -1,10 +1,10 @@
 // @flow
 import React from 'react';
-import { PendingContainer } from './RequestPendingStyle';
 import Spinner from '../Spinner/Spinner';
+import './RequestPending.scss';
 
 type Props = {
-  color?: string,
+  size?: number,
 }
 
 /**
@@ -12,12 +12,10 @@ type Props = {
  * @returns {*}
  * @constructor
  */
-const RequestPending = ({ color }: Props) => {
-    return (
-        <PendingContainer>
-            <Spinner size={20} color={color} />
-        </PendingContainer>
-    );
-};
+const RequestPending = ({ size }: Props) => (
+  <div className="pendingContainer">
+    <Spinner size={size} />
+  </div>
+);
 
 export default RequestPending;

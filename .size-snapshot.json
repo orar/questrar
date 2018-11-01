@@ -1,45 +1,45 @@
 {
   "dist/questrar.min.js": {
-    "bundled": 58820,
-    "minified": 58729,
-    "gzipped": 17177
+    "bundled": 53644,
+    "minified": 53345,
+    "gzipped": 16103
   },
   "dist/questrar.js": {
-    "bundled": 186485,
-    "minified": 59581,
-    "gzipped": 17439
+    "bundled": 148051,
+    "minified": 61183,
+    "gzipped": 17494
   },
   "questrar-esm.js": {
-    "bundled": 175147,
-    "minified": 67399,
-    "gzipped": 18403,
+    "bundled": 147771,
+    "minified": 60964,
+    "gzipped": 17460,
     "treeshaked": {
       "rollup": {
-        "code": 57053,
-        "import_statements": 141
+        "code": 50669,
+        "import_statements": 72
       },
       "webpack": {
-        "code": 58843
+        "code": 54132
       }
     }
   },
   "questrar-redux-esm.js": {
-    "bundled": 13337,
-    "minified": 4864,
-    "gzipped": 1667,
+    "bundled": 16536,
+    "minified": 5814,
+    "gzipped": 1842,
     "treeshaked": {
       "rollup": {
-        "code": 2196,
-        "import_statements": 14
+        "code": 2791,
+        "import_statements": 0
       },
       "webpack": {
-        "code": 3197
+        "code": 3759
       }
     }
   },
   "questrar-redux-cjs.js": {
-    "bundled": 13451,
-    "minified": 4965,
-    "gzipped": 1699
+    "bundled": 16648,
+    "minified": 5912,
+    "gzipped": 1875
   }
 }

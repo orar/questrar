@@ -1,17 +1,27 @@
-import { randomId } from "../../src/module/helper";
+import { randomId } from '../../src/module/helper';
 import {
+  initialState,
   rootReducer,
-  replaceState,
   removeRequestState,
   handleRequestSuccess,
   handleRequestFailed,
   handleRequestPending,
   setMessage,
   getState,
-  setRemoves
-} from 'src/redux/RequestReducer';
-import {FAILED, initialRequest, PENDING, REMOVE, SUCCESS} from "../../src/module/common";
-import {REQUEST_ACTION_TYPE} from "../../src/redux/common";
+  setRemoves,
+  handleRequestClean,
+  handleRequestDirty,
+} from '../../src/redux/RequestReducer';
+import {
+  CLEAN,
+  DIRTY,
+  FAILED,
+  initialRequest,
+  PENDING,
+  REMOVE,
+  SUCCESS,
+} from '../../src/module/common';
+import { REQUEST_ACTION_TYPE } from '../../src/redux/common';
 
 
 describe('[RequestReducer]', () => {
@@ -21,120 +31,201 @@ describe('[RequestReducer]', () => {
   let action;
   let providerStateMock;
 
+  const mockProviderState = () => {
+    const data = idList.reduce((acc, rid) => {
+      const req = Object.assign({ id: rid }, initialRequest);
+      return Object.assign({}, acc, { [rid]: req });
+    }, {});
+    providerStateMock = { data }
+  };
 
   beforeEach(() => {
-    idList = Array(3).fill(1).map(_ => randomId());
+    idList = Array(3).fill(1).map(randomId);
 
     id = idList[0];
     requestState = Object.assign({ id }, initialRequest);
-    action = { type: REQUEST_ACTION_TYPE, id }
+    action = { type: REQUEST_ACTION_TYPE, payload: { id } };
 
-    providerStateMock = {
-      data: idList.reduce((acc, id) => {
-        const req = Object.assign({ id }, initialRequest);
-        return Object.assign({}, acc, { [id]: req });
-      }, {}),
-      actions: {}
-    };
+    mockProviderState();
   });
 
 
   it('#setRemoves should set the proper flag for request state auto removal', () => {
-    action.autoRemove = true;
-    action.autoRemoveOnSuccess = true;
-    const rm = setRemoves(requestState, action);
+    action.payload.autoRemove = true;
+    action.payload.autoRemoveOnSuccess = true;
+    const rm = setRemoves(requestState, action.payload);
 
-    expect(rm).to.be.a('object').that.include({ id });
-    expect(rm.autoRemove).to.be.undefined();
-    expect(rm.removeOnSuccess).to.be.true();
+    expects(rm).to.be.a('object').that.include({ id });
+    expects(rm.autoRemove).to.be.undefined();
+    expects(rm.removeOnSuccess).to.be.true();
   });
 
 
   it('#setMessage should set message on a request state', () => {
-    action.message = 'New happy message';
-    setMessage(requestState, action);
+    action.payload.message = 'New happy message';
+    setMessage(requestState, action.payload);
 
-    expect(requestState).to.be.an('object').that.include({ message: action.message });
+    expects(requestState).to.be.an('object').that.includes({ message: action.payload.message });
   });
 
 
   it('#getState should get a particular request state from whole state', () => {
-    const state = getState(providerStateMock, id);
+    const state = getState(providerStateMock.data, id);
 
-    expect(state.id).to.be.equal(id);
+    expects(state.id).to.be.equal(id);
   });
 
   it('#getState should substitute a not found request state with default', () => {
-    const state = getState(providerStateMock, 'strangeId');
+    const strangeId = 'strangeId';
+    const state = getState(providerStateMock.data, strangeId);
 
-    expect(state.id).to.be.undefined();
+    expects(state.id).to.equal(strangeId);
   });
 
-  it('#handleRequestPending should handle action request pending', () => {
-    const states = handleRequestPending(providerStateMock, action);
-    const req = getState(states, action.id);
-    expect(req).to.be.an('object').that.include({ id, failed: false, success: false, pending: true, message: action.message });
-  });
+  it('#handleRequestPending should immutably handle a request `pending` action', () => {
+    const states = handleRequestPending(providerStateMock, action.payload);
+    const states1 = handleRequestPending(providerStateMock, action.payload);
+    const req = getState(states.data, action.payload.id);
 
-
-  it('#handleRequestSuccess should handle action request pending', () => {
-    const states = handleRequestSuccess(providerStateMock, action);
-    const req = getState(states, action.id);
-    expect(req).to.be.an('object')
-      .that.include({ id, failed: false, success: true, pending: false, message: action.message });
-    expect(req.successCount).to.be.equal(1);
-  });
-
-  it('#handleRequestFailed should handle action request pending', () => {
-    const states = handleRequestFailed(providerStateMock, action);
-    const req = getState(states, action.id);
-    expect(req).to.be.an('object')
-      .that.include({ id, failed: true, success: false, pending: false, message: action.message });
-    expect(req.failureCount).to.be.equal(1);
+    expects(req).to.be.an('object').that.deep.includes({
+      id, failed: false, success: false, pending: true,
+    });
+    expects(states).not.eql(states1)
   });
 
 
-
-  it('#removeRequestState should remove completely a request state', () => {
-    action.status = REMOVE;
-    const states = removeRequestState(providerStateMock, action);
-    const req = getState(states, action.id);
-
-    expect(req.id).to.be.undefined();
+  it('#handleRequestSuccess should immutably handle a  request action `success`', () => {
+    action.payload.message = 'Request successful';
+    const states = handleRequestSuccess(providerStateMock, action.payload);
+    const states1 = handleRequestSuccess(providerStateMock, action.payload);
+    const req = getState(states.data, action.payload.id);
+    expects(req).to.be.an('object').that.deep.includes({
+      id, failed: false, success: true, pending: false, message: action.payload.message,
+    });
+    expects(req.successCount).to.be.equal(1);
+    expects(states).not.eql(states1)
   });
 
-  /*it('#replaceState should replace old state with new given', () => {
-    ignore();
-  });*/
+  it('#handleRequestFailed should immutably handle a request action `failed`', () => {
+    action.payload.message = 'Sorry, request failed';
+    const states = handleRequestFailed(providerStateMock, action.payload);
+    const states1 = handleRequestFailed(providerStateMock, action.payload);
+    const req = getState(states.data, action.payload.id);
 
-  it('#rootReducer should reduce a success action to state detached', () => {
-    action.status = SUCCESS;
-    action.message = 'New happy message';
+    expects(req).to.be.an('object').that.deep.includes({
+      id, failed: true, success: false, pending: false, message: action.payload.message,
+    });
+    expects(req.failureCount).to.be.equal(1);
+    expects(states).not.eql(states1)
+  });
+
+  it('#removeRequestState should immutably remove a request state completely', () => {
+    const states = removeRequestState(providerStateMock, action.payload);
+    const states1 = removeRequestState(providerStateMock, action.payload);
+
+    expects(Object.hasOwnProperty.call(states.data, id)).to.be.false();
+    expects(states).not.eql(states1)
+  });
+
+
+  it('#handleRequestClean should immutably set a request state as `clean`', () => {
+    const states = handleRequestClean(providerStateMock, action.payload);
+    const states1 = handleRequestClean(providerStateMock, action.payload);
+    const req = getState(states.data, id);
+
+    expects(req).to.be.an('object').that.includes({ id, clean: true });
+    expects(states).not.eql(states1)
+  });
+
+  it('#handleRequestDirty should immutably set a request state as not `clean`', () => {
+    const states = handleRequestDirty(providerStateMock, action.payload);
+    const states1 = handleRequestDirty(providerStateMock, action.payload);
+    const req = getState(states.data, id);
+
+    expects(req).to.be.an('object').that.includes({ id, clean: false });
+    expects(states).not.eql(states1)
+  });
+
+  xit('#replaceState should replace old state with new given', () => {
+
+  });
+
+  it('#rootReducer should return initial state on an undefined action', () => {
+    const s = rootReducer();
+    expects(s).to.be.eql(initialState)
+  });
+
+  it('#rootReducer should immutably reduce a success action on state', () => {
+    action.payload.status = SUCCESS;
+    action.payload.message = 'New happy message';
 
     const s = rootReducer(providerStateMock, action);
-    const req = getState(s, action.id);
-    expect(req).to.be.an('object').that.includes({ id, failed: false, success: true, pending: false, message: action.message });
+    const s1 = rootReducer(providerStateMock, action);
+    const req = getState(s.data, action.payload.id);
+
+    expects(req).to.be.an('object').that.deep.includes({
+      id, failed: false, success: true, pending: false, message: action.payload.message,
+    });
+    expects(s).not.eql(s1);
   });
 
 
-  it('#rootReducer should reduce a failed action to state - detached', () => {
-    action.status = FAILED;
-    action.message = 'Request failed';
+  it('#rootReducer should immutably reduce a failed action on state', () => {
+    action.payload.status = FAILED;
+    action.payload.message = 'Request failed';
 
     const s = rootReducer(providerStateMock, action);
-    const req = getState(s, action.id);
-    expect(req).to.be.an('object').that.includes({ id, failed: true, success: false, pending: false, message: action.message });
+    const s1 = rootReducer(providerStateMock, action);
+    const req = getState(s.data, action.payload.id);
+
+    expects(req).to.be.an('object').that.deep.includes({
+      id, failed: true, success: false, pending: false, message: action.payload.message,
+    });
+    expects(s).not.eql(s1);
   });
 
 
-  it('#rootReducer should reduce a success action to state - detached', () => {
-    action.status = PENDING;
-    action.message = 'Loading...';
+  it('#rootReducer should immutably reduce a pending action on state', () => {
+    action.payload.status = PENDING;
+    action.payload.message = 'Loading...';
 
     const s = rootReducer(providerStateMock, action);
-    const req = getState(s, action.id);
-    expect(req).to.be.an('object').which.includes({ id, failed: false, success: false, pending: true, message: action.message });
+    const s1 = rootReducer(providerStateMock, action);
+    const req = getState(s.data, action.payload.id);
+    expects(req).to.be.an('object').which.deep.includes({
+      id, failed: false, success: false, pending: true, message: action.payload.message,
+    });
+    expects(s).not.eql(s1);
+  });
+
+  it('#rootReducer should immutably reduce a `clean` action on state', () => {
+    action.payload.status = CLEAN;
+
+    const s = rootReducer(providerStateMock, action);
+    const s1 = rootReducer(providerStateMock, action);
+    const req = getState(s.data, action.payload.id);
+    expects(req).to.be.an('object').which.deep.includes({ id, clean: true });
+    expects(s).not.eql(s1);
+  });
+
+  it('#rootReducer should immutably reduce a `dirty` action on state', () => {
+    action.payload.status = DIRTY;
+
+    const s = rootReducer(providerStateMock, action);
+    const s1 = rootReducer(providerStateMock, action);
+    const req = getState(s.data, action.payload.id);
+    expects(req).to.be.an('object').which.deep.includes({ id, clean: false });
+    expects(s).not.eql(s1);
   });
 
 
+  it('#rootReducer should immutably reduce a `remove` action on state', () => {
+    action.payload.status = REMOVE;
+
+    const s = rootReducer(providerStateMock, action);
+    const s1 = rootReducer(providerStateMock, action);
+
+    expects(Object.hasOwnProperty.call(s.data, id)).to.be.false()
+    expects(s).not.eql(s1);
+  });
 });

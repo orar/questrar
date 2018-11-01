@@ -1,0 +1,54 @@
+
+$bgColor: #fff;
+
+.Popover-body {
+  background-color: $bgColor;
+  border-radius: 5px;
+  font-size: 14px;
+  max-width: 400px;
+}
+
+
+.Popover-tipShape {
+  stroke-dasharray: 0, 0, 20;
+  stroke-width: 1px;
+  stroke-linejoin: round;
+}
+
+.Popover-tip {
+  fill: $bgColor;
+}
+
+.Popover-above{
+  .Popover-tip {
+    margin-top: -1px;
+  }
+}
+.Popover-below{
+  .Popover-tip {
+    margin-bottom: -1px;
+  }
+}
+.Popover-left{
+  .Popover-tip {
+    margin-left: -1px;
+  }
+}
+.Popover-right{
+  .Popover-tip {
+    margin-right: -1px;
+  }
+}
+
+
+
+.q-tooltip-content-failed, .q-tooltip-content-success {
+  padding: 5px;
+  text-align: center;
+  cursor: pointer;
+
+  .q-tooltip-title-failed, .q-tooltip-title-success {
+    font-size: 16px;
+    padding-bottom: 5px;
+  }
+}

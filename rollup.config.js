@@ -1,48 +1,45 @@
-import babel from 'rollup-plugin-babel'
-import commonjs from 'rollup-plugin-commonjs'
-import external from 'rollup-plugin-peer-deps-external'
-import postcss from 'rollup-plugin-postcss'
-import resolve from 'rollup-plugin-node-resolve'
-import url from 'rollup-plugin-url'
-import { plugin as analyze } from 'rollup-plugin-analyzer';
+import babel from 'rollup-plugin-babel';
+import commonjs from 'rollup-plugin-commonjs';
+import external from 'rollup-plugin-peer-deps-external';
+import postcss from 'rollup-plugin-postcss';
+import resolve from 'rollup-plugin-node-resolve';
+import url from 'rollup-plugin-url';
 import { uglify } from 'rollup-plugin-uglify';
 import builtins from 'rollup-plugin-node-builtins';
-import { sizeSnapshot } from "rollup-plugin-size-snapshot";
-import pkg from './package.json'
-import reduxPkg from './redux/package.json';
-
+import { sizeSnapshot } from 'rollup-plugin-size-snapshot';
+import pkg from './package.json';
 
 
 const peerDeps = Object.keys(pkg.externals);
 
-const makeConfig = ({input, output, minify, dependencies}) => ({
+const makeConfig = ({ input, output, minify, dependencies }) => ({
   input,
   output: {
     ...output,
-    },
+  },
   external: Array.isArray(dependencies) ? dependencies : [],
   plugins: [
     external(),
-
+    builtins(),
     postcss({
-      modules: true
+      //  modules: true,
     }),
     url(),
     babel({
       exclude: 'node_modules/**',
-      plugins: [ 'external-helpers' ]
+      plugins: ['external-helpers'],
     }),
     resolve({
-      extensions: [ '.js', '.jsx', '.json' ],
+      extensions: ['.js', '.jsx', '.json'],
       customResolveOptions: {
-        moduleDirectory: 'node_modules'
+        moduleDirectory: 'node_modules',
       }
     }),
     commonjs({
       include: 'node_modules/**',
       namedExports: {
-        'node_modules/react-is/index.js': ['isValidElementType']
-      }
+        'node_modules/react-is/index.js': ['isValidElementType'],
+      },
     }),
     minify && uglify({
       compress: {
@@ -52,29 +49,17 @@ const makeConfig = ({input, output, minify, dependencies}) => ({
         warnings: false,
       },
     }),
-    sizeSnapshot()
-  ].filter(Boolean)
+    sizeSnapshot(),
+  ].filter(Boolean),
 });
-
 
 
 export default [
   makeConfig({
-    input: 'es/index.js',
+    input: 'src/index.js',
     minify: true,
     output: {
-        file: pkg.unpkg,
-        format: 'umd',
-        name: 'Questrar',
-        sourcemap: true,
-        globals: pkg.externals
-      },
-    dependencies: peerDeps
-  }),
-  makeConfig({
-    input: 'es/index.js',
-    output: {
-      file: pkg.main,
+      file: pkg.unpkg,
       format: 'umd',
       name: 'Questrar',
       sourcemap: true,
@@ -82,33 +67,44 @@ export default [
     },
     dependencies: peerDeps
   }),
- makeConfig({
-    input: 'es/index.js',
+  makeConfig({
+    input: 'src/index.js',
+    output: {
+      file: pkg.main,
+      format: 'cjs',
+      sourcemap: true,
+      globals: pkg.externals
+    },
+    dependencies: peerDeps
+  }),
+  makeConfig({
+    input: 'src/redux/index.js',
+    output: {
+      file: 'questrar-redux-cjs.js',
+      dir: 'lib',
+      format: 'cjs',
+      sourcemap: true
+    }
+  }),
+  makeConfig({
+    input: 'src/index.js',
     output: {
       file: 'questrar-esm.js',
       dir: 'esm',
       format: 'es',
       sourcemap: true
     },
-   dependencies: peerDeps
+    dependencies: peerDeps
   }),
- makeConfig({
-    input: 'es/redux/index.js',
+  makeConfig({
+    input: 'src/redux/index.js',
     output: {
       file: 'questrar-redux-esm.js',
       dir: 'esm',
       format: 'es',
       sourcemap: true
     },
-   dependencies: peerDeps
+    dependencies: peerDeps
   }),
-  makeConfig({
-    input: 'es/redux/index.js',
-    output: {
-      file: "questrar-redux-cjs.js",
-      dir: 'lib',
-      format: 'cjs',
-      sourcemap: true
-    }
-  })
+
 ];

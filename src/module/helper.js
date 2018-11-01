@@ -1,7 +1,8 @@
 // @flow
 import invariant from 'invariant';
-import type {RequestState} from "../index";
+import type { RequestState } from '../index';
 
+/* eslint-disable no-use-before-define */
 /**
  * Extract list values of keys from a base object.
  * Use `getValue` 3rd param to retrieve/transform value based on key and base object
@@ -16,26 +17,29 @@ import type {RequestState} from "../index";
  * @param getValue Retrieve or transform the resulting value if provided as a function
  * @returns {*} Returns an empty array if no keys had a match in the base object
  */
-export const arrayValuesOfKeys = (obj: Object, keys: Array<string | number>, getValue?: (key: any, obj: Object) => any) => {
+export const arrayValuesOfKeys = (
+  obj: Object,
+  keys: Array<string | number>,
+  getValue?: (key: any, obj: Object) => any
+) => {
   invariant(nonEmpty(obj), 'No object has been provided for keys extraction');
   invariant(nonEmpty(keys), 'There are no keys provided for values extraction');
 
-  if(typeof keys === 'string') {
-
-    if(isFunc(getValue)){
+  if (typeof keys === 'string') {
+    if (isFunc(getValue)) {
       return [getValue(keys, obj)];
-    } else if(Object.hasOwnProperty.call(obj, keys)){
+    } if (Object.hasOwnProperty.call(obj, keys)) {
       return [obj[keys]];
     }
     return [];
   }
 
   const result = [];
-  for(let i = 0; i < keys.length; i ++ ){
-    if(isFunc(getValue)){
-      const value =  getValue(keys[i], obj);
+  for (let i = 0; i < keys.length; i += 1) {
+    if (isFunc(getValue)) {
+      const value = getValue(keys[i], obj);
       result.push(value);
-    } else if(Object.hasOwnProperty.call(obj, keys[i])){
+    } else if (Object.hasOwnProperty.call(obj, keys[i])) {
       result.push(obj[keys[i]]);
     }
   }
@@ -56,7 +60,7 @@ export const resetRequestFlags = (req: RequestState) => {
   r.pending = false;
   r.success = false;
   r.failed = false;
-  if(r.message) {
+  if (r.message) {
     delete r.message
   }
   return r;
@@ -68,9 +72,9 @@ export const resetRequestFlags = (req: RequestState) => {
  * @param length
  * @returns {string}
  */
-export function randomId () {
+export function randomId (): string {
   const rand = Math.random();
-  return rand.toString().split('.')[2];
+  return rand.toString().split('.')[1];
 }
 
 
@@ -81,7 +85,7 @@ export function randomId () {
  * @returns {boolean}
  */
 export function isFunc (func: any):%checks {
-  return typeof func === "function";
+  return typeof func === 'function';
 }
 
 /**
@@ -90,7 +94,8 @@ export function isFunc (func: any):%checks {
  * @returns {any|boolean}
  */
 export function isObj (obj: any):%checks {
-  return obj.constructor == Object
+  /* eslint-disable eqeqeq */
+  return nonEmpty(obj) && obj.constructor == Object
 }
 
 
@@ -100,7 +105,7 @@ export function isObj (obj: any):%checks {
  * @returns {any|boolean}
  */
 export function isNumber (num: any):%checks {
-  return typeof num === "number";
+  return typeof num === 'number';
 }
 
 /**
@@ -113,14 +118,9 @@ export function nonEmpty(value: any):%checks {
   return typeof value !== 'undefined' && value !== null
 }
 
+// $FlowFixMe
+export function isEmptyObj(value: any):%checks {
+  if (!nonEmpty(value) || !isObj(value)) return true;
 
-export function isEmptyObj(value: any) {
-  if(!nonEmpty(value)) return false;
-
-  for (let key in value) {
-    if (Object.hasOwnProperty.call(value, key)) {
-      return false;
-    }
-  }
-  return true;
+  return Object.keys(value).length === 0
 }

@@ -1,0 +1,43 @@
+{
+  "env": {
+    "jest": true
+  },
+
+  "rules": {
+    "no-extra-semi": 0,
+    // disable semi colon
+
+    "comma-dangle": 1,
+    // don't force es6 functions to include space before paren
+    "space-before-function-paren": 0,
+
+    // allow specifying true explicitly for boolean props
+    "react/jsx-boolean-value": 0,
+
+    // allow import from devDep packages
+    "import/no-extraneous-dependencies": 0,
+
+    "prefer-destructuring": 1,
+
+    "object-curly-spacing": 0,
+
+    "react/sort-comp": 0,
+
+    "react/prop-types": 1,
+
+    "react/button-has-type": 1,
+
+    "react/jsx-one-expression-per-line": 0,
+
+    "import/no-named-as-default": 0,
+    "import/no-unresolved": 0,
+
+    "babel/new-cap": 1,
+    "babel/no-invalid-this": 1,
+    "babel/object-curly-spacing": 0,
+    "babel/quotes": 0,
+    "babel/semi": 1,
+    "babel/no-unused-expressions": 1,
+    "babel/valid-typeof": 1
+  }
+}

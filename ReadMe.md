@@ -2,6 +2,9 @@
 
 Questrar is a simple React request state tracker for managing states of requests.
 
+[![npm version](https://badge.fury.io/js/questrar.svg)](https://badge.fury.io/js/questrar)
+[![Build Status](https://travis-ci.org/orarr/questrar.svg?branch=master)](https://travis-ci.org/orarr/questrar)
+
 Installation
 --
 
@@ -11,8 +14,12 @@ yarn add questrar
 npm install questrar
 ```
 
+> For testing Request component, see [questrar-test](http://github.com/orarr/questrar-test)
+
+
 And? Why?
 --
+
 We often tend to show a loading circle or gear icon on our buttons and pages and overlays when a particular request is in flight.
 And as soon as the request settles, the loading icon is cleared off and the
 content of the processed request (either successful or failed), is shown to the user.
@@ -46,10 +53,12 @@ type RequestState = {
 type RequestProp = {
     data: RequestState,
     actions: {
-       pending: (id: string | number, message?: any) => void, //set request state of id to pending
-       failed: (id: string | number, message?: any) => void,  //set request state of id to failed
-       success: (id: string | number, message?: any) => void, //set request state of id to success
+       pending: (id: string | number, message?: any) => void, // set request state of id to pending
+       failed: (id: string | number, message?: any) => void,  // set request state of id to failed
+       success: (id: string | number, message?: any) => void, // set request state of id to success
        remove: (id: string) => void, //remove completely
+       clean: (id: string) => void, // set request as untouched
+       dirty: (id: string) => void, //  set request as touched
     }    
 }
 ```
@@ -61,7 +70,8 @@ const defaultRequestState: RequestState = {
     success: false,
     failed: false,
     successCount: 0,
-    failureCount: 0
+    failureCount: 0,
+    clean: true,
 }
 ```
 
@@ -116,7 +126,7 @@ import { Request, withRequest } from 'questrar';
 export const UserProfile = ({ userId, data }) => {
     
     return (
-      <Request id={userId} initialPending >
+      <Request id={userId} pendOnMount >
         <ProfileView data={data} />
       </Request>
     );
@@ -126,7 +136,7 @@ export const UserProfile = ({ userId, data }) => {
 Where you explicitly want to use the request state object, you can use the inject parameter on `Request`;
 
 ```jsx harmony
-<Request id={stringOrNumberId} initialPending inject />
+<Request id={stringOrNumberId} pendOnMount inject />
 ```
 
 `inject` can be a boolean or a function with signature `(request: RequestProp) => {"anyParam": params} | request`
@@ -184,7 +194,7 @@ type RequestComponentOptions = {
   mergeIdSources?: boolean, //merge id and props.id (if there is)
 }
 
-export withRequest(options?: RequestComponentOptions)(Component)
+export default withRequest(options?: RequestComponentOptions)(Component)
 ```
 
 `withRequest` takes an **optional single id** or **optional list of ids** or **any function**
@@ -248,7 +258,7 @@ import { createStateProvider } from 'questrar/redux';
 
 const store: Store = createStore(reducers, initialState, compose);
 
-const path = 'app.operation.ticket'; //path to requestStateReducer in Redux reducer map
+const path = 'app.operation.ticket'; // path to requestStateReducer in Redux reducer map
 
 const stateProvider = createStateProvider(store, path?: string);
 
@@ -258,7 +268,7 @@ export class AppMain extends React.Component<Props> {
    render (){
     
      return (
-      <RequestStateProvider stateProvider={stateProvider} >
+      <RequestStateProvider stateProvider={stateProvider}>
         <App />
      </RequestStateProvider>
     }
@@ -266,7 +276,7 @@ export class AppMain extends React.Component<Props> {
 ```
 
 The above looks like the previous but stores the all of request states in Redux unlike before. 
-If you open your redux dev tools you can find requestStates by `'__QUESTRAR_REQUEST_'`
+If you open your redux dev tools you can find requestStates by `'_QUESTRAR_REQUEST_'`
 
 Then that's it, we can now create request states outside and track them inside.
 
@@ -362,19 +372,19 @@ API
 | Name | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 |`id`               | `string`  | yes | `undefined` | Request id is used to track a request. Request id doesnt need to have a request state. If no request state is found, a default state is represented |
-|`inject`           | `boolean` or `(requestProp) => object` | no | `false` | If set as true, the request state would be injected into the underlying component as `{ request: requestState }`. If set as a function, the function would receive the request state and return a typeof object which would then be added to the underlying component props. If function output type is not object, the resulting output would be `{ request: output }` |
-|`initialPending`   | `boolean` | no | `false` | Render a loading element immediately when component is mounted until request has failed or successful. Useful if the underlying component will throw error without data |
-|`passivePending`   | `boolean` | no | `false` | Do not show any signs of loading. Render the underlying component (eg. Button) as a loading element instead of a loading icon. |
-|`renderInitial`    | `Node` | no | Loading icon | If `initialLoading` is set true and `renderInitial` is provided, then `renderInitial` would be rendered. Thus, `renderInitial` renders once and only when `initialLoading` is set |
-|`renderLoading`    | `Node` or  `(requestProp) => Node` | no | Loading icon | A component that should be rendered whiles request is pending. If `renderLoading` is a component and `inject` is set, then `renderLoading` component would be injected  |
+|`inject`           | `boolean` or `(requestProp) => object` | no | `false` | If set as true, the request state would be injected into the underlying component as `{ request: requestState }`. If set as a function, the function would receive the request state and return a typeof object which would then be added to the underlying component props. If function output typeof is not object, the resulting output would be `{ request: output }` |
+|`pendOnMount`   | `boolean` | no | `false` | Render a loading/pending element immediately when component is mounted until request has failed or successful. Useful if the underlying component will throw error without data |
+|`passivePending`   | `boolean` | no | `false` | Do not show any signs of pending request. Render the underlying component (eg. Button) as a pending element instead of a loading icon. |
+|`renderPendOnMount`    | `Node` | no | Loading icon | If `pendOnMount` is set true and `pendOnMount` is provided, then `renderPendOnMount` would be rendered. Thus, `renderPendOnMount` renders once and only when `pendOnMount` is set |
+|`renderPending`    | `Node` or  `(requestProp) => Node` | no | Loading icon | A component that should be rendered whiles request is pending. If `renderPending` is a component and `inject` is set, then `renderPending` component would be injected with request props  |
 |`onFailure`        | `(requestProp) => void` | no | `undefined` | A callback called everytimes a request fails |
-|`renderFailure`    | `Node` or  `(requestProp) => Node` | no | `undefined` | Render on request failure |
-|`passiveOnFailure` | `boolean` | no | `false` | Just like `passivePending`. Do not show any visual sign of failure, no failure message, no `renderFailure` rendering |
-|`failTooltip`      | `boolean` | no | `false` | Show a responsive error tooltip/popup with `request.data.message` around the underlying component (if its not an array) signifying request failure. Stackoverflow error message like feature. Tooltip only closes onClick|
-|`onCloseFailure`   | `(id) => void` | no | `undefined` | A callback function called when failure component is unmounted. For instance when user closes tooltip |
-|`successTooltip`   | `boolean` | no | `false` | Just line `failTooltip`, renders a tooltip on underlying component |
-|`successReplace`   | `boolean` | no | `false` | Overrides `successTooltip`. Replace the underlying component with `request.data.message`|
-|`onCloseSuccess`   | `(id) => void`| no | `undefined` | Callback called when request success component (tooltip) is unmounted|
+|`renderOnFail`    | `Node` or  `(requestProp) => Node` | no | `undefined` | Render on request failure |
+|`passiveOnFail` | `boolean` | no | `false` | Just like `passivePending`. Do not show any visual sign of failure, no failure message, no `renderOnFail` rendering |
+|`popoverOnFail`      | `boolean` | no | `false` | Show a responsive error popover with `request.data.message` around the underlying component (if its not an array) signifying request failure. Stackoverflow error message like feature. Popover only closes onClick|
+|`onCloseFailure`   | `(requestProp) => void` | no | `undefined` | A callback function called when failure component is unmounted. For instance when user closes popover |
+|`popoverOnSuccess`   | `boolean` | no | `false` | Just like `popoverOnFail`, renders a tooltip on underlying component on request successful |
+|`successReplace`   | `boolean` | no | `false` | Overrides `popoverOnSuccess`. Replace the underlying component with `request.data.message`|
+|`onCloseSuccess`   | `(requestProp) => void`| no | `undefined` | Callback called when request success component (tooltip) is unmounted|
 
 
 
@@ -401,7 +411,7 @@ API
 const reqState = createRequestState();
 reqState.pending(<span>Cool loading icon <i className="" /></span>);
 reqState.remove();     // removes request completely from store. 
-reqState.success("I'm reincarnated") // recreates in store from a fresh request state
+reqState.success("I'm reincarnated") // recreates to store from a fresh default request state
 ```
 
 
