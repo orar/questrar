@@ -1,5 +1,8 @@
 // @flow
 
+/* eslint-disable eqeqeq */
+/* eslint-disable no-use-before-define */
+
 
 /**
  * Creates a random string of length less than 15 characters with [a - h]
@@ -19,7 +22,7 @@ export function randomId () {
  * @returns {boolean}
  */
 export function isFunc (func: any):%checks {
-  return typeof func === "function";
+  return typeof func === 'function';
 }
 
 /**
@@ -38,7 +41,7 @@ export function isObj (obj: any):%checks {
  * @returns {any|boolean}
  */
 export function isNumber (num: any):%checks {
-  return typeof num === "number";
+  return typeof num === 'number';
 }
 
 /**
@@ -51,14 +54,9 @@ export function nonEmpty(value: any):%checks {
   return typeof value !== 'undefined' && value !== null
 }
 
+// $FlowFixMe
+export function isEmptyObj(value: any):%checks {
+  if (!nonEmpty(value) || !isObj(value)) return true;
 
-export function isEmptyObj(value: any) {
-  if(!nonEmpty(value)) return false;
-
-  for (let key in value) {
-    if (Object.hasOwnProperty.call(value, key)) {
-      return false;
-    }
-  }
-  return true;
+  return Object.keys(value).length === 0
 }

@@ -1,0 +1,6 @@
+coverage/
+.idea/
+dist/
+lib/
+esm/
+node_modules/

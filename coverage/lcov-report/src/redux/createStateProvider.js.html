@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for src/redux/createStateProvider.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">All files</a> / <a href="index.html">src/redux</a> createStateProvider.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">10.81% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>4/37</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">8.7% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>2/23</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">11.11% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>1/9</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">10.81% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>4/37</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// @flow
+import type { Store } from 'redux';
+import { FAILED, PENDING, REMOVE, SUCCESS, REPLACE } from '../module/common';
+import type { ProviderRequestState } from '../index';
+import { REDUX_STATE_PATH, REQUEST_ACTION_TYPE } from './common';
+import createRequestState from './createRequest';
+import { nonEmpty, isFunc } from '../module/helper';
+&nbsp;
+&nbsp;
+/**
+ * Create a redux to questrar request state mapper
+ * It uses replace state to sync from provider to redux and back
+ *
+ * if path is more than one level deep in the store state, path should be delimited by a dot (.)
+ * e.g. 'app.operation.ticket' === { app: { operation: { ticket: { requestState }}}}
+ *
+ * @param store The redux store
+ * @param path The store path of request state
+ * @returns {{getState: getState, putState: putState}}
+ */
+export default function createStateProvider (store: Store, path?: string) {
+  const s = store;
+&nbsp;
+  /**
+   *  Request state identity
+   *  Since no two symbol created (Symbol()) are not equal
+   *  every time an update is made to store, a new symbol should be created
+   *
+   *  On state change, if id is not equal to state id, then a state update should have happened.
+   *  This should call Provider to force update
+   */
+  let id: Symbol;
+&nbsp;
+  /**
+   * Unsubscribe function
+   */
+  let unsubscribe: () =&gt; void;
+&nbsp;
+  /**
+   * Redux store absolute path to request state
+   * i.e. user preferred state path + reducer id
+   *
+   * @type {string}
+   * @private
+   */
+  const statePath = `${path || REDUX_STATE_PATH}.${REQUEST_ACTION_TYPE}`;
+&nbsp;
+&nbsp;
+  /**
+   * Gets the redux request state current
+   * @returns {*}
+   */
+  function <span class="fstat-no" title="function not covered" >getRawState(</span>) {
+    const state = <span class="cstat-no" title="statement not covered" >s.getState();</span>
+    const paths = <span class="cstat-no" title="statement not covered" >statePath.split('.');</span>
+    let rState = <span class="cstat-no" title="statement not covered" >state;</span>
+<span class="cstat-no" title="statement not covered" >    for (let i = 0; i &lt; paths.length; i += 1) {</span>
+<span class="cstat-no" title="statement not covered" >      if (paths[i] &amp;&amp; Object.hasOwnProperty.call(rState, paths[i])) {</span>
+<span class="cstat-no" title="statement not covered" >        rState = state[paths[i]]</span>
+      }
+    }
+<span class="cstat-no" title="statement not covered" >    return rState;</span>
+  }
+&nbsp;
+  /**
+   * Get state data
+   * @returns {*}
+   */
+  function <span class="fstat-no" title="function not covered" >getState(</span>) {
+    const state = <span class="cstat-no" title="statement not covered" >getRawState();</span>
+<span class="cstat-no" title="statement not covered" >    if (nonEmpty(state) &amp;&amp; nonEmpty(state.data)) {</span>
+<span class="cstat-no" title="statement not covered" >      return state.data;</span>
+    }
+<span class="cstat-no" title="statement not covered" >    return {};</span>
+  }
+&nbsp;
+  /**
+   * Replace the entire request state into redux
+   * CAVEAT: Prone to corrupt request state
+   * TODO: dispatch requestState specific update
+   *
+   * @param state
+   */
+  function <span class="fstat-no" title="function not covered" >putState(</span>state: ProviderRequestState) {
+<span class="cstat-no" title="statement not covered" >    s.dispatch({ type: REPLACE, payload: state });</span>
+  }
+&nbsp;
+&nbsp;
+  /**
+   * Run update to the Request provider
+   * @param update
+   * @returns {Function}
+   * @private
+   */
+  function <span class="fstat-no" title="function not covered" >runUpdate(</span>update: (shouldUpdate: boolean) =&gt; any) {
+<span class="cstat-no" title="statement not covered" >    return function <span class="fstat-no" title="function not covered" >run </span>() {</span>
+      const rs = <span class="cstat-no" title="statement not covered" >getRawState();</span>
+<span class="cstat-no" title="statement not covered" >      if (Object.hasOwnProperty.call(rs, 'id')) {</span>
+<span class="cstat-no" title="statement not covered" >        if (rs.id !== id) { // update if state id has changed since the last update</span>
+          /* eslint-disable prefer-destructuring */
+<span class="cstat-no" title="statement not covered" >          id = rs.id;</span>
+<span class="cstat-no" title="statement not covered" >          update(true)</span>
+        }
+      }
+    }
+  }
+&nbsp;
+  /**
+   * Watches the request state and run update of RequestProvider if there's been a change.
+   *
+   * @param update
+   */
+  function <span class="fstat-no" title="function not covered" >observe(</span>update: (shouldUpdate: boolean) =&gt; any) {
+<span class="cstat-no" title="statement not covered" >    unsubscribe = store.subscribe(runUpdate(update));</span>
+  }
+&nbsp;
+&nbsp;
+  /**
+   * Releases resources attached to store
+   */
+  function <span class="fstat-no" title="function not covered" >release(</span>) {
+<span class="cstat-no" title="statement not covered" >    if (isFunc(unsubscribe)) {</span>
+<span class="cstat-no" title="statement not covered" >      unsubscribe()</span>
+    }
+  }
+&nbsp;
+  /**
+   * Dispatch request state specific updates to redux store
+   * @param action
+   */
+  function <span class="fstat-no" title="function not covered" >updateRequest(</span>action: Object) {
+    const req = <span class="cstat-no" title="statement not covered" >createRequestState(action.id, action);</span>
+    let requestAction;
+<span class="cstat-no" title="statement not covered" >    switch (action.status) {</span>
+      case PENDING:
+<span class="cstat-no" title="statement not covered" >        requestAction = req.pending(action.message);</span>
+<span class="cstat-no" title="statement not covered" >        break;</span>
+      case FAILED:
+<span class="cstat-no" title="statement not covered" >        requestAction = req.failed(action.message);</span>
+        break;
+      case SUCCESS:
+<span class="cstat-no" title="statement not covered" >        requestAction = req.success(action.message);</span>
+<span class="cstat-no" title="statement not covered" >        break;</span>
+      case REMOVE:
+<span class="cstat-no" title="statement not covered" >        requestAction = req.remove();</span>
+<span class="cstat-no" title="statement not covered" >        break;</span>
+      default:
+<span class="cstat-no" title="statement not covered" >        break;</span>
+    }
+<span class="cstat-no" title="statement not covered" >    if (nonEmpty(requestAction)) {</span>
+<span class="cstat-no" title="statement not covered" >      s.dispatch(requestAction)</span>
+    }
+  }
+&nbsp;
+&nbsp;
+  return {
+    getState, putState, updateRequest, observe, release, path: statePath
+  };
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Thu Nov 01 2018 18:20:16 GMT+0000 (Greenwich Mean Time)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

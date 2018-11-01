@@ -1,9 +1,9 @@
 // @flow
 import React from 'react';
 import type { Node } from 'react';
-import type { RequestState, RequestActions, RequestProp } from "../../index";
 import Popover from 'react-popover';
-import { isFunc, isObj, nonEmpty } from "../../module/helper";
+import type { RequestState, RequestActions, RequestProp } from '../../index';
+import { isFunc, isObj, nonEmpty } from '../../module/helper';
 import './RequestSuccess.scss';
 
 
@@ -11,13 +11,11 @@ type Props = {
   id: string,
   request: RequestState,
   actions: RequestActions,
-  success?: boolean,
   children: Array<Node> | Node,
-  successTooltip?: boolean,
+  popoverOnSuccess?: boolean,
   successReplace?: boolean,
   onCloseSuccess: (id: any) => any,
   inject?: boolean | (request: RequestProp) => Object,
-  color?: string,
   className?: string
 
 }
@@ -26,15 +24,19 @@ type State = {
   open: boolean
 }
 
+/**
+ * Renders a successful request if popoverOnSuccess is set true or successReplace is set
+ */
 class RequestSuccess extends React.Component<Props, State> {
   props: Props;
+
   state: State = { open: true };
 
-  _defaultSuccessMessage = 'Successful';
+  defaultSuccessMessage = 'Successful';
 
 
   componentWillUnmount() {
-    this._closeTooltip();
+    this.closePopover();
   }
 
 
@@ -42,39 +44,50 @@ class RequestSuccess extends React.Component<Props, State> {
    * Close tooltip
    * @private
    */
-  _closeTooltip = () => {
+  closePopover = () => {
     const { id, actions, onCloseSuccess, request } = this.props;
+    const { open } = this.state;
 
-    //handle callback
-    if( this.state.open && isFunc(onCloseSuccess)){
+    //  handle callback
+    if (open && isFunc(onCloseSuccess)) {
       onCloseSuccess({ data: request, actions });
     }
-    //remove request if set to autoRemove
-    if(this.state.open && (request.autoRemove || request.removeOnSuccess)){
+    //  remove request if set to autoRemove
+    if (open && (request.autoRemove || request.removeOnSuccess)) {
       actions.remove(id);
-    } else {  actions.dirty(id) }
+    } else { actions.dirty(id) }
     this.setState({ open: false });
   };
 
+
+  /**
+   * Close popover on esc key press
+   * @param evt
+   */
+  keyClosePopover = (evt: Object) => {
+    if (evt.keyCode === 27) {
+      this.closePopover();
+    }
+  };
 
   /**
    * Recreates children if inject is set true
    * @returns {Props.children}
    * @private
    */
-  _children = () => {
+  children = () => {
     const { children, request, inject, actions } = this.props;
     const injection = { request: { data: request, actions }};
 
-    if(React.isValidElement(children)) {
-      //Map requestState to child props via inject function
-      if(isFunc(inject)){
+    if (React.isValidElement(children)) {
+      //  Map requestState to child props via inject function
+      if (isFunc(inject)) {
         const params = inject(injection.request);
         const paramProps = isObj(params) ? params : { request: params };
-        //$FlowFixMe
+        //  $FlowFixMe
         return React.cloneElement(children, paramProps);
       }
-      if(inject){//$FlowFixMe
+      if (inject) { // $FlowFixMe
         return React.cloneElement(children, injection);
       }
     }
@@ -87,12 +100,12 @@ class RequestSuccess extends React.Component<Props, State> {
    * @returns {Tooltip}
    * @private
    */
-  _createContent = () => {
+  createContent = () => {
     const { request } = this.props;
     let title;
-    if(request.message.title) {
+    if (request.message.title) {
       title = React.isValidElement(request.message.title) ? request.message.title : (
-        <div className="q-tooltip-title-success" >
+        <div className="q-tooltip-title-success">
           {request.message.title}
         </div>
       )
@@ -100,49 +113,56 @@ class RequestSuccess extends React.Component<Props, State> {
 
     const message = request.message.body ? request.message.body : request.message;
 
+    /* eslint-disable jsx-a11y/interactive-supports-focus */
     return (
-      <div className="q-tooltip-content-success" onClick={this._closeTooltip}>
+      <div
+        role="button"
+        onKeyPress={this.keyClosePopover}
+        className="q-tooltip-content-success"
+        onClick={this.closePopover}
+      >
         {title}
         {message}
       </div>
     )
   };
 
-
-
   render() {
-    const { children, successTooltip, successReplace, request, className = '' } = this.props;
+    const { popoverOnSuccess, successReplace, request, className = '' } = this.props;
+    const { open } = this.state;
 
-
-    if(successReplace) {
-
-      if(React.isValidElement(request.message)) {
+    if (successReplace) {
+      if (React.isValidElement(request.message)) {
         return request.message;
       }
 
       return (
         <div className="successContainer">
-          <div>{nonEmpty(request.message) && !isObj(request.message) ? request.message : this._defaultSuccessMessage}</div>
+          <div>
+            {nonEmpty(request.message) && !isObj(request.message) ? request.message
+              : this.defaultSuccessMessage
+            }
+          </div>
         </div>
       );
     }
 
-    if (successTooltip && request.message) {
-      const classNames = `requestSuccessPopover ${className}`;
+    if (popoverOnSuccess && request.message) {
+      const classNames = 'requestSuccessPopover ' + className;
 
       return (
         <Popover
-          isOpen={this.state.open}
+          isOpen={open}
           preferPlace="right"
-          body={this._createContent()}
+          body={this.createContent()}
           className={classNames}
         >
-          {this._children()}
+          {this.children()}
         </Popover>
       );
     }
 
-    return children;
+    return this.children();
   };
 }
 

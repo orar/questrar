@@ -1,19 +1,11 @@
-import { RequestConsumerContext, RequestProviderContext} from "../../src/module/context";
-import React from 'react';
+import { RequestConsumerContext, RequestProviderContext } from '../../src/module/context'
 
 describe('[Context]', () => {
-  let context = null;
-
-  before(() => {
-    context = React.createContext()
-  });
-
   it('Should export Context Consumer as `RequestConsumerContext`', () => {
-    expect(RequestConsumerContext).to.not.be.undefined;
+    expects(RequestConsumerContext).to.not.be.undefined();
   });
 
   it('Should export Context Provider as `RequestProviderContext`', () => {
-    expect(RequestProviderContext).to.not.be.undefined;
+    expects(RequestProviderContext).to.not.be.undefined();
   });
-
 });

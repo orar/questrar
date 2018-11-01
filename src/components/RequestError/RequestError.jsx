@@ -1,22 +1,20 @@
 // @flow
 import React from 'react';
-import type { Node } from 'react';
-import type { RequestActions, RequestState } from "../../index";
-import { isFunc, isObj } from "../../module/helper";
-import './RequestError.scss';
 import Popover from 'react-popover';
+import type { Node } from 'react';
+import type { RequestActions, RequestState } from '../../index';
+import { isFunc, isObj } from '../../module/helper';
+import './RequestError.scss';
 
 type Props = {
   id: string,
   request: RequestState,
   actions: RequestActions,
-  failure?: boolean | string,
   children: Array<Node> | Node,
-  errorTooltip?: boolean,
-  onCloseError?: (data: any) => any,
-  passiveOnError: boolean,
+  popoverOnFail?: boolean,
+  onCloseFailure?: (data: any) => any,
+  passiveOnFail: boolean,
   inject?: boolean | (request: RequestState) => Object,
-  color?: string,
   className?: string
 }
 
@@ -32,29 +30,40 @@ type State = {
  */
 class RequestError extends React.Component<Props, State> {
   props: Props;
+
   state: State = { open: true };
 
-  //close tooltip on unmount
+  // close tooltip on unmount
   componentWillUnmount() {
-    this._closeTooltip();
+    this.closePopover();
   }
 
   /**
    * Close tooltip and call backs
    * @private
    */
-  _closeTooltip = () => {
-    const { id, actions, onCloseError, request } = this.props;
-
-    //handle callback
-    if(this.state.open && isFunc(onCloseError)){
-      onCloseError({ data: request, actions });
+  closePopover = () => {
+    const { id, actions, onCloseFailure, request } = this.props;
+    const { open } = this.state;
+    // handle callback
+    if (open && isFunc(onCloseFailure)) {
+      onCloseFailure({ data: request, actions });
     }
-    //remove request if set to autoRemove
-    if(this.state.open && (request.autoRemove || request.removeOnFail)){
+    // remove request if set to autoRemove
+    if (open && (request.autoRemove || request.removeOnFail)) {
       actions.remove(id);
-    } else {  actions.dirty(id) }
+    } else { actions.dirty(id) }
     this.setState({ open: false });
+  };
+
+  /**
+   * Close popover on esc key press
+   * @param evt
+   */
+  keyClosePopover = (evt: Object) => {
+    if (evt.keyCode === 27) {
+      this.closePopover();
+    }
   };
 
   /**
@@ -62,19 +71,19 @@ class RequestError extends React.Component<Props, State> {
    * @returns {Props.children}
    * @private
    */
-  _children = () => {
+  children = () => {
     const { children, request, inject, actions } = this.props;
     const injection = { request: { data: request, actions }};
 
-    if(React.isValidElement(children)) {
-      //Transform requestState to child props via inject function
-      if(isFunc(inject)){
+    if (React.isValidElement(children)) {
+      // Transform requestState to child props via inject function
+      if (isFunc(inject)) {
         const params = inject(injection.request);
         const paramProps = isObj(params) ? params : { request: params };
-        //$FlowFixMe
+        // $FlowFixMe
         return React.cloneElement(children, paramProps);
       }
-      if(inject){//$FlowFixMe
+      if (inject) { // $FlowFixMe
         return React.cloneElement(children, injection);
       }
     }
@@ -85,24 +94,34 @@ class RequestError extends React.Component<Props, State> {
   /**
    * Creates tooltip content
    *
-   * @returns {Tooltip}
+   * @returns Tooltip
    * @private
    */
-  _createContent = () => {
+  createContent = () => {
     const { request } = this.props;
     let title;
-    if(request.message.title) {
+    if (request.message.title) {
       title = React.isValidElement(request.message.title) ? request.message.title : (
-        <div className="q-tooltip-title-failed" >
+        <div className="q-popover-title-failed">
           {request.message.title}
         </div>
       )
     }
 
-    const message = request.message.body ? request.message.body : request.message;
+    const message = !request.message.body ? request.message : (
+      <div className="q-popover-body-failed">
+        {request.message.body}
+      </div>
+    );
 
+    /* eslint-disable jsx-a11y/interactive-supports-focus */
     return (
-      <div className="q-tooltip-content-failed" onClick={this._closeTooltip}>
+      <div
+        role="button"
+        onKeyPress={this.keyClosePopover}
+        className="q-popover-content-failed"
+        onClick={this.closePopover}
+      >
         {title}
         {message}
       </div>
@@ -110,32 +129,33 @@ class RequestError extends React.Component<Props, State> {
   };
 
   render() {
-    const { errorTooltip, request, passiveOnError, className = '' } = this.props;
+    const { popoverOnFail, inject, request, passiveOnFail, className = '' } = this.props;
+    const { open } = this.state;
 
-    if (errorTooltip && request.message) {
-      const classNames = `requestFailurePopover ${className}`;
+    if (popoverOnFail && request.message) {
+      const classNames = 'requestFailurePopover ' + className;
 
       return (
-          <Popover
-            isOpen={this.state.open}
-            preferPlace="right"
-            body={this._createContent()}
-            className={classNames}
-          >
-            {this._children()}
-          </Popover>
+        <Popover
+          isOpen={open}
+          preferPlace="right"
+          body={this.createContent()}
+          className={classNames}
+        >
+          {this.children()}
+        </Popover>
       );
     }
 
-    if(passiveOnError){
-      return this._children();
+    if (passiveOnFail || inject) {
+      return this.children();
     }
 
-    if(React.isValidElement(request.message)) {
+    if (React.isValidElement(request.message)) {
       return request.message;
     }
 
-    if(isObj(request.message)) {
+    if (isObj(request.message)) {
       return (
         <div className="failureContainer">
           {request.message.title}
@@ -144,7 +164,7 @@ class RequestError extends React.Component<Props, State> {
       );
     }
 
-    if(request.message) {
+    if (request.message) {
       return (
         <div className="failureContainer">
           {request.message}
@@ -153,11 +173,10 @@ class RequestError extends React.Component<Props, State> {
     }
 
     return (
-      <div className="failureContainer" >
+      <div className="failureContainer">
         <div>An error occurred. Please try again later.</div>
       </div>
     );
-
   };
 }
 

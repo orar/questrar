@@ -1,21 +1,14 @@
 // @flow
-import type {RequestState} from "../index";
-import {SUCCESS, FAILED, PENDING, REMOVE, CLEAN, DIRTY} from "../module/common";
+import type { RequestState, CreateRequestOptions, CreateRequest } from '../index';
+import { SUCCESS, FAILED, PENDING, REMOVE, CLEAN, DIRTY } from '../module/common';
 import { REQUEST_ACTION_TYPE } from './common';
-import {isNumber, nonEmpty, randomId} from "../module/helper";
+import { isNumber, nonEmpty, randomId } from '../module/helper';
 
 
 /**
  * Configuration type for request action
+ * @experimental
  */
-export type RequestActionOptions = {
-  modifier?: (payload: any) => any,
-  autoRemove?: boolean,
-
-  autoRemoveOnSuccess?: boolean,
-  autoRemoveOnFailure?: boolean,
-}
-
 export type RequestOptions = {
   autoRemove: boolean,
   inject: (r: RequestState) => Object,
@@ -29,7 +22,10 @@ export type RequestOptions = {
  * @param options
  * @returns {function(Object=, string=, RequestOptions=)}
  */
-export function createRequest (id?: string | number, options?: RequestActionOptions) {
+export function createRequest (
+  id?: string | number,
+  options?: CreateRequestOptions,
+): CreateRequest {
   const reduxActionType = REQUEST_ACTION_TYPE;
 
   const isStatic = nonEmpty(id) && (typeof id === 'string' || isNumber(id));
@@ -39,7 +35,8 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
   const autoRemoveOnSuccess = hasOptions && options.autoRemoveOnSuccess;
   const autoRemoveOnFailure = hasOptions && options.autoRemoveOnFailure;
 
-  const requestId = isStatic ? id : randomId();
+  // $FlowFixMe
+  const requestId: string|number = isStatic ? id : randomId();
 
 
   /**
@@ -50,11 +47,13 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
    * @returns {{type: string, id: (string|number), status: string}}
    */
   const initAction = (rId: string | number, status: string, message?: any) => {
-    const _action = { type: reduxActionType, id: rId, status };
-    if(nonEmpty(message)){
-      _action.message = message
+    const action = { type: reduxActionType };
+    const payload = { id: rId, status };
+    if (nonEmpty(message)) {
+      payload.message = message
     }
-    return _action;
+    action.payload = payload;
+    return action;
   };
 
 
@@ -63,25 +62,25 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
    * @param message Optional message for update pending
    * @returns {{type: string, id: (string|number), status: string}}
    */
-  const pending = ( message?: any) => {
-    return initAction(requestId, PENDING, message);
-  };
+  const pending = (message?: any) => initAction(requestId, PENDING, message);
 
 
   /**
    * Creates a request successful action
    * @param message Optional message for update
    * @param remove Removes request on close success
-   * @returns {{type: string, id: (string|number), status: string} & {autoRemove: boolean, autoRemoveOnSuccess: boolean}}
+   * @returns FSA
    */
-  const success = ( message?: any, remove?: boolean) => {
+  const success = (message?: any, remove?: boolean) => {
     const action = initAction(requestId, SUCCESS, message);
-    if(nonEmpty(remove)){
-      action.autoRemoveOnSuccess = remove
-    } else {
-      action.autoRemoveOnSuccess = autoRemoveOnFailure
+    const { payload } = action;
+    if (nonEmpty(remove)) {
+      payload.autoRemoveOnSuccess = remove
+    } else if (autoRemoveOnSuccess || autoRemove) {
+      payload.autoRemoveOnSuccess = true
     }
-    return Object.assign(action, { autoRemove, autoRemoveOnSuccess })
+
+    return Object.assign({}, action, { payload })
   };
 
   /**
@@ -91,39 +90,34 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
    * @param remove Removes request on close failure
    * @returns {{type: string, id: (string|number), status: string} & {autoRemove: boolean}}
    */
-  const failed = ( message?: any, remove?: boolean) => {
+  const failed = (message?: any, remove?: boolean) => {
     const action = initAction(requestId, FAILED, message);
-    if(nonEmpty(remove)){
-      action.autoRemoveOnFailure = remove
-    } else {
-      action.autoRemoveOnFailure = autoRemoveOnFailure
+    const { payload } = action;
+    if (nonEmpty(remove)) {
+      payload.autoRemoveOnFailure = remove
+    } else if (autoRemoveOnFailure || autoRemove) {
+      payload.autoRemoveOnFailure = true
     }
-    return Object.assign(action, { autoRemove })
+    return Object.assign({}, action, { payload })
   };
 
   /**
    * Creates action to set request as clean
    * @returns {{type: string, id: *, status: *}}
    */
-  const clean = () => {
-    return initAction(requestId, CLEAN);
-  };
+  const clean = () => initAction(requestId, CLEAN);
 
   /**
    * Creates action to set request as dirty (clean === false)
    * @returns {{type: string, id: *, status: *}}
    */
-  const dirty = () => {
-    return initAction(requestId, DIRTY);
-  };
+  const dirty = () => initAction(requestId, DIRTY);
 
   /**
    * Creates an action to remove a specific request state
    * @returns {{type: string, id: (string|number), status: string}}
    */
-  const remove = () => {
-    return initAction(requestId, REMOVE);
-  };
+  const remove = () => initAction(requestId, REMOVE);
 
   /**
    * Action binder function
@@ -133,9 +127,7 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
     return requestId;
   }
 
-  actionCreator.toString = () => {
-    return requestId;
-  };
+  actionCreator.toString = () => requestId;
 
   actionCreator.id = requestId;
 
@@ -150,7 +142,6 @@ export function createRequest (id?: string | number, options?: RequestActionOpti
 
   return actionCreator;
 }
-
 
 
 export default createRequest;

@@ -1,15 +1,20 @@
 // @flow
-import {PENDING, SUCCESS, FAILED, REPLACE, CLEAN, DIRTY, initialRequest, REMOVE} from "../module/common";
-import { REQUEST_ACTION_TYPE } from './common';
-import { nonEmpty, resetRequestFlags as resetFlags} from "../module/helper";
 import invariant from 'invariant';
-import type {RequestState, ReduxRequestState, ProviderRequestState} from "../index";
+import { PENDING, SUCCESS, FAILED, REPLACE, CLEAN, DIRTY, initialRequest, REMOVE } from '../module/common';
+import { REQUEST_ACTION_TYPE } from './common';
+import { nonEmpty, resetRequestFlags as resetFlags } from '../module/helper';
+import type { RequestState, ReduxRequestState, ProviderRequestState } from '../index';
 
+/**
+ * Initial state of request reducer
+ * @type {{data: {}}}
+ */
+export const initialState = { data: {} };
 
 
 /**
- * Sets remove flags on request.
- * Removes control removal of requestState on close of RequestComponent feature `onCloseError` or `onCloseSuccess`
+ * Sets removal  flags on request.
+ *
  * @param state
  * @param action
  * @returns {*}
@@ -20,25 +25,24 @@ export function setRemoves(state: Object, action: Object) {
   if (action.autoRemove) {
     s.autoRemove = true
   }
-  if(action.autoRemoveOnSuccess){
+  if (action.autoRemoveOnSuccess) {
     s.removeOnSuccess = true;
-    if(s.autoRemove) {
-      delete s['autoRemove'];
+    if (s.autoRemove) {
+      delete s.autoRemove;
     }
     return s;
   }
 
-  if(action.autoRemoveOnFailure){
+  if (action.autoRemoveOnFailure) {
     s.removeOnFail = true;
-    if(s.autoRemove) {
-      delete s['autoRemove'];
+    if (s.autoRemove) {
+      delete s.autoRemove;
     }
     return s;
   }
 
   return s;
 }
-
 
 
 /**
@@ -51,7 +55,7 @@ export function getState(state: ProviderRequestState, id: string | number) {
   if (Object.hasOwnProperty.call(state, id)) {
     return Object.assign({}, state[id]);
   }
-  return initialRequest;
+  return { ...initialRequest, id };
 }
 
 
@@ -61,9 +65,11 @@ export function getState(state: ProviderRequestState, id: string | number) {
  * @param action
  */
 export function setMessage(state: RequestState, action: Object) {
-  if(action.message){
+  if (action.message) {
+    /* eslint-disable no-param-reassign */
     state.message = action.message;
   }
+  return state;
 }
 
 /**
@@ -74,11 +80,11 @@ export function setMessage(state: RequestState, action: Object) {
 export function handleRequestPending (state: ReduxRequestState, action: Object): ReduxRequestState {
   invariant(nonEmpty(action.id), 'request action missing id field');
 
+  /* eslint-disable prefer-destructuring */
   const id = action.id;
   const stateId = Symbol(id);
 
   const nextReq = resetFlags(getState(state.data, id));
-  nextReq.id = id;
   nextReq.pending = true;
   nextReq.clean = true;
   setMessage(nextReq, action);
@@ -99,7 +105,6 @@ export function handleRequestClean (state: ReduxRequestState, action: Object): R
   const stateId = Symbol(id);
 
   const nextReq = resetFlags(getState(state.data, id));
-  nextReq.id = id;
   nextReq.clean = true;
 
   const data = Object.assign({}, state.data, { [id]: nextReq });
@@ -118,7 +123,6 @@ export function handleRequestDirty (state: ReduxRequestState, action: Object): R
   const stateId = Symbol(id);
 
   const nextReq = resetFlags(getState(state.data, id));
-  nextReq.id = id;
   nextReq.clean = false;
 
   const data = Object.assign({}, state.data, { [id]: nextReq });
@@ -126,13 +130,12 @@ export function handleRequestDirty (state: ReduxRequestState, action: Object): R
 }
 
 
-
 /**
  * Updates a request state to failed
  * @params state, action
  * @returns {{} & RequestState}
  */
-export function handleRequestFailed (state: ReduxRequestState, action: Object){
+export function handleRequestFailed (state: ReduxRequestState, action: Object) {
   invariant(nonEmpty(action.id), 'request state action missing id field');
 
   const id = action.id;
@@ -140,7 +143,6 @@ export function handleRequestFailed (state: ReduxRequestState, action: Object){
 
 
   const nextReq = resetFlags(getState(state.data, id));
-  nextReq.id = id;
   nextReq.failed = true;
   nextReq.failureCount += 1;
   setMessage(nextReq, action);
@@ -164,7 +166,6 @@ export function handleRequestSuccess (state: ReduxRequestState, action: Object):
   const stateId = Symbol(id);
 
   const nextReq = resetFlags(getState(state, id));
-  nextReq.id = id;
   nextReq.success = true;
   nextReq.successCount += 1;
   setMessage(nextReq, action);
@@ -184,8 +185,8 @@ export function handleRequestSuccess (state: ReduxRequestState, action: Object):
 export function removeRequestState (state: ReduxRequestState, action: Object): ReduxRequestState {
   invariant(nonEmpty(action.id), 'request action missing id field');
 
-  const stateId = Symbol();
   const id = action.id;
+  const stateId = Symbol(id);
 
   if (Object.hasOwnProperty.call(state.data, id)) {
     const data = Object.assign({}, state.data);
@@ -204,7 +205,7 @@ export function removeRequestState (state: ReduxRequestState, action: Object): R
  * @returns {*}
  */
 export const replaceState = (state: ProviderRequestState, action: Object) => {
-  const stateId = Symbol();
+  const stateId = Symbol(REPLACE);
 
   return Object.assign({}, { data: action.state, id: stateId });
 };
@@ -217,31 +218,32 @@ export const replaceState = (state: ProviderRequestState, action: Object) => {
  * @returns {*} Final state
  */
 export function rootReducer(state: ReduxRequestState, action: Object) {
-  const _state = Object.assign({ data: {} }, state);
-  switch (action.status){
+  const newState = Object.assign({}, initialState, state);
+  const payload = action && action.payload ? action.payload : {};
+  switch (payload.status) {
     case PENDING:
-      return handleRequestPending(_state, action);
+      return handleRequestPending(newState, payload);
 
     case SUCCESS:
-      return handleRequestSuccess(_state, action);
+      return handleRequestSuccess(newState, payload);
 
     case FAILED:
-      return handleRequestFailed(_state, action);
+      return handleRequestFailed(newState, payload);
 
     case CLEAN:
-      return handleRequestClean(_state, action);
+      return handleRequestClean(newState, payload);
 
     case DIRTY:
-      return handleRequestDirty(_state, action);
+      return handleRequestDirty(newState, payload);
 
     case REPLACE:
-      return replaceState(_state, action);
+      return replaceState(newState, payload);
 
     case REMOVE:
-      return removeRequestState(_state, action);
+      return removeRequestState(newState, payload);
 
-    default:{
-      return _state;
+    default: {
+      return newState;
     }
   }
 }

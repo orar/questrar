@@ -1,11 +1,10 @@
 // @flow
-import type { Store }  from 'redux';
-import {FAILED, PENDING, REMOVE, SUCCESS} from "../module/common";
-import type {ProviderRequestState} from "../index";
+import type { Store } from 'redux';
+import { FAILED, PENDING, REMOVE, SUCCESS, REPLACE } from '../module/common';
+import type { ProviderRequestState } from '../index';
 import { REDUX_STATE_PATH, REQUEST_ACTION_TYPE } from './common';
-import { REPLACE } from "../module/common";
-import createRequest from "./createRequest";
-import {nonEmpty, isFunc} from "../module/helper";
+import createRequestState from './createRequest';
+import { nonEmpty, isFunc } from '../module/helper';
 
 
 /**
@@ -20,14 +19,15 @@ import {nonEmpty, isFunc} from "../module/helper";
  * @returns {{getState: getState, putState: putState}}
  */
 export default function createStateProvider (store: Store, path?: string) {
-
   const s = store;
 
   /**
    *  Request state identity
    *  Since no two symbol created (Symbol()) are not equal
    *  every time an update is made to store, a new symbol should be created
-   *  On store state change, symbol realizes change in request state object forcing update to context provider
+   *
+   *  On state change, if id is not equal to state id, then a state update should have happened.
+   *  This should call Provider to force update
    */
   let id: Symbol;
 
@@ -43,19 +43,19 @@ export default function createStateProvider (store: Store, path?: string) {
    * @type {string}
    * @private
    */
-  const _path = (path || REDUX_STATE_PATH) + '.' + REQUEST_ACTION_TYPE;
+  const statePath = `${path || REDUX_STATE_PATH}.${REQUEST_ACTION_TYPE}`;
 
 
   /**
    * Gets the redux request state current
    * @returns {*}
    */
-  function getRawState(){
+  function getRawState() {
     const state = s.getState();
-    const paths = _path.split('.');
+    const paths = statePath.split('.');
     let rState = state;
-    for(let i = 0; i < paths.length; i++){
-      if(paths[i] && Object.hasOwnProperty.call(rState, paths[i])){
+    for (let i = 0; i < paths.length; i += 1) {
+      if (paths[i] && Object.hasOwnProperty.call(rState, paths[i])) {
         rState = state[paths[i]]
       }
     }
@@ -66,9 +66,9 @@ export default function createStateProvider (store: Store, path?: string) {
    * Get state data
    * @returns {*}
    */
-  function getState(){
+  function getState() {
     const state = getRawState();
-    if(nonEmpty(state) && nonEmpty(state.data) ){
+    if (nonEmpty(state) && nonEmpty(state.data)) {
       return state.data;
     }
     return {};
@@ -81,7 +81,7 @@ export default function createStateProvider (store: Store, path?: string) {
    *
    * @param state
    */
-  function putState(state: ProviderRequestState){
+  function putState(state: ProviderRequestState) {
     s.dispatch({ type: REPLACE, payload: state });
   }
 
@@ -93,11 +93,12 @@ export default function createStateProvider (store: Store, path?: string) {
    * @private
    */
   function runUpdate(update: (shouldUpdate: boolean) => any) {
-    return function () {
-      const _s = getRawState();
-      if (Object.hasOwnProperty.call(_s, 'id')) {
-        if (_s.id !== id) { //update if state id has changed since the last update
-          id = _s.id;
+    return function run () {
+      const rs = getRawState();
+      if (Object.hasOwnProperty.call(rs, 'id')) {
+        if (rs.id !== id) { // update if state id has changed since the last update
+          /* eslint-disable prefer-destructuring */
+          id = rs.id;
           update(true)
         }
       }
@@ -105,14 +106,11 @@ export default function createStateProvider (store: Store, path?: string) {
   }
 
   /**
-   * Watches the request state and forces update of RequestProvider if there's been a change.
-   *
-   * CAVEAT: Calls update with true on any little update in any store state
-   * TODO: Track changes only on requestState in store
+   * Watches the request state and run update of RequestProvider if there's been a change.
    *
    * @param update
    */
-  function observe(update: (shouldUpdate: boolean) => any){
+  function observe(update: (shouldUpdate: boolean) => any) {
     unsubscribe = store.subscribe(runUpdate(update));
   }
 
@@ -121,9 +119,9 @@ export default function createStateProvider (store: Store, path?: string) {
    * Releases resources attached to store
    */
   function release() {
-   if(isFunc(unsubscribe)) {
-     unsubscribe()
-   }
+    if (isFunc(unsubscribe)) {
+      unsubscribe()
+    }
   }
 
   /**
@@ -131,32 +129,31 @@ export default function createStateProvider (store: Store, path?: string) {
    * @param action
    */
   function updateRequest(action: Object) {
-    const req = createRequest(action.id, action);
-    let _action;
+    const req = createRequestState(action.id, action);
+    let requestAction;
     switch (action.status) {
       case PENDING:
-        _action = req.pending(action.message);
+        requestAction = req.pending(action.message);
         break;
       case FAILED:
-        _action = req.failed(action.message);
+        requestAction = req.failed(action.message);
         break;
       case SUCCESS:
-        _action = req.success(action.message);
+        requestAction = req.success(action.message);
         break;
       case REMOVE:
-        _action = req.remove();
+        requestAction = req.remove();
         break;
       default:
         break;
     }
-    if(nonEmpty(_action)){
-      s.dispatch(_action)
+    if (nonEmpty(requestAction)) {
+      s.dispatch(requestAction)
     }
   }
 
 
   return {
-    getState, putState, updateRequest, observe, release, path: _path
+    getState, putState, updateRequest, observe, release, path: statePath
   };
-
 }

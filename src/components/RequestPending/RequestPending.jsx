@@ -2,8 +2,9 @@
 import React from 'react';
 import Spinner from '../Spinner/Spinner';
 import './RequestPending.scss';
+
 type Props = {
-  color?: string,
+  size?: number,
 }
 
 /**
@@ -11,12 +12,10 @@ type Props = {
  * @returns {*}
  * @constructor
  */
-const RequestPending = ({ color }: Props) => {
-    return (
-        <div className="pendingContainer">
-            <Spinner size={20} color={color} />
-        </div>
-    );
-};
+const RequestPending = ({ size }: Props) => (
+  <div className="pendingContainer">
+    <Spinner size={size} />
+  </div>
+);
 
 export default RequestPending;

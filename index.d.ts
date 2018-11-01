@@ -11,7 +11,7 @@ export declare interface RequestState {
     id?: string | number;
 
     pending: boolean;
-    success: boolean ;
+    success: boolean;
     failed: boolean;
 
     successCount: number;
@@ -108,7 +108,30 @@ export declare interface StateProvider {
 // redux
 // ==============
 
+export declare interface CreateRequestOptions {
+    modifier?: (payload: any) => any,
+    autoRemove?: boolean,
+
+    autoRemoveOnSuccess?: boolean,
+    autoRemoveOnFailure?: boolean,
+}
+
 export declare interface ReduxRequestState {
     id: Symbol,
     data: ProviderRequestState
+}
+
+
+export declare function createRequestState(id: string | number, options?: CreateRequestOptions): CreateRequest;
+
+
+
+export declare interface CreateRequest {
+    id: string | number,
+    pending: (message?: any) => { type: string, payload: { id: string | number, status: string, message?: any }}
+    success: (message?: any, remove?: boolean) => { type: string, payload: { id: string | number, status: string, message?: any }}
+    failed: (message?: any, remove?: boolean) => { type: string, payload: { id: string | number, status: string, message?: any }}
+    remove: () => { type: string, payload: { id: string | number, status: string }}
+    dirty: () => { type: string, payload: { id: string | number, status: string }}
+    clean: () => { type: string, payload: { id: string | number, status: string }}
 }

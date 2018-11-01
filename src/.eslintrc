@@ -1,0 +1,21 @@
+{
+  "env": {
+    "jest": true
+  },
+
+  "rules": {
+    "no-extra-semi": 0,
+    // disable semi colon
+
+    "comma-dangle": 1,
+    // don't force es6 functions to include space before paren
+    "space-before-function-paren": 0,
+
+    // allow specifying true explicitly for boolean props
+    "react/jsx-boolean-value": 0,
+
+    "prefer-template": 1,
+
+    "react/no-array-index-key": 1
+  }
+}

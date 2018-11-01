@@ -39,6 +39,7 @@
   "dependencies": {
     "flow-bin": "^0.82.0",
     "prop-types": "^15.6.2",
+    "questrar": "link:..",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-floater": "^0.6.0",

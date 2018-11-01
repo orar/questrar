@@ -1,9 +1,13 @@
 [ignore]
-
+./test
 
 [include]
 
 [libs]
+
+suppress_type=$FlowIssue
+suppress_type=$FlowFixMe
+suppress_type=$FixMe
 
 [lints]
 

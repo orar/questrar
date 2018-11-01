@@ -1,21 +1,20 @@
 // @flow
-import React from 'react';
-import type { RequestState } from "../index";
+import type { RequestState } from '../index';
 
 
-//status flags
+//  status flags
 export const PENDING = 'pending';
 export const SUCCESS = 'success';
 export const FAILED = 'failed';
 
-//action flags
+//  action flags
 export const REPLACE = 'replace';
 export const REMOVE = 'remove';
 export const CLEAN = 'clean';
-export const DIRTY = 'clean';
+export const DIRTY = 'dirty';
 
 
-//Initial request state
+//  Initial request state
 export const initialRequest: RequestState = {
   pending: false,
   success: false,
