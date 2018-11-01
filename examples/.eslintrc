@@ -30,6 +30,7 @@
     "react/jsx-one-expression-per-line": 0,
 
     "import/no-named-as-default": 0,
+    "import/no-unresolved": 0,
 
     "babel/new-cap": 1,
     "babel/no-invalid-this": 1,
