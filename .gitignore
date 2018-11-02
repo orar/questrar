@@ -5,6 +5,7 @@ esm/
 lib/
 coverage/
 *.log
+docs/medium.md
 
 
 
