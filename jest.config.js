@@ -13,10 +13,10 @@ module.exports = {
     './',
   ],
   moduleNameMapper: {
-    '.scss$': '<rootDir>/src/.tests/StyleMock.js',
+    '.scss$': '<rootDir>/src/__tests__/StyleMock.js',
   },
   setupFiles: [
-    '<rootDir>/src/.tests/test-bundle.js',
+    '<rootDir>/src/__tests__/test-bundle.js',
   ],
 
   setupTestFrameworkScriptFile: 'jest-enzyme/lib/index.js',
@@ -29,7 +29,7 @@ module.exports = {
     pretendToBeVisual: true,
   },
 
-  testRegex: '/src/.*?\\.tests?/.*?\\.(test|spec)\\.jsx?$',
+  testRegex: '/src/.*?__tests?__/.*?\\.(test|spec)\\.jsx?$',
   testURL: 'http://localhost:3000',
 
   collectCoverage: true,
