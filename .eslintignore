@@ -4,3 +4,5 @@ dist/
 lib/
 esm/
 node_modules/
+**/__tests__/
+**/__test__/
