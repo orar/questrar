@@ -1,8 +1,8 @@
 import { isFSA } from 'flux-standard-action';
-import { randomId } from '../../src/module/helper';
-import { REQUEST_ACTION_TYPE } from '../../src/redux/common';
-import {FAILED, PENDING, REMOVE, SUCCESS, DIRTY, CLEAN} from '../../src/module/common';
-import createRequest from '../../src/redux/createRequest';
+import { randomId } from '../../module/helper';
+import { REQUEST_ACTION_TYPE } from '../common';
+import {FAILED, PENDING, REMOVE, SUCCESS, DIRTY, CLEAN} from '../../module/common';
+import createRequest from '../createRequest';
 
 describe('[createRequest]', () => {
   let id;

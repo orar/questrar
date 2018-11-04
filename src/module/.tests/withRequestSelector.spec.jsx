@@ -1,18 +1,18 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import withRequestSelector from '../../src/module/withRequestSelector';
-import { randomId } from '../../src/module/helper';
-import { RequestConsumerContext } from '../../src/module/context';
-import { initialRequest } from '../../src/module/common';
+import withRequestSelector from '../withRequestSelector';
+import { randomId } from '../helper';
+import { RequestConsumerContext } from '../context';
+import { initialRequest } from '../common';
 
-const TestComponent = () => <div>Component</div>;
+const TestComponent = (props) => <div {...props}>Component</div>;
 
 
 describe('[withRequestSelector]', () => {
   let idList;
   let HostComponent;
   let wrapper;
-
+  let actions;
   let providerStateMock;
 
   const mockProviderState = () => {
@@ -24,9 +24,21 @@ describe('[withRequestSelector]', () => {
     providerStateMock = { data, actions: {} };
   };
 
+  const createActions = () => {
+    actions = {
+      success: jest.fn(),
+      pending: jest.fn(),
+      failed: jest.fn(),
+      remove: jest.fn(),
+      dirty: jest.fn(),
+      clean: jest.fn(),
+    };
+  };
+
   beforeAll(() => {
     idList = Array(10).fill(1).map(randomId);
     mockProviderState();
+    createActions()
 
     HostComponent = withRequestSelector(TestComponent);
 
@@ -42,4 +54,13 @@ describe('[withRequestSelector]', () => {
 
     expects(state.id).to.be.a('string').that.is.eql(idList[0]);
   });
+
+  it('#getRequest Should create a single request state given a single id', () => {
+    const component = wrapper.instance().renderComponent({ data: providerStateMock, actions });
+    const scomponent = shallow(component);
+
+    expects(scomponent.prop('request')).to.include({ id: idList[0] });
+  });
+
+
 });

@@ -4,7 +4,7 @@ import type { RequestState } from '../index';
 
 /* eslint-disable no-use-before-define */
 /**
- * Extract list values of keys from a base object.
+ * Shallowly extract list values of keys from a base object.
  * Use `getValue` 3rd param to retrieve/transform value based on key and base object
  *
  * ```
@@ -28,7 +28,8 @@ export const arrayValuesOfKeys = (
   if (typeof keys === 'string') {
     if (isFunc(getValue)) {
       return [getValue(keys, obj)];
-    } if (Object.hasOwnProperty.call(obj, keys)) {
+    }
+    if (Object.hasOwnProperty.call(obj, keys)) {
       return [obj[keys]];
     }
     return [];

@@ -1,11 +1,30 @@
 // @flow
 import type { Store } from 'redux';
-import { FAILED, PENDING, REMOVE, SUCCESS, REPLACE } from '../module/common';
+import invariant from 'invariant'
+import { FAILED, PENDING, REMOVE, SUCCESS, REPLACE, DIRTY, CLEAN } from '../module/common';
 import type { ProviderRequestState } from '../index';
 import { REDUX_STATE_PATH, REQUEST_ACTION_TYPE } from './common';
 import createRequestState from './createRequest';
 import { nonEmpty, isFunc } from '../module/helper';
 
+/**
+ * Gets the redux request state current
+ * @returns {*}
+ */
+
+export function getRawState(s: Store, path: string) {
+  const state = s.getState();
+  const paths = path.split('.');
+  let rState = state;
+  for (let i = 0; i < paths.length; i += 1) {
+    if (paths[i] && Object.hasOwnProperty.call(rState, paths[i])) {
+      rState = rState[paths[i]]
+    } else if (paths[i]) {
+      invariant(false, `State path: '${path}' looks incorrect. '${paths[i]}' does not exist`)
+    }
+  }
+  return rState;
+}
 
 /**
  * Create a redux to questrar request state mapper
@@ -45,29 +64,12 @@ export default function createStateProvider (store: Store, path?: string) {
    */
   const statePath = `${path || REDUX_STATE_PATH}.${REQUEST_ACTION_TYPE}`;
 
-
-  /**
-   * Gets the redux request state current
-   * @returns {*}
-   */
-  function getRawState() {
-    const state = s.getState();
-    const paths = statePath.split('.');
-    let rState = state;
-    for (let i = 0; i < paths.length; i += 1) {
-      if (paths[i] && Object.hasOwnProperty.call(rState, paths[i])) {
-        rState = state[paths[i]]
-      }
-    }
-    return rState;
-  }
-
   /**
    * Get state data
    * @returns {*}
    */
   function getState() {
-    const state = getRawState();
+    const state = getRawState(s, statePath);
     if (nonEmpty(state) && nonEmpty(state.data)) {
       return state.data;
     }
@@ -94,7 +96,7 @@ export default function createStateProvider (store: Store, path?: string) {
    */
   function runUpdate(update: (shouldUpdate: boolean) => any) {
     return function run () {
-      const rs = getRawState();
+      const rs = getRawState(s, statePath);
       if (Object.hasOwnProperty.call(rs, 'id')) {
         if (rs.id !== id) { // update if state id has changed since the last update
           /* eslint-disable prefer-destructuring */
@@ -141,6 +143,12 @@ export default function createStateProvider (store: Store, path?: string) {
       case SUCCESS:
         requestAction = req.success(action.message);
         break;
+      case DIRTY:
+        requestAction = req.dirty();
+        break;
+      case CLEAN:
+        requestAction = req.clean();
+        break;
       case REMOVE:
         requestAction = req.remove();
         break;
@@ -154,6 +162,6 @@ export default function createStateProvider (store: Store, path?: string) {
 
 
   return {
-    getState, putState, updateRequest, observe, release, path: statePath
+    getState, putState, updateRequest, observe, release, path: statePath,
   };
 }

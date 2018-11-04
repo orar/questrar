@@ -104,7 +104,7 @@ export function handleRequestClean (state: ReduxRequestState, action: Object): R
   const id = action.id;
   const stateId = Symbol(id);
 
-  const nextReq = resetFlags(getState(state.data, id));
+  const nextReq = getState(state.data, id);
   nextReq.clean = true;
 
   const data = Object.assign({}, state.data, { [id]: nextReq });
@@ -122,7 +122,7 @@ export function handleRequestDirty (state: ReduxRequestState, action: Object): R
   const id = action.id;
   const stateId = Symbol(id);
 
-  const nextReq = resetFlags(getState(state.data, id));
+  const nextReq = getState(state.data, id);
   nextReq.clean = false;
 
   const data = Object.assign({}, state.data, { [id]: nextReq });
@@ -193,7 +193,7 @@ export function removeRequestState (state: ReduxRequestState, action: Object): R
     delete data[id];
     return { id: stateId, data };
   }
-  return Object.assign({}, state);
+  return Object.assign({ id: stateId }, state);
 }
 
 
@@ -218,32 +218,32 @@ export const replaceState = (state: ProviderRequestState, action: Object) => {
  * @returns {*} Final state
  */
 export function rootReducer(state: ReduxRequestState, action: Object) {
-  const newState = Object.assign({}, initialState, state);
+  const oldState = Object.assign({}, initialState, state);
   const payload = action && action.payload ? action.payload : {};
   switch (payload.status) {
     case PENDING:
-      return handleRequestPending(newState, payload);
+      return handleRequestPending(oldState, payload);
 
     case SUCCESS:
-      return handleRequestSuccess(newState, payload);
+      return handleRequestSuccess(oldState, payload);
 
     case FAILED:
-      return handleRequestFailed(newState, payload);
+      return handleRequestFailed(oldState, payload);
 
     case CLEAN:
-      return handleRequestClean(newState, payload);
+      return handleRequestClean(oldState, payload);
 
     case DIRTY:
-      return handleRequestDirty(newState, payload);
+      return handleRequestDirty(oldState, payload);
 
     case REPLACE:
-      return replaceState(newState, payload);
+      return replaceState(oldState, payload);
 
     case REMOVE:
-      return removeRequestState(newState, payload);
+      return removeRequestState(oldState, payload);
 
     default: {
-      return newState;
+      return oldState;
     }
   }
 }

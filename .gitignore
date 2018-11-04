@@ -4,8 +4,10 @@ dist/
 esm/
 lib/
 coverage/
-*.log
 docs/medium.md
+size-snapshot.json
+*.log
+
 
 
 

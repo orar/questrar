@@ -1,4 +1,4 @@
-import { randomId } from '../../src/module/helper';
+import { randomId } from '../../module/helper';
 import {
   initialState,
   rootReducer,
@@ -6,22 +6,23 @@ import {
   handleRequestSuccess,
   handleRequestFailed,
   handleRequestPending,
+  replaceState,
   setMessage,
   getState,
   setRemoves,
   handleRequestClean,
   handleRequestDirty,
-} from '../../src/redux/RequestReducer';
+} from '../RequestReducer';
 import {
   CLEAN,
   DIRTY,
   FAILED,
   initialRequest,
   PENDING,
-  REMOVE,
+  REMOVE, REPLACE,
   SUCCESS,
-} from '../../src/module/common';
-import { REQUEST_ACTION_TYPE } from '../../src/redux/common';
+} from '../../module/common';
+import { REQUEST_ACTION_TYPE } from '../common';
 
 
 describe('[RequestReducer]', () => {
@@ -50,7 +51,7 @@ describe('[RequestReducer]', () => {
   });
 
 
-  it('#setRemoves should set the proper flag for request state auto removal', () => {
+  it('#setRemoves should set the proper flag for request state auto removal on success', () => {
     action.payload.autoRemove = true;
     action.payload.autoRemoveOnSuccess = true;
     const rm = setRemoves(requestState, action.payload);
@@ -58,6 +59,17 @@ describe('[RequestReducer]', () => {
     expects(rm).to.be.a('object').that.include({ id });
     expects(rm.autoRemove).to.be.undefined();
     expects(rm.removeOnSuccess).to.be.true();
+  });
+
+
+  it('#setRemoves should set the proper flag for request state auto removal on failure', () => {
+    action.payload.autoRemove = true;
+    action.payload.autoRemoveOnFailure = true;
+    const rm = setRemoves(requestState, action.payload);
+
+    expects(rm).to.be.a('object').that.include({ id });
+    expects(rm.autoRemove).to.be.undefined();
+    expects(rm.removeOnFail).to.be.true();
   });
 
 
@@ -127,27 +139,44 @@ describe('[RequestReducer]', () => {
     expects(states).not.eql(states1)
   });
 
+  it('#removeRequestState should immutably reassign requestStates' +
+    ' if no request is found to remove', () => {
+    action.payload.id = "unknownId";
+    const states = removeRequestState(providerStateMock, action.payload);
+    const states1 = removeRequestState(providerStateMock, action.payload);
 
-  it('#handleRequestClean should immutably set a request state as `clean`', () => {
-    const states = handleRequestClean(providerStateMock, action.payload);
-    const states1 = handleRequestClean(providerStateMock, action.payload);
+    expects(Object.hasOwnProperty.call(states.data, action.payload.id)).to.be.false();
+    expects(states).to.not.eql(states1)
+  });
+
+
+  it('#handleRequestClean should only immutably set a request state as `clean`', () => {
+    const dirty = handleRequestDirty(providerStateMock, action.payload);
+    const old = getState(dirty.data,  action.payload.id);
+    const states = handleRequestClean(dirty, action.payload);
+    const states1 = handleRequestClean(dirty, action.payload);
     const req = getState(states.data, id);
 
     expects(req).to.be.an('object').that.includes({ id, clean: true });
+    expects({ ...req, clean: false}).to.be.eql(old)
     expects(states).not.eql(states1)
   });
 
-  it('#handleRequestDirty should immutably set a request state as not `clean`', () => {
+  it('#handleRequestDirty should only immutably set a request state as not `clean`', () => {
+    const old = getState(providerStateMock.data,  action.payload.id);
     const states = handleRequestDirty(providerStateMock, action.payload);
     const states1 = handleRequestDirty(providerStateMock, action.payload);
     const req = getState(states.data, id);
 
     expects(req).to.be.an('object').that.includes({ id, clean: false });
+    expects({ ...req, clean: true }).to.be.eql(old);
     expects(states).not.eql(states1)
   });
 
-  xit('#replaceState should replace old state with new given', () => {
+  it('#replaceState should replace old state with new given', () => {
+    const replaced = replaceState({}, { state: providerStateMock.data })
 
+    expects(replaced.data).to.be.eql(providerStateMock.data);
   });
 
   it('#rootReducer should return initial state on an undefined action', () => {
@@ -226,6 +255,26 @@ describe('[RequestReducer]', () => {
     const s1 = rootReducer(providerStateMock, action);
 
     expects(Object.hasOwnProperty.call(s.data, id)).to.be.false()
+    expects(s).not.eql(s1);
+  });
+
+  it('#rootReducer should immutably reduce a `remove` action on state', () => {
+    action.payload.status = REMOVE;
+
+    const s = rootReducer(providerStateMock, action);
+    const s1 = rootReducer(providerStateMock, action);
+
+    expects(Object.hasOwnProperty.call(s.data, id)).to.be.false()
+    expects(s).not.eql(s1);
+  });
+
+  it('#rootReducer should immutably reduce a `replace` action on state', () => {
+    action.payload.status = REPLACE;
+    action.payload.state = providerStateMock.data;
+
+    const s = rootReducer({}, action);
+    const s1 = rootReducer({}, action);
+
     expects(s).not.eql(s1);
   });
 });
