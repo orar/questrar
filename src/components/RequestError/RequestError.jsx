@@ -3,7 +3,10 @@ import React from 'react';
 import Popover from 'react-popover';
 import type { Node } from 'react';
 import type { RequestActions, RequestState } from '../../index';
-import { isFunc, isObj } from '../../module/helper';
+import { isFunc } from '../../module/helper';
+import PopoverContent from '../PopoverContent';
+import Banner from '../Banner';
+import { createChildren } from '../Common';
 import './RequestError.scss';
 
 type Props = {
@@ -13,7 +16,7 @@ type Props = {
   children: Array<Node> | Node,
   popoverOnFail?: boolean,
   onCloseFailure?: (data: any) => any,
-  passiveOnFail: boolean,
+  passiveOnFail?: boolean,
   inject?: boolean | (request: RequestState) => Object,
   className?: string
 }
@@ -44,88 +47,38 @@ class RequestError extends React.Component<Props, State> {
    */
   closePopover = () => {
     const { id, actions, onCloseFailure, request } = this.props;
-    const { open } = this.state;
-    // handle callback
-    if (open && isFunc(onCloseFailure)) {
-      onCloseFailure({ data: request, actions });
+
+    // handle onClose callback
+    if (request.clean) {
+      if (isFunc(onCloseFailure)) {
+        onCloseFailure({ data: request, actions });
+      }
+      if (request.autoRemove || request.removeOnFail) {
+        actions.remove(id);
+      } else { actions.dirty(id) }
     }
-    // remove request if set to autoRemove
-    if (open && (request.autoRemove || request.removeOnFail)) {
-      actions.remove(id);
-    } else { actions.dirty(id) }
+
     this.setState({ open: false });
   };
 
   /**
-   * Close popover on esc key press
-   * @param evt
-   */
-  keyClosePopover = (evt: Object) => {
-    if (evt.keyCode === 27) {
-      this.closePopover();
-    }
-  };
-
-  /**
-   * Recreates children if needed for request props injection
+   * Recreates children if inject is set true
    * @returns {Props.children}
    * @private
    */
-  children = () => {
-    const { children, request, inject, actions } = this.props;
-    const injection = { request: { data: request, actions }};
+  children = () => createChildren(this.props);
 
-    if (React.isValidElement(children)) {
-      // Transform requestState to child props via inject function
-      if (isFunc(inject)) {
-        const params = inject(injection.request);
-        const paramProps = isObj(params) ? params : { request: params };
-        // $FlowFixMe
-        return React.cloneElement(children, paramProps);
-      }
-      if (inject) { // $FlowFixMe
-        return React.cloneElement(children, injection);
-      }
-    }
-    return children;
-  };
-
-
-  /**
-   * Creates tooltip content
-   *
-   * @returns Tooltip
-   * @private
-   */
-  createContent = () => {
+  popoverContent = () => {
     const { request } = this.props;
-    let title;
-    if (request.message.title) {
-      title = React.isValidElement(request.message.title) ? request.message.title : (
-        <div className="q-popover-title-failed">
-          {request.message.title}
-        </div>
-      )
-    }
-
-    const message = !request.message.body ? request.message : (
-      <div className="q-popover-body-failed">
-        {request.message.body}
-      </div>
-    );
-
-    /* eslint-disable jsx-a11y/interactive-supports-focus */
     return (
-      <div
-        role="button"
-        onKeyPress={this.keyClosePopover}
+      <PopoverContent
+        message={request.message}
         className="q-popover-content-failed"
-        onClick={this.closePopover}
-      >
-        {title}
-        {message}
-      </div>
-    )
+        titleClassName="q-popover-title-failed"
+        bodyClassName="q-popover-body-failed"
+        onClose={this.closePopover}
+      />
+    );
   };
 
   render() {
@@ -134,12 +87,13 @@ class RequestError extends React.Component<Props, State> {
 
     if (popoverOnFail && request.message) {
       const classNames = 'requestFailurePopover ' + className;
+      const content = this.popoverContent();
 
       return (
         <Popover
           isOpen={open}
           preferPlace="right"
-          body={this.createContent()}
+          body={content}
           className={classNames}
         >
           {this.children()}
@@ -151,31 +105,12 @@ class RequestError extends React.Component<Props, State> {
       return this.children();
     }
 
-    if (React.isValidElement(request.message)) {
-      return request.message;
-    }
-
-    if (isObj(request.message)) {
-      return (
-        <div className="failureContainer">
-          {request.message.title}
-          {request.message.body}
-        </div>
-      );
-    }
-
-    if (request.message) {
-      return (
-        <div className="failureContainer">
-          {request.message}
-        </div>
-      );
-    }
-
     return (
-      <div className="failureContainer">
-        <div>An error occurred. Please try again later.</div>
-      </div>
+      <Banner
+        message={request.message}
+        className="failureContainer"
+        defaultMessage="An error occurred. Please try again later."
+      />
     );
   };
 }

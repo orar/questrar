@@ -13,6 +13,12 @@ const RenderProfile = ({ request }) => {
     request.actions.failed(id, 'Failed Intentionally');
   };
 
+  if (request.data.failed) {
+    return (
+      <div className="profileFailed">{request.data.message}</div>
+    );
+  }
+
   if (request.data.success) {
     const data = request.data.message;
     return (

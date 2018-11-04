@@ -1,6 +1,6 @@
-import { Request, Provider, withRequest } from '../src/index';
+import { Request, Provider, withRequest } from '../index';
 
-describe('(Entry) index', () => {
+describe('[Entry] index', () => {
   //
   it('Should export Request as a stateless component', () => {
     expects(Request).to.be.a('function')

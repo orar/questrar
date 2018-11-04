@@ -42,11 +42,7 @@ class RequestProvider extends React.PureComponent<Props, State> {
     componentDidMount() {
       const { stateProvider } = this.props;
       if (this.hasStore() && isFunc(stateProvider.observe)) {
-        stateProvider.observe((shouldUpdate) => {
-          if (shouldUpdate) {
-            this.forceUpdate();
-          }
-        });
+        stateProvider.observe(this.updateContextTree);
       }
     }
 
@@ -56,6 +52,16 @@ class RequestProvider extends React.PureComponent<Props, State> {
         stateProvider.release();
       }
     }
+
+  /**
+   * Force update component tree
+   * @param shouldUpdate
+   */
+  updateContextTree = (shouldUpdate: boolean) => {
+    if (shouldUpdate) {
+      this.forceUpdate();
+    }
+  };
 
   /**
    * Checks if provider has external request state store
@@ -210,9 +216,9 @@ class RequestProvider extends React.PureComponent<Props, State> {
       return this.props.stateProvider.updateRequest({ id, status: CLEAN });
     }
     const makeClean = (r) => {
-      /* eslint-disable no-param-reassign */
-      r.clean = true;
-      return r;
+      const req = r;
+      req.clean = true;
+      return req;
     };
     return this.applyStateChange(id)(makeClean);
   };
@@ -227,8 +233,9 @@ class RequestProvider extends React.PureComponent<Props, State> {
       return this.props.stateProvider.updateRequest({ id, status: DIRTY });
     }
     const makeClean = (r) => {
-      r.clean = false;
-      return r;
+      const req = r;
+      req.clean = false;
+      return req;
     };
     return this.applyStateChange(id)(makeClean)
   };

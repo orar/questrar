@@ -1,4 +1,4 @@
-import { RequestConsumerContext, RequestProviderContext } from '../../src/module/context'
+import { RequestConsumerContext, RequestProviderContext } from '../context'
 
 describe('[Context]', () => {
   it('Should export Context Consumer as `RequestConsumerContext`', () => {

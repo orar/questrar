@@ -3,8 +3,11 @@ import React from 'react';
 import type { Node } from 'react';
 import Popover from 'react-popover';
 import type { RequestState, RequestActions, RequestProp } from '../../index';
-import { isFunc, isObj, nonEmpty } from '../../module/helper';
+import { isFunc } from '../../module/helper';
+import PopoverContent from '../PopoverContent';
+import Banner from '../Banner';
 import './RequestSuccess.scss';
+import { createChildren } from '../Common';
 
 
 type Props = {
@@ -24,6 +27,7 @@ type State = {
   open: boolean
 }
 
+
 /**
  * Renders a successful request if popoverOnSuccess is set true or successReplace is set
  */
@@ -32,13 +36,9 @@ class RequestSuccess extends React.Component<Props, State> {
 
   state: State = { open: true };
 
-  defaultSuccessMessage = 'Successful';
-
-
   componentWillUnmount() {
     this.closePopover();
   }
-
 
   /**
    * Close tooltip
@@ -46,28 +46,17 @@ class RequestSuccess extends React.Component<Props, State> {
    */
   closePopover = () => {
     const { id, actions, onCloseSuccess, request } = this.props;
-    const { open } = this.state;
 
-    //  handle callback
-    if (open && isFunc(onCloseSuccess)) {
-      onCloseSuccess({ data: request, actions });
+    if (request.clean) {
+      if (isFunc(onCloseSuccess)) {
+        onCloseSuccess({ data: request, actions });
+      }
+      if (request.autoRemove || request.removeOnFail) {
+        actions.remove(id);
+      } else { actions.dirty(id) }
     }
-    //  remove request if set to autoRemove
-    if (open && (request.autoRemove || request.removeOnSuccess)) {
-      actions.remove(id);
-    } else { actions.dirty(id) }
+
     this.setState({ open: false });
-  };
-
-
-  /**
-   * Close popover on esc key press
-   * @param evt
-   */
-  keyClosePopover = (evt: Object) => {
-    if (evt.keyCode === 27) {
-      this.closePopover();
-    }
   };
 
   /**
@@ -75,55 +64,18 @@ class RequestSuccess extends React.Component<Props, State> {
    * @returns {Props.children}
    * @private
    */
-  children = () => {
-    const { children, request, inject, actions } = this.props;
-    const injection = { request: { data: request, actions }};
+  children = () => createChildren(this.props);
 
-    if (React.isValidElement(children)) {
-      //  Map requestState to child props via inject function
-      if (isFunc(inject)) {
-        const params = inject(injection.request);
-        const paramProps = isObj(params) ? params : { request: params };
-        //  $FlowFixMe
-        return React.cloneElement(children, paramProps);
-      }
-      if (inject) { // $FlowFixMe
-        return React.cloneElement(children, injection);
-      }
-    }
-    return children;
-  };
-
-  /**
-   * Creates tooltip content
-   *
-   * @returns {Tooltip}
-   * @private
-   */
-  createContent = () => {
+  popoverContent = () => {
     const { request } = this.props;
-    let title;
-    if (request.message.title) {
-      title = React.isValidElement(request.message.title) ? request.message.title : (
-        <div className="q-tooltip-title-success">
-          {request.message.title}
-        </div>
-      )
-    }
-
-    const message = request.message.body ? request.message.body : request.message;
-
-    /* eslint-disable jsx-a11y/interactive-supports-focus */
     return (
-      <div
-        role="button"
-        onKeyPress={this.keyClosePopover}
-        className="q-tooltip-content-success"
-        onClick={this.closePopover}
-      >
-        {title}
-        {message}
-      </div>
+      <PopoverContent
+        message={request.message}
+        className="q-popover-content-success"
+        titleClassName="q-popover-title-success"
+        bodyClassName="q-popover-body-success"
+        onClose={this.closePopover}
+      />
     )
   };
 
@@ -132,29 +84,24 @@ class RequestSuccess extends React.Component<Props, State> {
     const { open } = this.state;
 
     if (successReplace) {
-      if (React.isValidElement(request.message)) {
-        return request.message;
-      }
-
       return (
-        <div className="successContainer">
-          <div>
-            {nonEmpty(request.message) && !isObj(request.message) ? request.message
-              : this.defaultSuccessMessage
-            }
-          </div>
-        </div>
+        <Banner
+          message={request.message}
+          className="successContainer"
+        />
       );
     }
 
     if (popoverOnSuccess && request.message) {
       const classNames = 'requestSuccessPopover ' + className;
 
+      const content = this.popoverContent();
+
       return (
         <Popover
           isOpen={open}
           preferPlace="right"
-          body={this.createContent()}
+          body={content}
           className={classNames}
         >
           {this.children()}

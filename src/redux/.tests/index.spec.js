@@ -1,5 +1,5 @@
-import { createRequestState, createStateProvider, requestStateReducer } from '../../src/redux';
-import { REQUEST_ACTION_TYPE } from '../../src/redux/common';
+import { createRequestState, createStateProvider, requestStateReducer } from '../';
+import { REQUEST_ACTION_TYPE } from '../common';
 
 
 describe('[Redux Exports]', () => {

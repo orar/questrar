@@ -1,6 +1,6 @@
 {
   "name": "questrar-example",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Questrar example",
   "main": "index.js",
   "repository": "https://github.com/orarr/questrar",

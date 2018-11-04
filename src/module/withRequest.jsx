@@ -37,14 +37,12 @@ export default function withRequest(options?: RequestComponentOptions) {
 
         if (options) {
           //  options.id takes precedence over props.id
-          if (isFunc(options.id)) {
-            const propsId = options.id(this.props);
-            if (propsId) {
-              const reqIdList = Array.isArray(propsId) ? propsId : [propsId];
-              id = id.concat(reqIdList);
+          if (options.id) {
+            let idList = options.id;
+            if (isFunc(options.id)) {
+              idList = options.id(this.props);
             }
-          } else if (options.id) {
-            const optId = Array.isArray(options.id) ? options.id : [options.id];
+            const optId = Array.isArray(idList) ? idList : [idList];
             // $FlowFixMe
             id = id.concat(optId);
           }
@@ -99,6 +97,7 @@ export default function withRequest(options?: RequestComponentOptions) {
           if (nonEmpty(req)) {
             return req;
           }
+          // code never gonna reach here
           return Object.assign({}, initialRequest, { id: ids[0] });
         }
 

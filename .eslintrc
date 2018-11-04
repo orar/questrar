@@ -18,28 +18,27 @@
     }
   },
   "rules": {
+    "complexity": ["error", {"max": 10}],
+
     "no-extra-semi": 0,
     // disable semi colon
     "babel/semi": 0,
     "semi": 0,
 
-    "comma-dangle": 0,
-    // don't force es6 functions to include space before paren
-    "space-before-function-paren": 0,
+    "prefer-template": 0,
 
+    "comma-dangle": 0,
+
+    "space-before-function-paren": 0,
+    "object-curly-newline": 0,
     "object-curly-spacing": 0,
 
-    // allow specifying true explicitly for boolean props
-    "react/jsx-boolean-value": 0,
+    "import/no-named-as-default": 1,
 
-    "object-curly-newline": 0,
-
-    "react/require-default-props": 1,
-
+    "react/require-default-props": 0,
     "react/sort-comp": 0,
-
     "react/prop-types": 1,
+    "react/no-array-index-key": 1
 
-    "import/no-named-as-default": 1
   }
 }

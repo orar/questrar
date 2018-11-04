@@ -1,17 +1,16 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import RequestPending from '../../src/components/RequestPending';
-import Spinner from '../../src/components/Spinner/Spinner';
+import RequestPending from '../RequestPending';
+import Spinner from '../../../components/Spinner';
 
 
 describe('<RequestPending />', () => {
-  let color;
   let size;
   let wrapper;
 
   const createWrapper = () => {
     wrapper = shallow(
-      <RequestPending color={color} size={size} />
+      <RequestPending size={size} />
     )
   };
 

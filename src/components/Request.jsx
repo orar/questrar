@@ -7,8 +7,10 @@ import RequestError from './RequestError/RequestError';
 import RequestPending from './RequestPending/RequestPending';
 import RequestSuccess from './RequestSuccess';
 import withRequestSelector from '../module/withRequestSelector';
-import { isFunc, isObj } from '../module/helper';
+import { isFunc, nonEmpty } from '../module/helper';
+import { createChildren } from './Common';
 import './Request.scss';
+
 
 type Props = {
   id: string,
@@ -98,78 +100,44 @@ export const Request = ({
 
   className,
 }: Props) => {
-  invariant(id !== null && id !== undefined, 'No request state id is provided as a prop');
+  invariant(nonEmpty(id), 'No request state id is provided as a prop');
 
   const injection = { request: { data: request, actions } };
 
-  // if request isPending, replace child with loading element
-  if (request.pending && !passivePending) {
-    if (isFunc(renderPending)) {
-      return renderPending(request)
-    }
-    if (renderPending && isFunc(inject)) {
-      const params = inject(injection.request);
-      const paramProps = isObj(params) ? params : { request: params };
-      // $FlowFixMe
-      return React.cloneElement(renderPending, paramProps);
+  if (request.pending) {
+    // if request isPending, replace child with loading element
+    if (!passivePending) {
+      if (isFunc(renderPending)) {
+        return renderPending(injection.request)
+      }
+
+      if (nonEmpty(renderPending)) {
+        return createChildren({ children: renderPending, inject, request, actions })
+      }
+
+      return <RequestPending />;
     }
 
-    if (renderPending && inject) { // $FlowFixMe
-      return React.cloneElement(renderPending, injection);
-    }
-
-    if (React.isValidElement(renderPending)) {
-      return renderPending
-    }
-
-    return <RequestPending />;
-  }
-
-  // if request isPending, keep child as loading element. Dont replace child.
-  if (request.pending && passivePending) {
-    const singleChild = React.Children.count(children) === 1;
-
-    // Inject element with request state and actions if it's single child
-    if (singleChild && isFunc(inject)) {
-      // Render child but map request state to props
-      // of error component through inject function provided
-      const params = inject(injection.request);
-      const paramProps = isObj(params) ? params : { request: params };
-      // $FlowFixMe
-      return React.cloneElement(children, paramProps);
-    }
-    if (singleChild && inject) {
-      // Inject element if it's a child -- $FlowFixMe
-      return React.cloneElement(children, injection);
-    }
-    return children;
+    // if request isPending, keep child as loading element. Dont replace child.
+    return createChildren({ children, inject, request, actions });
   }
 
   // When request has failed
   if (request.failed) {
     // call onFailure callback
     if (isFunc(onFailure) && request.clean) {
-      onFailure(request);
+      onFailure(injection.request);
       actions.dirty(id);
-    }
-    // Render error
-    if (isFunc(renderOnFail)) {
-      return renderOnFail(request)
     }
 
     // Render custom error component but map request state to props
     // of error component through inject function
-    if (React.isValidElement(renderOnFail)) {
-      if (isFunc(inject)) {
-        const params = inject(injection.request);
-        const paramProps = isObj(params) ? params : { request: params };
-        // $FlowFixMe
-        return React.cloneElement(renderOnFail, paramProps);
+    if (nonEmpty(renderOnFail)) {
+      if (isFunc(renderOnFail)) {
+        return renderOnFail(injection.request)
       }
-      // $FlowFixMe
-      return inject ? React.cloneElement(renderOnFail, request) : renderOnFail;
+      return createChildren({ children: renderOnFail, inject, request, actions });
     }
-
 
     return (
       <RequestError
@@ -191,7 +159,7 @@ export const Request = ({
   if (request.success) {
     // call onFailure callback
     if (isFunc(onSuccess) && request.clean) {
-      onSuccess(request);
+      onSuccess(injection.request);
       actions.dirty(request.id);
     }
 
@@ -212,63 +180,36 @@ export const Request = ({
       );
     }
 
-    const singleChild = React.Children.count(children) === 1;
-    // Map requestState to child props via inject function
-    if (singleChild && isFunc(inject)) {
-      const params = inject(injection.request);
-      const paramProps = isObj(params) ? params : { request: params };
-      // $FlowFixMe
-      return React.cloneElement(children, paramProps);
-    }
-
-    if (inject && singleChild) {
-      // $FlowFixMe
-      return React.cloneElement(children, injection);
-    }
-
-    return children;
+    return createChildren({ children, inject, request, actions });
   }
 
-  // Until the request is successful, render a loading component
-  // Usually used when if there is no data the underlying component may have rendering issues
+  // At default requestState, all flags (pending, success, failed) are false.
+  // Until the requestState changes, render a loading component
+  // Usually used when if there is no data the
+  // underlying component may have rendering issues or even throw
   if (pendOnMount) {
-    if (isFunc(renderPendOnMount)) {
-      return renderPendOnMount(injection)
+    // `renderPendOnMount` is different from `renderPending`.
+    // This is rendered once until any of the flags is set true.
+    // That means `renderPendOnMount` is rendered once until requestState is reset
+    if (renderPendOnMount) {
+      if (isFunc(renderPendOnMount)) {
+        return renderPendOnMount(injection.request)
+      }
+      return renderPendOnMount;
     }
 
-    if (!renderPendOnMount && renderPending) {
+    // If `renderPendOnMount` is not set, fallback to the custom `renderPending`
+    if (renderPending) {
       if (isFunc(renderPending)) {
-        return renderPending(injection)
+        return renderPending(injection.request)
       }
       return renderPending;
-    }
-
-    if (React.isValidElement(renderPendOnMount)) {
-      return renderPendOnMount
     }
 
     return <RequestPending />;
   }
 
-  if (inject) {
-    const singleChild = React.Children.count(children) === 1;
-
-    // Map requestState to child props via inject function
-    if (singleChild && isFunc(inject)) {
-      const params = inject(injection.request);
-      const paramProps = isObj(params) ? params : { request: params };
-      // $FlowFixMe
-      return React.cloneElement(children, paramProps);
-    }
-
-    if (singleChild) {
-      // $FlowFixMe
-      return React.cloneElement(children, injection);
-    }
-  }
-
-  // After everything falls through, return children
-  return children;
+  return createChildren({ children, inject, request, actions });
 };
 
 export default withRequestSelector(Request);
