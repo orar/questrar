@@ -38,7 +38,7 @@
     "react/require-default-props": 0,
     "react/sort-comp": 0,
     "react/prop-types": 1,
-    "react/no-array-index-key": 1
-
+    "react/no-array-index-key": 1,
+    "react/no-unused-prop-types": 1
   }
 }
