@@ -141,7 +141,7 @@ Where you explicitly want to use the request state object, you can use the injec
 <Request id={stringOrNumberId} pendOnMount inject />
 ```
 
-`inject` can be a boolean or a function with signature `(request: RequestProp) => {"anyParam": params} | request`
+`inject` can be a boolean or a function with signature `(request: RequestProp) => {"anyProp": params} | request`
  which would be recieved by the underlying component.
  
 ```jsx harmony
@@ -272,8 +272,9 @@ export class AppMain extends React.Component<Props> {
      return (
       <RequestStateProvider stateProvider={stateProvider}>
         <App />
-     </RequestStateProvider>
-    }
+      </RequestStateProvider>
+     )
+   }
 }
 ```
 
@@ -288,7 +289,6 @@ import { createRequestState } from 'questrar/redux';
 
 export const fetchUserProfileState = createRequestState('REQUEST_ID'); //Create a requestState to begin with an id
 export const publishPostRequestState = createRequestState(); //Create a requestState with generated unique id
-export const likePostRequestState = createRequestState();
 ```
 
 In case you will always have access to `fetchUserProfileState`, 
@@ -340,7 +340,7 @@ export const UserProfile = ({ userId, data }) => {
  
  return (
   <Request
-   id={fetchUserProfileState() || fetchUserProfileState.id || fetchUserProfileState.toString()}
+   id={fetchUserProfileState() || fetchUserProfileState.id}
    inject={injector} 
   >
     <Button >Fetch Profile</Button>
@@ -374,7 +374,7 @@ API
 | Name | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
 |`id`               | `string`  | yes | `undefined` | Request id is used to track a request. Request id doesnt need to have a request state. If no request state is found, a default state is represented |
-|`inject`           | `boolean` or `(requestProp) => object` | no | `false` | If set as true, the request state would be injected into the underlying component as `{ request: requestState }`. If set as a function, the function would receive the request state and return a typeof object which would then be added to the underlying component props. If function output typeof is not object, the resulting output would be `{ request: output }` |
+|`inject`           | `boolean` or `(requestProp) => object` | no | `undefined` | If set as true, the request state would be injected into the underlying component as `{ request: requestState }`. If set as a function, the function would receive the request state and return a typeof object which would then be added to the underlying component props. If function output typeof is not object, the resulting output would be `{ request: output }` |
 |`pendOnMount`   | `boolean` | no | `false` | Render a loading/pending element immediately when component is mounted until request has failed or successful. Useful if the underlying component will throw error without data |
 |`passivePending`   | `boolean` | no | `false` | Do not show any signs of pending request. Render the underlying component (eg. Button) as a pending element instead of a loading icon. |
 |`renderPendOnMount`    | `Node` | no | Loading icon | If `pendOnMount` is set true and `pendOnMount` is provided, then `renderPendOnMount` would be rendered. Thus, `renderPendOnMount` renders once and only when `pendOnMount` is set |
