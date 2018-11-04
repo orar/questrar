@@ -5,7 +5,7 @@ esm/
 lib/
 coverage/
 docs/medium.md
-size-snapshot.json
+.size-snapshot.json
 *.log
 
 
