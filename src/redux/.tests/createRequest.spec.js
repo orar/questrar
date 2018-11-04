@@ -4,7 +4,7 @@ import { REQUEST_ACTION_TYPE } from '../common';
 import {FAILED, PENDING, REMOVE, SUCCESS, DIRTY, CLEAN} from '../../module/common';
 import createRequest from '../createRequest';
 
-describe('[createRequest]', () => {
+describe('[Function] createRequest', () => {
   let id;
   let requestState;
 

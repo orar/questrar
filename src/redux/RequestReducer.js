@@ -65,11 +65,29 @@ export function getState(state: ProviderRequestState, id: string | number) {
  * @param action
  */
 export function setMessage(state: RequestState, action: Object) {
+  const s = state;
   if (action.message) {
-    /* eslint-disable no-param-reassign */
-    state.message = action.message;
+    s.message = action.message;
   }
-  return state;
+  return s;
+}
+
+export function handleRequest (
+  transformState: (request: RequestState, action: Object) => RequestState
+): (request: RequestState, action: Object) => ReduxRequestState {
+  return (state: ReduxRequestState, action: Object): ReduxRequestState => {
+    invariant(nonEmpty(action.id), 'request action missing id field');
+
+    /* eslint-disable prefer-destructuring */
+    const id = action.id;
+    const stateId = Symbol(id);
+
+    const next = getState(state.data, id);
+    const nextReq = transformState(next, action);
+
+    const data = Object.assign({}, state.data, { [id]: nextReq });
+    return { id: stateId, data };
+  }
 }
 
 /**
@@ -78,20 +96,13 @@ export function setMessage(state: RequestState, action: Object) {
  * @returns {{} & RequestState}
  */
 export function handleRequestPending (state: ReduxRequestState, action: Object): ReduxRequestState {
-  invariant(nonEmpty(action.id), 'request action missing id field');
-
-  /* eslint-disable prefer-destructuring */
-  const id = action.id;
-  const stateId = Symbol(id);
-
-  const nextReq = resetFlags(getState(state.data, id));
-  nextReq.pending = true;
-  nextReq.clean = true;
-  setMessage(nextReq, action);
-
-  const data = Object.assign({}, state.data, { [id]: nextReq });
-  return { id: stateId, data };
+  return handleRequest((r, a) => {
+    const next = resetFlags(r);
+    next.pending = true;
+    return setMessage(next, a);
+  })(state, action)
 }
+
 
 /**
  * Updates a request to clean state
@@ -99,16 +110,11 @@ export function handleRequestPending (state: ReduxRequestState, action: Object):
  * @returns {{} & RequestState}
  */
 export function handleRequestClean (state: ReduxRequestState, action: Object): ReduxRequestState {
-  invariant(nonEmpty(action.id), 'request action missing id field');
-
-  const id = action.id;
-  const stateId = Symbol(id);
-
-  const nextReq = getState(state.data, id);
-  nextReq.clean = true;
-
-  const data = Object.assign({}, state.data, { [id]: nextReq });
-  return { id: stateId, data };
+  return handleRequest((r) => {
+    const next = r;
+    next.clean = true;
+    return next;
+  })(state, action);
 }
 
 /**
@@ -117,16 +123,11 @@ export function handleRequestClean (state: ReduxRequestState, action: Object): R
  * @returns {{} & RequestState}
  */
 export function handleRequestDirty (state: ReduxRequestState, action: Object): ReduxRequestState {
-  invariant(nonEmpty(action.id), 'request action missing id field');
-
-  const id = action.id;
-  const stateId = Symbol(id);
-
-  const nextReq = getState(state.data, id);
-  nextReq.clean = false;
-
-  const data = Object.assign({}, state.data, { [id]: nextReq });
-  return { id: stateId, data };
+  return handleRequest((r) => {
+    const next = r;
+    next.clean = false;
+    return next;
+  })(state, action);
 }
 
 
@@ -136,20 +137,12 @@ export function handleRequestDirty (state: ReduxRequestState, action: Object): R
  * @returns {{} & RequestState}
  */
 export function handleRequestFailed (state: ReduxRequestState, action: Object) {
-  invariant(nonEmpty(action.id), 'request state action missing id field');
-
-  const id = action.id;
-  const stateId = Symbol(id);
-
-
-  const nextReq = resetFlags(getState(state.data, id));
-  nextReq.failed = true;
-  nextReq.failureCount += 1;
-  setMessage(nextReq, action);
-  setRemoves(nextReq, action);
-
-  const data = Object.assign({}, state.data, { [id]: nextReq });
-  return { id: stateId, data };
+  return handleRequest((r, a) => {
+    const next = resetFlags(r);
+    next.failed = true;
+    next.failureCount += 1;
+    return setRemoves(setMessage(next, a), a);
+  })(state, action);
 }
 
 /**
@@ -160,19 +153,12 @@ export function handleRequestFailed (state: ReduxRequestState, action: Object) {
  * @returns {{} & RequestState}
  */
 export function handleRequestSuccess (state: ReduxRequestState, action: Object): ReduxRequestState {
-  invariant(nonEmpty(action.id), 'request state action missing id field');
-
-  const id = action.id;
-  const stateId = Symbol(id);
-
-  const nextReq = resetFlags(getState(state, id));
-  nextReq.success = true;
-  nextReq.successCount += 1;
-  setMessage(nextReq, action);
-  setRemoves(nextReq, action);
-
-  const data = Object.assign({}, state.data, { [id]: nextReq });
-  return { id: stateId, data };
+  return handleRequest((r, a) => {
+    const next = resetFlags(r);
+    next.success = true;
+    next.successCount += 1;
+    return setRemoves(setMessage(next, a), a);
+  })(state, action);
 }
 
 

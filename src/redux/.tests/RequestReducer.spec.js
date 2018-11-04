@@ -12,6 +12,7 @@ import {
   setRemoves,
   handleRequestClean,
   handleRequestDirty,
+  handleRequest,
 } from '../RequestReducer';
 import {
   CLEAN,
@@ -92,6 +93,27 @@ describe('[RequestReducer]', () => {
     const state = getState(providerStateMock.data, strangeId);
 
     expects(state.id).to.equal(strangeId);
+  });
+
+  it('#handleRequest should handle request using provided transformer function', () => {
+    const transformer = jest.fn((r, a) => r);
+    handleRequest(transformer)(providerStateMock, action.payload)
+    const state = getState(providerStateMock.data, action.payload.id);
+
+    expect(transformer).toHaveBeenNthCalledWith(1, state, action.payload)
+  });
+
+  it('#handleRequest should handle request immutably', () => {
+    const transformer = (r, a) => { r.success = true; return r };
+
+    const states = handleRequest(transformer)(providerStateMock, action.payload);
+    const states1 = handleRequest(transformer)(providerStateMock, action.payload);
+    const req = getState(states.data, action.payload.id);
+
+    expects(req).to.be.an('object').that.deep.includes({
+      id, failed: false, success: true, pending: false,
+    });
+    expects(states).not.eql(states1)
   });
 
   it('#handleRequestPending should immutably handle a request `pending` action', () => {

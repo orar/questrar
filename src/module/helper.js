@@ -61,6 +61,7 @@ export const resetRequestFlags = (req: RequestState) => {
   r.pending = false;
   r.success = false;
   r.failed = false;
+  r.clean = true;
   if (r.message) {
     delete r.message
   }
