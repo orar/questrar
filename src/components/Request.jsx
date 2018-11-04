@@ -210,7 +210,6 @@ export const Request = ({
   }
 
   return createChildren({ children, inject, request, actions });
-
 };
 
 export default withRequestSelector(Request);

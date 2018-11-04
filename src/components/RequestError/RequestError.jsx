@@ -3,7 +3,7 @@ import React from 'react';
 import Popover from 'react-popover';
 import type { Node } from 'react';
 import type { RequestActions, RequestState } from '../../index';
-import { isFunc, nonEmpty } from '../../module/helper';
+import { isFunc } from '../../module/helper';
 import PopoverContent from '../PopoverContent';
 import Banner from '../Banner';
 import { createChildren } from '../Common';

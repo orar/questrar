@@ -8,7 +8,6 @@ type Props = {
   titleClassName?: string,
   bodyClassName?: string,
   onClose: () => void,
-  escToClose?: boolean,
 }
 
 /**

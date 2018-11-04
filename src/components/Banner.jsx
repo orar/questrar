@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { nonEmpty,isObj } from '../module/helper';
+import { nonEmpty, isObj } from '../module/helper';
 
 type Props = {
   message?: any | { title: any, body: any },

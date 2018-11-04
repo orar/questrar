@@ -134,12 +134,6 @@ class RequestProvider extends React.PureComponent<Props, State> {
     this.putRequestState(data)
   };
 
-  updateProviderState = (action) => {
-    if (this.hasStore()) {
-    }
-    return null;
-  };
-
   /**
    * Updates a request to successful and increments the success count of the particular request
    * @param id Request Id

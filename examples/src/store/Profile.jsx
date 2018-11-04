@@ -15,7 +15,7 @@ const RenderProfile = ({ request }) => {
 
   if (request.data.failed) {
     return (
-      <div className='profileFailed'>{request.data.message}</div>
+      <div className="profileFailed">{request.data.message}</div>
     );
   }
 
