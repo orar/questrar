@@ -25,23 +25,19 @@ export const arrayValuesOfKeys = (
   invariant(nonEmpty(obj), 'No object has been provided for keys extraction');
   invariant(nonEmpty(keys), 'There are no keys provided for values extraction');
 
-  if (typeof keys === 'string') {
-    if (isFunc(getValue)) {
-      return [getValue(keys, obj)];
-    }
-    if (Object.hasOwnProperty.call(obj, keys)) {
-      return [obj[keys]];
-    }
-    return [];
+  let keyList = keys;
+
+  if (!Array.isArray(keyList)) {
+    keyList = [keys];
   }
 
   const result = [];
-  for (let i = 0; i < keys.length; i += 1) {
+  for (let i = 0; i < keyList.length; i += 1) {
     if (isFunc(getValue)) {
-      const value = getValue(keys[i], obj);
+      const value = getValue(keyList[i], obj);
       result.push(value);
-    } else if (Object.hasOwnProperty.call(obj, keys[i])) {
-      result.push(obj[keys[i]]);
+    } else if (Object.hasOwnProperty.call(obj, keyList[i])) {
+      result.push(obj[keyList[i]]);
     }
   }
 

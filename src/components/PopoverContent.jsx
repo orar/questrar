@@ -45,8 +45,6 @@ const PopoverContent = ({
 
   if (msgObject) {
     messageBody = message.body
-  } else {
-    messageBody = null
   }
 
   if (messageBody && !React.isValidElement(messageBody)) {
