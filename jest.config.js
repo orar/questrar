@@ -32,7 +32,7 @@ module.exports = {
   testRegex: '/src/.*?__tests?__/.*?\\.(test|spec)\\.jsx?$',
   testURL: 'http://localhost:3000',
 
-  collectCoverage: true,
+  collectCoverage: false,
   collectCoverageFrom: [
     'src/**/*.js',
     'src/**/*.jsx'
