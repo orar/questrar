@@ -3,9 +3,9 @@
 Questrar is a simple React request state tracker for managing states of requests.
 
 [![npm version](https://badge.fury.io/js/questrar.svg)](https://badge.fury.io/js/questrar)
-[![Maintainability](https://api.codeclimate.com/v1/badges/f844416f4e3c15b8ae22/maintainability)](https://codeclimate.com/github/orarr/questrar/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/f844416f4e3c15b8ae22/test_coverage)](https://codeclimate.com/github/orarr/questrar/test_coverage)
-[![Build Status](https://travis-ci.org/orarr/questrar.svg?branch=master)](https://travis-ci.org/orarr/questrar)
+[![Maintainability](https://api.codeclimate.com/v1/badges/f844416f4e3c15b8ae22/maintainability)](https://codeclimate.com/github/orar/questrar/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/f844416f4e3c15b8ae22/test_coverage)](https://codeclimate.com/github/orar/questrar/test_coverage)
+[![Build Status](https://travis-ci.org/orar/questrar.svg?branch=master)](https://travis-ci.org/orar/questrar)
 
 Installation
 --
@@ -16,7 +16,7 @@ yarn add questrar
 npm install questrar
 ```
 
-> For testing Request component, see [questrar-test](http://github.com/orarr/questrar-test)
+> For testing Request component, see [questrar-test](http://github.com/orar/questrar-test)
 
 
 And? Why?
