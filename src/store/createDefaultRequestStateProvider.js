@@ -4,7 +4,7 @@ import RequestSubscription from './RequestSubscription';
 import type { RequestStoreState } from '../index';
 import createRequestStore from './Store';
 
-export default function () {
+export default function createDefaultRequestStateProvider () {
   const initialState: RequestStoreState = {
     id: Symbol('default'),
     data: {}
