@@ -1,7 +1,8 @@
 import configureStore from 'redux-mock-store'
-import { randomId } from '../../module/helper';
-import createStateProvider, { getRawState } from '../createStateProvider';
+import randomId  from '../../utils/randomId';
+import createStateProvider, { getProviderState } from '../createStateProvider';
 import { REQUEST_ACTION_TYPE } from '../common';
+import RequestSubscription from '../../store/RequestSubscription';
 import {
   CLEAN,
   DIRTY,
@@ -9,16 +10,18 @@ import {
   initialRequest,
   PENDING,
   REMOVE,
-  REPLACE,
   SUCCESS
-} from '../../module/common';
+} from '../../utils/common';
+import { initialState } from '../RequestReducer';
 
 describe('[createStateProvider]', () => {
   let id;
+  let idList;
   let store;
   let mockStore;
   let stateProvider;
   let initialState;
+  let initialData;
 
   const createStore = () => {
     mockStore = configureStore([]);
@@ -26,9 +29,18 @@ describe('[createStateProvider]', () => {
     stateProvider = createStateProvider(store);
   };
 
+  const mockProviderState = () => {
+    initialData = idList.reduce((acc, id) => {
+      const req = { id, ...initialRequest };
+      return {...acc, [id]: req };
+    }, {});
+    initialState ={ [REQUEST_ACTION_TYPE]: { id: Symbol(id), data: initialData }};
+  };
+
   beforeEach(() => {
-    id = randomId();
-    initialState = {};
+    idList = Array(10).fill(1).map(randomId);
+    id = idList[0];
+    mockProviderState();
     createStore();
   });
 
@@ -39,25 +51,11 @@ describe('[createStateProvider]', () => {
 
   it('Should have the provider properties', () => {
     expects(stateProvider).to.be.an('object').that.has.all
-      .keys(['getState', 'observe', 'path', 'release', 'updateRequest', 'putState']);
-  });
-
-
-  it('Should set arbitrary path of request states if provided', () => {
-    const arbPath = 'new.state.path';
-    stateProvider = createStateProvider(store, arbPath);
-    /* eslint-disable prefer-template */
-    const expectedPath = arbPath + '.' + REQUEST_ACTION_TYPE;
-    expects(stateProvider.path).to.be.equal(expectedPath);
+      .keys(['name', 'getState', 'observe', 'updateRequest']);
   });
 
   it('Should get state', () => {
-    const id = randomId()
-    const data = { [id]: { ...initialRequest, id} }
-    initialState = { [REQUEST_ACTION_TYPE]: { id: Symbol(id), data }};
-    createStore();
-
-    expects(stateProvider.getState()).to.be.eql(data)
+    expects(stateProvider.getState()).to.be.eql(initialData)
   });
 
   it('Should return an empty state if state doesnt exist or data is empty', () => {
@@ -77,7 +75,7 @@ describe('[createStateProvider]', () => {
     initialState = { x: { y: { z: requestState }}};
 
     createStore();
-    expects(getRawState(store, path)).to.be.eql(requestState[REQUEST_ACTION_TYPE])
+    expects(getProviderState(store, path, 'Test.State.Provider')).to.be.eql(requestState[REQUEST_ACTION_TYPE])
   });
 
 
@@ -88,15 +86,8 @@ describe('[createStateProvider]', () => {
     initialState = { x: { y: { z: requestState }}};
 
     createStore();
-    expects(() => getRawState(store, path)).to.throw(/'v' does not exist/)
+    expects(() => getProviderState(store, path, 'Test.State.Provider')).to.throw(/'v' does not exist/)
   });
-
- it('Should put replace state', () => {
-   const newState = { [id]: { ...initialRequest, id}  };
-   const expectedAction = { type: REPLACE, payload: newState };
-   stateProvider.putState(newState);
-   expects(store.getActions()[0]).to.be.eql(expectedAction)
- });
 
  it('Should subscribe to store', () => {
    const updateTree = () => true;
@@ -104,16 +95,6 @@ describe('[createStateProvider]', () => {
    stateProvider.observe(updateTree);
 
    expect(store.subscribe).toHaveBeenCalledTimes(1)
- });
-
- it('Should unsubscribe to store on call `release`', () => {
-   const updateTree = () => true;
-   const unsubscribe = jest.fn()
-   store.subscribe = jest.fn(unsubscribe)
-   stateProvider.observe(updateTree);
-   stateProvider.release();
-
-   expect(unsubscribe).toHaveBeenCalledTimes(1)
  });
 
 
@@ -184,8 +165,5 @@ describe('[createStateProvider]', () => {
 
      expects(store.getActions()).to.be.empty()
    });
-
-
-
  });
 });

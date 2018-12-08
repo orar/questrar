@@ -30,20 +30,34 @@ module.exports = () => ({
         exclude: /node_modules/,
       },
       {
+        test: [/\.(bmp|gif|jpe?g|png)$/],
+        loader: require.resolve("url-loader"),
+        options: {
+          limit: 10000,
+          name: "static/media/[name].[hash:8].[ext]",
+        },
+      },
+      {
+        test: [/\.(eot|ttf|svg|woff|woff2)$/],
+        loader: require.resolve("file-loader"),
+      },
+      {
         test: /\.s?css$/,
         use: [
           'style-loader',
           {
             loader: 'css-loader',
+
+          },
+          'resolve-url-loader',
+          'postcss-loader',
+          {
+            loader: 'sass-loader',
             options: {
-              importLoaders: 2,
+              sourcemap: true,
             },
           },
-          'postcss-loader',
-          'sass-loader',
         ],
-        exclude: /node_modules/,
-
       },
     ],
   },

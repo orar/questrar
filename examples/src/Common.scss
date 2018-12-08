@@ -1,0 +1,158 @@
+
+
+.contextStateAppContainer {
+
+}
+
+.requestButton {
+
+}
+
+
+.deleteButtonContainer {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  width: 50rem;
+  padding: 3rem;
+
+  .warning {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border-radius: .6rem;
+    border: 1px solid red;
+    background-color: rgba(255, 205, 206, 0.45);
+    min-height: 3rem;
+  }
+
+  .warnBold {
+    font-weight: 600;
+  }
+
+  .deleteStatusWrap {
+    margin: 2rem auto;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .deleteStatus {
+    margin: 2rem auto;
+    display: flex;
+    justify-content: center;
+  }
+
+  .warnButtonWrap {
+    margin-top: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    position: relative;
+  }
+
+  .deleteButton {
+    border: 1px solid #ccc;
+    background-color: #ffc8ca;
+    padding: .5rem;
+    border-radius: .2rem;
+    width: 100%;
+  }
+
+
+  .redBack {
+    background-color: #ffc8ca;
+  }
+}
+
+
+.postContainer {
+  width: 450px;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+
+  .postsListWrap {
+    display: flex;
+    flex-flow: column nowrap;
+    width: 100%;
+
+
+    .postItemContainer {
+      display: flex;
+      flex-flow: column nowrap;
+      width: 100%;
+      border: 1px solid #f1f1f1;
+      margin: 2px;
+      border-radius: 3px;
+
+      .postItemHeader {
+        height: 25px;
+        background-color: #f9f9f9;
+        width: 100%;
+        padding: 0 5px;
+
+      }
+
+      .postItemBody {
+        width: 100%;
+        padding: 5px 5px 5px 10px;
+
+      }
+    }
+  }
+  .postActions {
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+
+  }
+  .textArea {
+    margin: 20px auto;
+    width: 100%;
+    border-radius: 3px;
+    border: 1px solid #f1f1f1;
+
+  }
+
+  .postButton {
+    margin: 20px auto;
+
+    width: 100%;
+
+  }
+}
+
+
+.requestStateContainer {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  width: 100%;
+  margin-top: 100px;
+
+  .stateHeader {
+    width: 100%;
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  .pending {
+    width: 100%;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+  }
+  .pendingButtonWrap {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .pendButton {
+    margin: 20px;
+  }
+}

@@ -19,7 +19,7 @@ describe('<Spinner />', () => {
 
   it('Should render a loading gear', () => {
     expects(wrapper.is('div.sk-fading-circle')).to.be.true();
-    expects(wrapper.children()).to.be.lengthOf(11);
+    expects(wrapper.children()).to.be.lengthOf(12);
   });
 
   it('Should set color and size of spinner', () => {

@@ -1,7 +1,7 @@
 import { isFSA } from 'flux-standard-action';
-import { randomId } from '../../module/helper';
+import randomId  from '../../utils/randomId';
 import { REQUEST_ACTION_TYPE } from '../common';
-import {FAILED, PENDING, REMOVE, SUCCESS, DIRTY, CLEAN} from '../../module/common';
+import {FAILED, PENDING, REMOVE, SUCCESS, DIRTY, CLEAN} from '../../utils/common';
 import createRequest from '../createRequest';
 
 describe('[Function] createRequest', () => {
@@ -18,6 +18,10 @@ describe('[Function] createRequest', () => {
     expects(createRequest).to.be.a('function');
   });
 
+  it('Should return a function', () => {
+    expects(requestState).to.be.a('function');
+  });
+
   it('Should create an random id if no id is provided by user', () => {
     requestState = createRequest();
     const anotherState = createRequest();
@@ -25,10 +29,11 @@ describe('[Function] createRequest', () => {
   });
 
   it('should be able to extract id of the request', () => {
-    expects(requestState).to.be.a('function');
     expects(requestState()).to.be.a('string').that.is.equal(id);
     expects(requestState.id).to.be.a('string').that.is.equal(id);
-    expects(requestState.toString()).to.be.equal(id);
+
+    const randRequestState = createRequest();
+    expects(randRequestState()).to.be.equal(randRequestState.id)
   });
 
 

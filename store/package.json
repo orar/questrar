@@ -1,0 +1,7 @@
+{
+  "name": "questrar/store",
+  "private": true,
+  "main": "../lib/questrar-store-cjs.js",
+  "module": "../esm/questrar-store-esm.js",
+  "jsnext:main": "../esm/questrar-store-esm.js"
+}

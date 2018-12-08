@@ -1,54 +1,33 @@
 // @flow
-import type { RequestState, CreateRequestOptions, CreateRequest } from '../index';
-import { SUCCESS, FAILED, PENDING, REMOVE, CLEAN, DIRTY } from '../module/common';
+import type { RequestState, CreateRequest, RequestId } from '../index';
+import { SUCCESS, FAILED, PENDING, REMOVE, CLEAN, DIRTY } from '../utils/common';
 import { REQUEST_ACTION_TYPE } from './common';
-import { isNumber, nonEmpty, randomId } from '../module/helper';
-
-
-/**
- * Configuration type for request action
- * @experimental
- */
-export type RequestOptions = {
-  autoRemove: boolean,
-  inject: (r: RequestState) => Object,
-}
+import nonEmpty from '../utils/nonEmpty'
+import randomId from '../utils/randomId'
+import isRequestId from '../utils/isRequestId'
 
 
 /**
  * Creates a redux requestState action to update request state in redux store
  *
  * @param id
- * @param options
  * @returns {function(Object=, string=, RequestOptions=)}
  */
-export function createRequest (
-  id?: string | number,
-  options?: CreateRequestOptions,
-): CreateRequest {
+export function createRequest (id?: RequestId): CreateRequest {
   const reduxActionType = REQUEST_ACTION_TYPE;
 
-  const isStatic = nonEmpty(id) && (typeof id === 'string' || isNumber(id));
-  const hasOptions = nonEmpty(options);
-
-  const autoRemove = hasOptions && options.autoRemove;
-  const autoRemoveOnSuccess = hasOptions && options.autoRemoveOnSuccess;
-  const autoRemoveOnFailure = hasOptions && options.autoRemoveOnFailure;
-
-  // $FlowFixMe
-  const requestId: string|number = isStatic ? id : randomId();
-
+  const requestId: RequestId = isRequestId(id) ? id : randomId();
 
   /**
-   * Creates an action to update a request in redux store
-   * @param rId Request id
+   * Creates an FSA action to update a request in redux store
+   * @param reqId Request id
    * @param status Update status of request
    * @param message Optional message for current update
    * @returns {{type: string, id: (string|number), status: string}}
    */
-  const initAction = (rId: string | number, status: string, message?: any) => {
+  const initAction = (reqId: RequestId, status: string, message?: any) => {
     const action = { type: reduxActionType };
-    const payload = { id: rId, status };
+    const payload = { id: reqId, status };
     if (nonEmpty(message)) {
       payload.message = message
     }
@@ -68,38 +47,17 @@ export function createRequest (
   /**
    * Creates a request successful action
    * @param message Optional message for update
-   * @param remove Removes request on close success
    * @returns FSA
    */
-  const success = (message?: any, remove?: boolean) => {
-    const action = initAction(requestId, SUCCESS, message);
-    const { payload } = action;
-    if (nonEmpty(remove)) {
-      payload.autoRemoveOnSuccess = remove
-    } else if (autoRemoveOnSuccess || autoRemove) {
-      payload.autoRemoveOnSuccess = true
-    }
-
-    return Object.assign({}, action, { payload })
-  };
+  const success = (message?: any) => initAction(requestId, SUCCESS, message);
 
   /**
    *
    * Creates a request failed action
    * @param message Optional message for update
-   * @param remove Removes request on close failure
    * @returns {{type: string, id: (string|number), status: string} & {autoRemove: boolean}}
    */
-  const failed = (message?: any, remove?: boolean) => {
-    const action = initAction(requestId, FAILED, message);
-    const { payload } = action;
-    if (nonEmpty(remove)) {
-      payload.autoRemoveOnFailure = remove
-    } else if (autoRemoveOnFailure || autoRemove) {
-      payload.autoRemoveOnFailure = true
-    }
-    return Object.assign({}, action, { payload })
-  };
+  const failed = (message?: any) => initAction(requestId, FAILED, message);
 
   /**
    * Creates action to set request as clean
@@ -123,24 +81,22 @@ export function createRequest (
    * Action binder function
    * @returns {*}
    */
-  function actionCreator () {
+  function requestAction () {
     return requestId;
   }
 
-  actionCreator.toString = () => requestId;
+  requestAction.id = requestId;
 
-  actionCreator.id = requestId;
+  requestAction.pending = pending;
+  requestAction.success = success;
+  requestAction.failed = failed;
 
-  actionCreator.pending = pending;
-  actionCreator.success = success;
-  actionCreator.failed = failed;
+  requestAction.clean = clean;
+  requestAction.dirty = dirty;
 
-  actionCreator.clean = clean;
-  actionCreator.dirty = dirty;
+  requestAction.remove = remove;
 
-  actionCreator.remove = remove;
-
-  return actionCreator;
+  return requestAction;
 }
 
 
