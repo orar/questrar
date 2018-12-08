@@ -1,5 +1,5 @@
 // @flow
-import nonEmpty from '../utils/nonEmpty'
+import nonEmpty from './nonEmpty'
 
 /**
  * Overrides Requests props with child props

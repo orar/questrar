@@ -1,8 +1,6 @@
 // @flow
 import React from 'react';
 
-export const initialRequestContextState = {}
-
 const RequestContext = React.createContext();
 
 //  React Context provider and consumer

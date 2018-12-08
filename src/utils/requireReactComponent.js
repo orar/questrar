@@ -1,7 +1,6 @@
 // @flow
 import invariant from 'invariant';
 import isFunc from './isFunc';
-import getComponentName from './getComponentName';
 
 /**
  * Validates or throws if a argument is not a React component

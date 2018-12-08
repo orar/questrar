@@ -23,7 +23,7 @@ const addTodoReducer = (state, action) => {
 };
 
 const updateTodoReducer = (state, action) => {
-  const data = state.data.map(t => t.id === action.payload.id ? action.payload : t);
+  const data = state.data.map(t => (t.id === action.payload.id ? action.payload : t));
   return { data };
 };
 

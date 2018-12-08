@@ -39,7 +39,9 @@
     "story": "start-storybook -p 9001 -c .storybook"
   },
   "peerDependencies": {
-    "prop-types": "^15.6.2"
+    "prop-types": "^15.6.2",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3"
   },
   "externals": {
     "prop-types": "PropTypes",

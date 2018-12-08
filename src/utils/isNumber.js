@@ -8,5 +8,3 @@
 export default function isNumber (num: any):%checks {
   return typeof num === 'number';
 }
-
-

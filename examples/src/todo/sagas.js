@@ -3,7 +3,7 @@ import 'regenerator-runtime/runtime';
 import { call, put, take, spawn, all } from 'redux-saga/effects';
 import createSagaMiddleware, { delay } from 'redux-saga';
 import { fetchTodoState, addTodoState } from './requestStates';
-import { fetchTodo, saveTodo, updateTodo, addTodo, removeAllTodo } from './reducers';
+import { fetchTodo, saveTodo, addTodo } from './reducers';
 import todos from './TodoListSample';
 
 export const sagaMiddleware = createSagaMiddleware();

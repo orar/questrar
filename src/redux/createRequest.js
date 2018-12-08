@@ -1,5 +1,5 @@
 // @flow
-import type { RequestState, CreateRequest, RequestId } from '../index';
+import type { CreateRequest, RequestId } from '../index';
 import { SUCCESS, FAILED, PENDING, REMOVE, CLEAN, DIRTY } from '../utils/common';
 import { REQUEST_ACTION_TYPE } from './common';
 import nonEmpty from '../utils/nonEmpty'

@@ -1,7 +1,6 @@
 // @flow
 import 'regenerator-runtime/runtime';
 import { take, put } from 'redux-saga/effects';
-import { createRequestState } from 'questrar/redux';
 import createSagaMiddleware, { delay } from 'redux-saga';
 import { fetchProfileState } from './createStore';
 
