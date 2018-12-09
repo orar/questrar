@@ -10,8 +10,8 @@ In cases where we want to make fetch requests outside the component
 
 
 > Note: the following snippets are using **[Redux](https://redux-js.org)** store.
- You can create your custom storage implementation with [createStateProvider](./createStateProvider.md) 
- You can checkout actual implementation for [ReduxStateProvider](../src/redux/createStateProvider.js). 
+ You can create your custom storage implementation with [createStateProvider](docs/createStateProvider.md) 
+ You can checkout actual implementation for [ReduxStateProvider](src/redux/createStateProvider.js). 
 
 
 With Redux, since we are going to store all of the request states in redux, we need to add Redux reducer to our root reducers.
