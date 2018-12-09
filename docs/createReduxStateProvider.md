@@ -1,5 +1,5 @@
 
-###Working with Redux
+### Working with Redux
 
 
 In cases where we want to make fetch requests outside the component
@@ -9,8 +9,8 @@ In cases where we want to make fetch requests outside the component
  This actually depends on the state provider implementation
 
 
-> Note: the following snippets are using **[Redux](https://redux-js.org)** store.
- You can create your custom storage implementation with [createStateProvider](./createStateProvider.md) 
+> Note: the following snippets are using **[Redux](https://redux.js.org)** store.
+ You can create your custom storage implementation with [createStateProvider](createStateProvider.md) 
  You can checkout actual implementation for [ReduxStateProvider](../src/redux/createStateProvider.js). 
 
 
@@ -156,7 +156,7 @@ createStateProvider(store, path)
 
 
 
-####### const requestState = createRequestState(id: RequestId)
+###### const requestState = createRequestState(id: RequestId)
 Create a function with the following props:
 
 `requestState.id`

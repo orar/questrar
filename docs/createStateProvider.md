@@ -1,7 +1,7 @@
 
 Creating a state provider
 --
-Questrar is agnostic to your app storage implementation. The [readme](../ReadMe.md) implementation used redux as the storage of the app.
+Questrar is agnostic to your app storage implementation. The [readme](../readme.md) implementation used redux as the storage of the app.
 You can also create your implementation and provide as a `stateProvider` prop to `Provider` component. 
 
 You can checkout the [DefaultStateProvider](../src/store/createStateProvider.js) and [ReduxStateProvider](../src/redux/createStateProvider.js). 

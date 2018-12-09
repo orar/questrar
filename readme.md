@@ -28,8 +28,8 @@ React's composability making it easy to control, track request,
  show loading icons and failed messages and other UI transformations based on a state of specific request.
  
  
-#### [Working with redux](../docs/createRequestState.md)
-#### See [API](../docs/coreAPI.md) section
+#### [Working with redux](docs/createReduxStateProvider.md)
+#### See [API](docs/coreAPI.md) section
 
 
 A request state is typed as
@@ -238,5 +238,15 @@ Any of `props.id` or `options.id` is optional. If no id is found, an empty objec
  a `RequestProp` is returned instead of `RequestMapProp`
 
 
-{docs/feedback.md}
-{docs/credit.md}
+
+Feedback
+--
+
+Any feedback and PR contributions will be appreciated regardless.
+
+
+Credits
+--
+
+- Inspired by Christian Kaps [@akkie](http://github.com/akkie)
+
