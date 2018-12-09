@@ -11,7 +11,7 @@ In cases where we want to make fetch requests outside the component
 
 > Note: the following snippets are using **[Redux](https://redux.js.org)** store.
  You can create your custom storage implementation with [createStateProvider](createStateProvider.md) 
- You can checkout actual implementation for [ReduxStateProvider](src/redux/createStateProvider.js). 
+ You can checkout actual implementation for [ReduxStateProvider](../src/redux/createStateProvider.js). 
 
 
 With Redux, since we are going to store all of the request states in redux, we need to add Redux reducer to our root reducers.
@@ -61,7 +61,7 @@ export class AppMain extends React.Component<Props> {
 }
 ```
 
-The above looks just like the [previous](readme.md) but stores the all of request states in Redux unlike before. 
+The above looks just like the [previous](../readme.md) but stores the all of request states in Redux unlike before. 
 If you open your redux dev tools you can find all requestStates by `'_QUESTRAR_REQUEST_'`
 
 That's it. We can now create request states and dispatch updates to store while we use them in our components.
