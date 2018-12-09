@@ -10,6 +10,7 @@ import RequestPendOnMount from '../RequestPendOnMount';
 
 const Requestor = () => <div className="request-or">Requestor</div>;
 
+
 describe('[Component] Request', () => {
   let id;
   let requestState;

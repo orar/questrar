@@ -7,7 +7,6 @@ import { mockProviderRequestState } from './mock';
 
 const TestComponent = () => <div className="test">Component</div>;
 
-
 describe('[Component] withRequest', () => {
   let idList;
   let firstId;
