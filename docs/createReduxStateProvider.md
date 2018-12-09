@@ -9,7 +9,7 @@ In cases where we want to make fetch requests outside the component
  This actually depends on the state provider implementation
 
 
-> Note: the following snippets are using **[Redux](https://redux-js.org)** store.
+> Note: the following snippets are using **[Redux](https://redux.js.org)** store.
  You can create your custom storage implementation with [createStateProvider](docs/createStateProvider.md) 
  You can checkout actual implementation for [ReduxStateProvider](src/redux/createStateProvider.js). 
 
