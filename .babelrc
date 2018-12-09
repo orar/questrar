@@ -18,7 +18,8 @@
         "babel-plugin-transform-es2015-modules-commonjs",
         ["istanbul", {
           "exclude": [
-            "**/*.spec.js"
+            "**/__tests__/",
+            "**/__test__/"
           ]
         }]
       ],

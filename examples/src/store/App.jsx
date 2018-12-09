@@ -17,7 +17,7 @@ export const App = () => (
       <ProfileApp />
     </RequestStateProvider>
   </ReduxStoreProvider>
-)
+);
 
 
 export default App;

@@ -2,7 +2,8 @@
 import React, { Component } from 'react';
 import { Request } from 'questrar';
 import DeleteButton from './DeleteButton';
-import './Common.scss';
+import PostPage from './PostPage';
+import '../Common.scss';
 
 type Props = {
 
@@ -33,13 +34,8 @@ export class ProfilePage extends Component<Props, State> {
     render() {
       return (
         <div style={{ height: '150vh'}}>
-          <Request id="user02932" initialLoading={this.state.loading}>
-            <div>
-              <div>Profile</div>
-              <div>
-                <DeleteButton id={this.subId} />
-              </div>
-            </div>
+          <Request id="user02932" pendOnMount={this.state.loading}>
+            <PostPage />
           </Request>
         </div>
       );

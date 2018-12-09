@@ -1,4 +1,5 @@
 
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic&subset=latin');
 
 
 .profileContainer {
@@ -44,5 +45,12 @@
     border: 1px solid #aaaaaa;
     background: transparent;
     color: #aaaaaa;
+  }
+
+  .profileFailed {
+    color: #aaaaaa;
+    margin-top: 50px;
+    width: 100%;
+    text-align: center;
   }
 }

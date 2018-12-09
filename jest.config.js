@@ -13,10 +13,10 @@ module.exports = {
     './',
   ],
   moduleNameMapper: {
-    '.scss$': '<rootDir>/test/StyleMock.js',
+    '.scss$': '<rootDir>/src/__tests__/StyleMock.js',
   },
   setupFiles: [
-    '<rootDir>/test/test-bundle.js',
+    '<rootDir>/src/__tests__/test-bundle.js',
   ],
 
   setupTestFrameworkScriptFile: 'jest-enzyme/lib/index.js',
@@ -29,18 +29,18 @@ module.exports = {
     pretendToBeVisual: true,
   },
 
-  testRegex: '/test/.*?\\.(test|spec)\\.jsx?$',
+  testRegex: '/src/.*?__tests?__/.*\\.(test|spec)\\.jsx?$',
   testURL: 'http://localhost:3000',
 
   collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.js',
-    'src/**/*.jsx',
+    'src/**/*.jsx'
   ],
   coverageDirectory: '<rootDir>/coverage',
   coverageThreshold: {
     global: {
-      branches: 50,
+      branches: 65,
       functions: 75,
       lines: 65,
       statements: 65

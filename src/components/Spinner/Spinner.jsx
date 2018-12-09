@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { isNumber } from '../../module/helper';
+import isNumber from '../../utils/isNumber';
 import './Spinner.scss';
 
 type Props = {
@@ -12,7 +12,7 @@ const Spinner = ({ size }: Props) => {
   const spinSize = isNumber(size) ? size : 40;
   Object.assign(style, { width: spinSize, height: spinSize });
 
-  const cogs = Array(11).fill(1);
+  const cogs = Array(12).fill(1);
 
   return (
     <div className="sk-fading-circle" style={style}>

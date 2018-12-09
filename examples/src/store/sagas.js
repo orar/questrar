@@ -4,18 +4,17 @@ import { take, put } from 'redux-saga/effects';
 import createSagaMiddleware, { delay } from 'redux-saga';
 import { fetchProfileState } from './createStore';
 
-
 export const sagaMiddleware = createSagaMiddleware();
 
 
 const profile = {
-  name: 'Sag Amid Leware',
+  name: 'Sag Amidd Leware',
   age: 25,
   gcode: 'er4fioxx',
   university: 'Solar',
   homePlanet: 'Mars',
   address: 'Oxide 34 street, Meltpoint, Nalpole Crater, Mars',
-  interLanguage: 'klingon',
+  language: 'Klingon',
 };
 
 /* eslint-disable no-undef */

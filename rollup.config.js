@@ -78,15 +78,6 @@ export default [
     dependencies: peerDeps
   }),
   makeConfig({
-    input: 'src/redux/index.js',
-    output: {
-      file: 'questrar-redux-cjs.js',
-      dir: 'lib',
-      format: 'cjs',
-      sourcemap: true
-    }
-  }),
-  makeConfig({
     input: 'src/index.js',
     output: {
       file: 'questrar-esm.js',
@@ -96,10 +87,42 @@ export default [
     },
     dependencies: peerDeps
   }),
+
+  // redux
+  makeConfig({
+    input: 'src/redux/index.js',
+    output: {
+      file: 'questrar-redux-cjs.js',
+      dir: 'lib',
+      format: 'cjs',
+      sourcemap: true
+    }
+  }),
   makeConfig({
     input: 'src/redux/index.js',
     output: {
       file: 'questrar-redux-esm.js',
+      dir: 'esm',
+      format: 'es',
+      sourcemap: true
+    },
+    dependencies: peerDeps
+  }),
+
+  // store
+  makeConfig({
+    input: 'src/store/index.js',
+    output: {
+      file: 'questrar-store-cjs.js',
+      dir: 'lib',
+      format: 'cjs',
+      sourcemap: true
+    }
+  }),
+  makeConfig({
+    input: 'src/store/index.js',
+    output: {
+      file: 'questrar-store-esm.js',
       dir: 'esm',
       format: 'es',
       sourcemap: true

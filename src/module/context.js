@@ -1,17 +1,14 @@
 // @flow
 import React from 'react';
-import type { RequestContext } from '../index';
 
+const RequestContext = React.createContext();
 
-export const initialRequestContextState: RequestContext = {
-  data: {},
-  actions: {}
-};
-
-//  React Context api
+//  React Context provider and consumer
 const {
   Provider: RequestProviderContext,
   Consumer: RequestConsumerContext,
-} = React.createContext(initialRequestContextState);
+} = RequestContext;
 
 export { RequestProviderContext, RequestConsumerContext };
+
+export default RequestContext;

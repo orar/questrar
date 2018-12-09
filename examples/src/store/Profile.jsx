@@ -13,6 +13,12 @@ const RenderProfile = ({ request }) => {
     request.actions.failed(id, 'Failed Intentionally');
   };
 
+  if (request.data.failed) {
+    return (
+      <div className="profileFailed">{request.data.message}</div>
+    );
+  }
+
   if (request.data.success) {
     const data = request.data.message;
     return (
@@ -43,8 +49,8 @@ const RenderProfile = ({ request }) => {
             <span>{data.address}</span>
           </div>
           <div className="profileItem">
-            <span className="label">Extraterrestrial Language:</span>
-            <span>{data.interLanguage}</span>
+            <span className="label">Language:</span>
+            <span>{data.language}</span>
           </div>
         </div>
         <div className="profileActions">
@@ -73,14 +79,18 @@ class Profile extends Component<Props> {
 
     componentDidMount() {
       const { dispatch } = this.props;
-      dispatch({ type: 'FETCH_PROFILE_INFO' })
+      dispatch({ type: 'FETCH_PROFILE_INFO' });
     }
 
 
     render() {
       return (
         <div style={{ paddingTop: 32 }} className="profileContainer">
-          <Request id={fetchProfileState.id} pendOnMount inject>
+          <Request
+            inject
+            pendOnMount
+            id={fetchProfileState.id}
+          >
             <RenderProfile />
           </Request>
         </div>
@@ -89,8 +99,6 @@ class Profile extends Component<Props> {
 }
 
 
-// We are using redux-saga and we need to dispatch an action inside ProfileComponent
-// which to be taken by the saga worker function
 const mapStateToProps = (state) => {
   console.log(state);
   return state;

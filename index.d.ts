@@ -44,14 +44,6 @@ export declare interface ProviderRequestState {
     [s: string]: RequestState
 }
 
-
-
-export declare interface RequestContext {
-    data: { [s: string]: RequestState };
-    actions: RequestActions
-}
-
-
 export declare interface RequestSelectorProps {
     request: RequestState;
     actions: RequestActions;
@@ -62,6 +54,15 @@ export declare interface RequestSelectorProps {
  */
 export declare interface RequestProp {
     data: RequestState;
+    actions: RequestActions;
+}
+
+
+/**
+ * Request object received by components wrapped with `withRequest` HOC
+ */
+export declare interface RequestListProp {
+    data: {[id: string]: RequestState };
     actions: RequestActions;
 }
 

@@ -5,7 +5,7 @@
 
   "rules": {
     "no-extra-semi": 0,
-    // disable semi colon
+    "no-undef": 1,
 
     "comma-dangle": 1,
     // don't force es6 functions to include space before paren

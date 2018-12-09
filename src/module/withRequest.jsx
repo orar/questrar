@@ -1,20 +1,34 @@
 // @flow
 import React from 'react';
-import type {RequestContext, ProviderRequestState} from '../index';
-import { initialRequest} from './common';
-import { RequestConsumerContext } from './context';
-import {arrayValuesOfKeys, isFunc, nonEmpty, isEmptyObj} from './helper';
-
+import hoistNonReactStatics from 'hoist-non-react-statics';
+import invariant from 'invariant';
+import type { StateProvider, RequestId } from '../index';
+import RequestContext from './context';
+import createRequestActions from './createRequestStateActions';
+import isFunc from '../utils/isFunc';
+import type { Bookkeeper } from './createRequestBookkeeper';
+import createRequestBookkeeper from './createRequestBookkeeper';
+import getComponentName from '../utils/getComponentName';
+import requireReactComponent from '../utils/requireReactComponent';
+import selectRequestStates from './selectRequestStates';
+import compareRequestsMismatch from '../utils/compareRequestsMismatch';
 
 type RequestComponentProps = {
   id: string | Array<string>,
+  stateProvider: StateProvider,
+}
+
+type State = {
+  id: Symbol
 }
 
 type RequestComponentOptions = {
-  id:string | Array<string> | (props: RequestComponentProps | any) => string | Array<string>,
-  mergeIdSources: boolean,
+  /* eslint-disable-next-line max-len */
+  id?: RequestId | Array<RequestId> | (props: RequestComponentProps | Object) => RequestId | Array<RequestId>,
+  mergeIdSources?: boolean,
+  stateProvider?: StateProvider,
+  trackIds?: boolean,
 }
-
 
 /**
  * Provides request object to component wrapped in `withRequest`
@@ -22,113 +36,158 @@ type RequestComponentOptions = {
  * @param options Request options
  * @returns HOC Function
  */
-export default function withRequest(options?: RequestComponentOptions) {
-  return function withRequestHOC(WrappedComponent: any) {
-    return class extends React.Component<RequestComponentProps> {
+export default function withRequest(options?: RequestComponentOptions = {}) {
+  return function withRequestHOC(WrappedComponent: Object) {
+    requireReactComponent(WrappedComponent);
+
+    class WithRequest extends React.Component<RequestComponentProps, State> {
       props: RequestComponentProps;
 
+      state: State;
+
+      release: () => void;
+
+      bookkeeper: Bookkeeper;
+
+      provider: StateProvider;
+
+      constructor(props, context) {
+        super(props, context);
+
+        this.createProvider();
+        this.createBookkeeper()
+      }
+
+
       /**
-       * Combine id from HOC and provided in props to array of request ids
+       * Subscribe to provider state changes and
+       * Check for provider state updates to refresh component
+       */
+      componentDidMount() {
+        this.observe();
+        const ids = this.getIds(this.props);
+        this.bookkeeper.checkForUpdate(ids);
+        if (this.bookkeeper.shouldUpdate) this.forceUpdate()
+      }
+
+      /**
+       * Checks for props and provider updates before deciding a component re-render
+       * @param nextProps
+       * @returns {boolean}
+       */
+      shouldComponentUpdate(nextProps: RequestComponentProps) {
+        const ids = this.getIds(nextProps);
+        this.bookkeeper.checkForUpdate(ids);
+        return this.props !== nextProps || this.bookkeeper.shouldUpdate;
+      }
+
+      /**
+       * Checks for props and provider updates before render
+       * @param nextProps
+       * @returns {boolean}
+       */
+      componentWillUpdate(nextProps) {
+        const ids = this.getIds(nextProps);
+        this.bookkeeper.checkForUpdate(ids);
+      }
+
+      /**
+       * Releases state provider subscriptions and clears bookkeeper history
+       */
+      componentWillUnmount() {
+        this.bookkeeper.clearSelf();
+        if (isFunc(this.release)) {
+          this.release();
+        }
+      }
+
+      /**
+       * Initializes `bookkeeper`
+       */
+      createBookkeeper () {
+        // $FlowFixMe
+        this.bookkeeper = createRequestBookkeeper(
+          this.provider,
+          selectRequestStates,
+          compareRequestsMismatch
+        );
+      }
+
+      /**
+       * Observes request states and causes re-render when any of them changes
+       * Any re-render will be decided by `bookkeeper` to exclude unnecessary re-renders
+       */
+      observe = () => {
+        /* eslint-disable-next-line react/no-unused-state */
+        this.release = this.provider.observe(({ id }) => this.setState({ id }))
+      };
+
+      /**
+       * Gets state provider by props precedence over options over context
+       * @returns {*}
+       */
+      createProvider = () => {
+        const { stateProvider } = this.props;
+        if (stateProvider) {
+          this.provider = stateProvider;
+        } else if (options.stateProvider) {
+          this.provider = options.stateProvider;
+        } else {
+          this.provider = this.context;
+        }
+
+        invariant(
+          this.provider && isFunc(this.provider.getState),
+          'No stateProvider is provided for request state storage. '
+          + 'This can be provided as a stateProvider prop to the base Provider component '
+          + `or to ${getComponentName(WrappedComponent)} component`
+        );
+      };
+
+      /**
+       * Combine id (from props with precedence over options) to array of request ids
        * @returns {Array} An array of request ids
        * @private
        */
-      getIds = () => {
-        let id = [];
+      getIds = (props: RequestComponentProps): Array<RequestId> => {
+        let idList = [];
+        const { id } = props;
+        const propsIdList = Array.isArray(id) ? id : [id];
+        idList = idList.concat(propsIdList).filter(Boolean);
 
-        if (options) {
-          //  options.id takes precedence over props.id
+        if (idList.length === 0 || options.mergeIdSources) {
           if (isFunc(options.id)) {
-            const propsId = options.id(this.props);
-            if (propsId) {
-              const reqIdList = Array.isArray(propsId) ? propsId : [propsId];
-              id = id.concat(reqIdList);
-            }
+            idList = idList.concat(options.id(props));
           } else if (options.id) {
-            const optId = Array.isArray(options.id) ? options.id : [options.id];
-            // $FlowFixMe
-            id = id.concat(optId);
-          }
-
-          // combine props.id if mergeIdSources set true or options.id is empty
-          const { id: pId } = this.props;
-          if ((options.mergeIdSources || id.length === 0) && pId) {
-            const propsId = Array.isArray(pId) ? pId : [pId];
-            // $FlowFixMe
-            id = id.concat(propsId);
+            idList = idList.concat(options.id);
           }
         }
-
-        return id;
+        return idList.filter(Boolean);
       };
-
-      /**
-       * Select requestState of an id provided in props
-       * if no requestState is found for the particular id, a default requestState is provided
-       *
-       * @private
-       */
-      getRequest = (requestObj: ProviderRequestState) => {
-        const ids = this.getIds();
-
-        if (!Array.isArray(ids) || ids.length === 0) return {};
-
-        if (isEmptyObj(requestObj)) {
-          //  Return a single request state instead of an object map of id: requestState
-          if (ids.length === 1) {
-            return Object.assign({}, initialRequest, { id: ids[0] });
-          }
-
-          //  prefill all with initial request states
-          return ids.reduce((acc, id) => {
-            const iniReq = Object.assign({}, initialRequest, { id });
-            return Object.assign({}, acc, { [id]: iniReq });
-          }, {});
-        }
-
-        //  extract all requestStates by ids
-        const requests = arrayValuesOfKeys(requestObj, ids, (k, o) => {
-          if (Object.hasOwnProperty.call(o, k)) {
-            return Object.assign({}, o[k], { id: k });
-          }
-          return Object.assign({}, initialRequest, { id: k });
-        });
-
-        //  Return a single request state instead of an object map
-        if (ids.length === 1) {
-          const req = requests.find(r => r.id === ids[0]);
-          if (nonEmpty(req)) {
-            return req;
-          }
-          return Object.assign({}, initialRequest, { id: ids[0] });
-        }
-
-        return requests.reduce((acc, curReq) => {
-          acc[curReq.id] = curReq;
-          return acc;
-        }, {});
-      };
-
 
       /**
        * Renders Wrapped Component
-       * @param state
+       *
        * @returns {*}
        */
-      renderComponent = (state: RequestContext) => {
-        const data = this.getRequest(state.data);
-        const request = Object.assign({}, { data, actions: state.actions });
-
-        return <WrappedComponent {...this.props} request={request} />;
-      };
-
-
       render() {
-        return (
-          <RequestConsumerContext>
-            {this.renderComponent}
-          </RequestConsumerContext>
-        );
+        const data = this.bookkeeper.request;
+        const actions = createRequestActions(this.provider);
+        const request = { data, actions };
+        const props = { ...this.props, request };
+
+        return React.createElement(WrappedComponent, props)
       }
     }
+
+    // $FlowFixMe
+    WithRequest.contextType = RequestContext;
+
+    if (process.env.NODE_ENV !== 'production') {
+      const wrappedComponentDisplayName = getComponentName(WrappedComponent);
+      WithRequest.displayName = `withRequest(${wrappedComponentDisplayName})`
+    }
+
+    return hoistNonReactStatics(WithRequest, WrappedComponent);
   }
 }
