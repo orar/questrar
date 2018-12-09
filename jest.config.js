@@ -29,10 +29,10 @@ module.exports = {
     pretendToBeVisual: true,
   },
 
-  testRegex: '/src/.*?__tests?__/.*?\\.(test|spec)\\.jsx?$',
+  testRegex: '/src/.*?__tests?__/.*\\.(test|spec)\\.jsx?$',
   testURL: 'http://localhost:3000',
 
-  collectCoverage: false,
+  collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.js',
     'src/**/*.jsx'

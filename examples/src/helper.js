@@ -6,7 +6,6 @@
 
 /**
  * Creates a random string of length less than 15 characters with [a - h]
- * @param length
  * @returns {string}
  */
 export function randomId () {
@@ -31,7 +30,7 @@ export function isFunc (func: any):%checks {
  * @returns {any|boolean}
  */
 export function isObj (obj: any):%checks {
-  return nonEmpty(obj) && obj.constructor == Object
+  return nonEmpty(obj) && obj.constructor == Object;
 }
 
 
@@ -51,12 +50,12 @@ export function isNumber (num: any):%checks {
  * @returns {boolean}
  */
 export function nonEmpty(value: any):%checks {
-  return typeof value !== 'undefined' && value !== null
+  return typeof value !== 'undefined' && value !== null;
 }
 
 // $FlowFixMe
 export function isEmptyObj(value: any):%checks {
   if (!nonEmpty(value) || !isObj(value)) return true;
 
-  return Object.keys(value).length === 0
+  return Object.keys(value).length === 0;
 }
