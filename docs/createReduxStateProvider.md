@@ -156,7 +156,7 @@ createStateProvider(store, path)
 
 
 
-####### const requestState = createRequestState(id: RequestId)
+###### const requestState = createRequestState(id: RequestId)
 Create a function with the following props:
 
 `requestState.id`
