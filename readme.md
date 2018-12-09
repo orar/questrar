@@ -28,7 +28,7 @@ React's composability making it easy to control, track request,
  show loading icons and failed messages and other UI transformations based on a state of specific request.
  
  
-#### [Working with redux](docs/createRequestState.md)
+#### [Working with redux](docs/createReduxStateProvider.md)
 #### See [API](docs/coreAPI.md) section
 
 
