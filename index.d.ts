@@ -3,12 +3,18 @@
 // Flow types
 //==========================================
 
+export declare type  RequestId = string | number | symbol
+
+export declare enum RequestStatus {
+    PENDING, FAILED, SUCCESS, DIRTY, CLEAN, REMOVE
+}
 
 /**
  * Request state type of a single request
  */
 export declare interface RequestState {
-    id?: string | number;
+    id?: RequestId;
+    $id: Symbol,
 
     pending: boolean;
     success: boolean;
@@ -21,22 +27,19 @@ export declare interface RequestState {
 
     message?: any;
 
-    autoRemove?: boolean;
-    removeOnSuccess?: boolean;
-    removeOnFail?: boolean;
 }
 
 /**
  * Request actions for turning request states
  */
 export declare interface RequestActions {
-    success (id: string | number, message?: any): any;
-    failed (id: string | number, message?: any): any;
-    pending (id: string | number, message?: any): any;
-    remove (id: string | number, message?: any): any;
+    success (id: RequestId, message?: any): any;
+    failed (id: RequestId, message?: any): any;
+    pending (id: RequestId, message?: any): any;
+    remove (id: RequestId, message?: any): any;
 
-    clean (id: string | number): any;
-    dirty (id: string | number): any;
+    clean (id: RequestId): any;
+    dirty (id: RequestId): any;
 }
 
 
@@ -44,10 +47,6 @@ export declare interface ProviderRequestState {
     [s: string]: RequestState
 }
 
-export declare interface RequestSelectorProps {
-    request: RequestState;
-    actions: RequestActions;
-}
 
 /**
  * Request object received by inject functions and props
@@ -57,17 +56,17 @@ export declare interface RequestProp {
     actions: RequestActions;
 }
 
-
 /**
  * Request object received by components wrapped with `withRequest` HOC
  */
-export declare interface RequestListProp {
+export declare interface RequestMapProp {
     data: {[id: string]: RequestState };
     actions: RequestActions;
 }
 
 
 export declare interface StateProvider {
+    name: string
 
     /**
      * Gets all of the request states in store
@@ -76,20 +75,11 @@ export declare interface StateProvider {
     getState():any;
 
     /**
-     * Puts request state
-     * Updates all of request states in store
-     *
-     * @param state
-     * @returns {null}
-     */
-    putState (state: Object): void
-
-    /**
      * Updates a specific requestState in store
      * @param requestStatus
      * @returns {null}
      */
-    updateRequest (requestStatus: Object): void
+    updateRequest (requestStatus: { id: RequestId, messsage?: any, status: RequestStatus }): void
 
     /**
      * Observe changes to the request state and re-renders the RequestProvider tree subsequently
@@ -109,13 +99,6 @@ export declare interface StateProvider {
 // redux
 // ==============
 
-export declare interface CreateRequestOptions {
-    modifier?: (payload: any) => any,
-    autoRemove?: boolean,
-
-    autoRemoveOnSuccess?: boolean,
-    autoRemoveOnFailure?: boolean,
-}
 
 export declare interface ReduxRequestState {
     id: Symbol,
@@ -123,16 +106,16 @@ export declare interface ReduxRequestState {
 }
 
 
-export declare function createRequestState(id: string | number, options?: CreateRequestOptions): CreateRequest;
+export declare function createRequestState(id: RequestId): CreateRequest;
 
 
 
 export declare interface CreateRequest {
     id: string | number,
-    pending: (message?: any) => { type: string, payload: { id: string | number, status: string, message?: any }}
-    success: (message?: any, remove?: boolean) => { type: string, payload: { id: string | number, status: string, message?: any }}
-    failed: (message?: any, remove?: boolean) => { type: string, payload: { id: string | number, status: string, message?: any }}
-    remove: () => { type: string, payload: { id: string | number, status: string }}
-    dirty: () => { type: string, payload: { id: string | number, status: string }}
-    clean: () => { type: string, payload: { id: string | number, status: string }}
+    pending: (message?: any) => { type: string, payload: { id: RequestId, status: string, message?: any }}
+    success: (message?: any, remove?: boolean) => { type: string, payload: { id: RequestId, status: string, message?: any }}
+    failed: (message?: any, remove?: boolean) => { type: string, payload: { id: RequestId, status: string, message?: any }}
+    remove: () => { type: string, payload: { id: RequestId, status: string }}
+    dirty: () => { type: string, payload: { id: RequestId, status: string }}
+    clean: () => { type: string, payload: { id: RequestId, status: string }}
 }

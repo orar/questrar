@@ -1,6 +1,10 @@
 import createRequestBookkeeper from '../createRequestBookkeeper';
 import randomId from '../../utils/randomId';
-import { makeRandomIds, mockProviderRequestState, mockStateProvider } from './mock';
+import {
+  makeRandomIds,
+  mockProviderRequestState,
+  mockStateProvider
+} from '../../__tests__/RequestMock';
 
 describe('[Function] createRequestBookkeeper', () => {
   let stateId;

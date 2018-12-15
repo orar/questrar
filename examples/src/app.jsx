@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import App from './context/App';
+import App from './todo/App';
 import 'semantic-ui-css/semantic.css';
 
 /* eslint-disable no-undef */

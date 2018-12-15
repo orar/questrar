@@ -3,7 +3,7 @@ import { shallow, mount } from 'enzyme';
 import randomId from '../../utils/randomId';
 import withRequest from '../withRequest';
 import Provider from '../Provider';
-import { mockProviderRequestState } from './mock';
+import { mockProviderRequestState } from '../../__tests__/RequestMock';
 
 const TestComponent = () => <div className="test">Component</div>;
 
@@ -24,9 +24,7 @@ describe('[Component] withRequest', () => {
   let unsubscribe;
 
   const mockProviderState = () => {
-    const data = mockProviderRequestState(idList);
-    providerState = { data, actions: {} };
-
+    providerState = mockProviderRequestState(idList);
   };
 
   const mockStateProvider = () => {
@@ -82,7 +80,7 @@ describe('[Component] withRequest', () => {
     expects(instance.provider).to.be.eql(stateProvider).which.is.eql(instance.context);
   });
 
-  it('Should render wrapped component as root Component', () => {
+  it('Should render wrapped component as immediate child Component', () => {
     createSingleIdWrapper(mount);
     expects(singleIdWrapper.children().children().is(TestComponent)).to.be.true();
   });
@@ -159,7 +157,7 @@ describe('[Component] withRequest', () => {
       instance.setState({ id: 'update'});
 
       // Called again in componentWillUpdate
-      expect(shouldUpdateSpy).toHaveBeenCalledTimes(2);
+      expect(shouldUpdateSpy).toHaveBeenCalledTimes(1);
     })
   });
 
@@ -183,6 +181,7 @@ describe('[Component] withRequest', () => {
   describe('[Function] render', () => {
     it('Should render Children as root element', () => {
       createSingleIdWrapper(shallow, true);
+      console.log(singleIdWrapper.props())
       expects(singleIdWrapper.is(TestComponent)).to.be.true()
     });
 

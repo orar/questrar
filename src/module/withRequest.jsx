@@ -10,11 +10,12 @@ import type { Bookkeeper } from './createRequestBookkeeper';
 import createRequestBookkeeper from './createRequestBookkeeper';
 import getComponentName from '../utils/getComponentName';
 import requireReactComponent from '../utils/requireReactComponent';
-import selectRequestStates from './selectRequestStates';
-import compareRequestsMismatch from '../utils/compareRequestsMismatch';
+import { selectRequestStates } from '../utils/selectRequestStates';
+import { compareMultiRequestMismatch } from '../utils/compareRequestsMismatch';
+import isRequestId from '../utils/isRequestId';
 
 type RequestComponentProps = {
-  id: string | Array<string>,
+  id?: RequestId | Array<RequestId>,
   stateProvider: StateProvider,
 }
 
@@ -27,7 +28,7 @@ type RequestComponentOptions = {
   id?: RequestId | Array<RequestId> | (props: RequestComponentProps | Object) => RequestId | Array<RequestId>,
   mergeIdSources?: boolean,
   stateProvider?: StateProvider,
-  trackIds?: boolean,
+  keepSingleRequestMap?: boolean,
 }
 
 /**
@@ -36,7 +37,7 @@ type RequestComponentOptions = {
  * @param options Request options
  * @returns HOC Function
  */
-export default function withRequest(options?: RequestComponentOptions = {}) {
+export default function withRequest(options?: RequestComponentOptions = { }) {
   return function withRequestHOC(WrappedComponent: Object) {
     requireReactComponent(WrappedComponent);
 
@@ -55,9 +56,14 @@ export default function withRequest(options?: RequestComponentOptions = {}) {
         super(props, context);
 
         this.createProvider();
-        this.createBookkeeper()
+        this.createBookkeeper();
       }
 
+
+      componentWillMount() {
+        const ids = this.getIds(this.props);
+        this.bookkeeper.checkForUpdate(ids);
+      }
 
       /**
        * Subscribe to provider state changes and
@@ -65,8 +71,6 @@ export default function withRequest(options?: RequestComponentOptions = {}) {
        */
       componentDidMount() {
         this.observe();
-        const ids = this.getIds(this.props);
-        this.bookkeeper.checkForUpdate(ids);
         if (this.bookkeeper.shouldUpdate) this.forceUpdate()
       }
 
@@ -109,7 +113,7 @@ export default function withRequest(options?: RequestComponentOptions = {}) {
         this.bookkeeper = createRequestBookkeeper(
           this.provider,
           selectRequestStates,
-          compareRequestsMismatch
+          compareMultiRequestMismatch
         );
       }
 
@@ -162,7 +166,7 @@ export default function withRequest(options?: RequestComponentOptions = {}) {
             idList = idList.concat(options.id);
           }
         }
-        return idList.filter(Boolean);
+        return idList.filter(isRequestId);
       };
 
       /**
@@ -171,7 +175,14 @@ export default function withRequest(options?: RequestComponentOptions = {}) {
        * @returns {*}
        */
       render() {
-        const data = this.bookkeeper.request;
+        let data = this.bookkeeper.request;
+
+        if (!options.keepSingleRequestMap) {
+          const keys = Object.keys(data);
+          if (keys.length === 1) {
+            data = data[keys[0]]
+          }
+        }
         const actions = createRequestActions(this.provider);
         const request = { data, actions };
         const props = { ...this.props, request };
@@ -179,6 +190,11 @@ export default function withRequest(options?: RequestComponentOptions = {}) {
         return React.createElement(WrappedComponent, props)
       }
     }
+
+    // $FlowFixMe
+    WithRequest.defaultProps = {
+      id: (props: Object) => (props ? props.id : null),
+    };
 
     // $FlowFixMe
     WithRequest.contextType = RequestContext;

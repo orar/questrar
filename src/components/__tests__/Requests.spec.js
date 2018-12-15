@@ -1,33 +1,36 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { Requests } from '../Requests';
-import randomId from '../../utils/randomId';
 import { initialRequest } from '../../utils/common';
+import { makeRandomIds, mockProviderRequestState } from '../../__tests__/RequestMock';
 
 const LoneChild = ({}) => <div className="loneChild">Im a lone child</div>;
 
 describe('[Component] Requests', function () {
   let id;
+  let idList;
   let props;
   let wrapper;
   let requestState;
   let actions = {};
 
   const createWrapper = () => {
-    wrapper = shallow(<Requests {...props} />)
+    wrapper = shallow(<Requests  {...props} />)
   };
 
   const createRequestState = () => {
-    requestState = Array(5).fill(1)
-      .reduce(acc => {
-        const id = randomId();
-        return { ...acc, [id]: { ...initialRequest, id } }
-      }, {});
+    requestState = mockProviderRequestState(idList)
   };
 
   beforeEach(() => {
+    idList = makeRandomIds();
     createRequestState();
-    props = { children: <LoneChild />, request: { data: requestState, actions } };
+    props = {
+      id: props => props.id,
+      children: idList.map(id => <LoneChild id={id} />),
+      request: { data: requestState, actions },
+      inject: true,
+    };
     createWrapper();
   });
 
@@ -36,62 +39,32 @@ describe('[Component] Requests', function () {
     expects(() => createWrapper()).to.throw();
   });
 
-  it('Should provide a default request Id extractor if `id` prop is not set', () => {
-    delete props.id;
-    createWrapper();
-    expects(wrapper.is(LoneChild)).to.be.true();
+  describe('[Function] createSubTree', () => {
+
+    it('Should not create a tree if child is not a React element ', () => {
+      const childEl = 'element';
+      const el = wrapper.instance().createSubTree(childEl);
+      expects(el).to.be.equal(childEl)
+    });
+
+    it('Should set trees to cache if skipOldTrees prop is set truthy', () => {
+      props.skipOldTrees = true;
+      createWrapper();
+      const cache = wrapper.instance().cache;
+
+      expects(cache.requests.size).to.be.equal(idList.length)
+    });
+
+    it('Should not set trees to cache if skipOldTrees prop is not set or false', () => {
+      props.skipOldTrees = false;
+      createWrapper();
+      const cache = wrapper.instance().cache;
+
+      expects(cache.requests.size).to.be.equal(0)
+    });
   });
 
-  xit('Should not update trees if request states have not been updated -o', () => {
-    props.fast = true;
-    createWrapper();
-    const instance = wrapper.instance()
-    const shouldUpdate = instance.shouldComponentUpdate(instance.props);
-    expects(shouldUpdate).to.be.false();
-
-    const loneId = Object.keys(requestState)[0];
-    const loneRequest = JSON.parse(JSON.stringify(requestState[loneId]))
-    //loneRequest.pending = true;
-    const nextProps = { ...instance.props, request: { data: { ...requestState, [loneId]: loneRequest }, actions } };
-
-    const shouldFastUpdate = instance.shouldComponentUpdate(nextProps);
-    console.log(instance.props.request.data);
-    console.log(nextProps.request.data);
-    expects(shouldFastUpdate).to.be.true();
-  });
-
-  it('Should only update tree only if requestState is updated when `fast` prop is set true', () => {
-    const loneId = Object.keys(requestState)[0];
-    props.fast = true;
-    createWrapper();
-    wrapper.setProps({ inject: true });
-    const instance = wrapper.instance()
-    const shouldUpdate = instance.shouldComponentUpdate(instance.props);
-    expects(shouldUpdate).to.be.false();
-  });
-
-  it('Should update trees if request states is updated', () => {
-    const newId = randomId();
-    const instance = wrapper.instance()
-    const nextProps = { ...props, request: {
-      ...props.request,
-        data: {
-        ...requestState,
-          [newId]: {
-          ...initialRequest,
-            id: newId
-        }
-      }}};
-
-    const shouldUpdate = instance.shouldComponentUpdate(nextProps)
-    expects(shouldUpdate).to.be.true()
-  });
-
-  it('Should safely return any child without request id', () => {
-    expects(wrapper.is(LoneChild)).to.be.true();
-  });
-
-  it('Should safely return any child without request id or id prop', () => {
+  it('Should safely return any child without setting to cache if could not extract id from child', () => {
     const loneId = Object.keys(requestState)[0];
     props.children = [
       <LoneChild />,
@@ -101,5 +74,6 @@ describe('[Component] Requests', function () {
     createWrapper();
     expects(wrapper.first().props().request).to.be.undefined();
     expects(wrapper.last().props().request.data).to.be.eql(requestState[loneId]);
-  })
+  });
+
 });

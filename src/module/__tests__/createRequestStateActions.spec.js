@@ -8,7 +8,7 @@ import createRequestStateActions, {
 } from '../createRequestStateActions';
 import randomId from '../../utils/randomId';
 import { CLEAN, DIRTY, FAILED, PENDING, REMOVE, SUCCESS } from '../../utils/common';
-import { mockStateProvider } from './mock';
+import { mockStateProvider } from '../../__tests__/RequestMock';
 
 describe('createRequestStateActions', () => {
   let provider;

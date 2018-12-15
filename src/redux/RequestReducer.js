@@ -1,27 +1,15 @@
 // @flow
-import { PENDING, SUCCESS, FAILED, CLEAN, DIRTY, initialRequest, REMOVE } from '../utils/common';
+import { PENDING, SUCCESS, FAILED, CLEAN, DIRTY, REMOVE } from '../utils/common';
 import { REQUEST_ACTION_TYPE } from './common';
-import type { RequestState, ReduxRequestState, ProviderRequestState } from '../index';
+import type { RequestState, ReduxRequestState } from '../index';
 import resetFlags from '../utils/resetRequestFlags'
+import { selectSingleRequestState } from '../utils/selectRequestStates';
 
 /**
  * Initial state of request reducer
  * @type {{data: {}}}
  */
 export const initialState = { id: '', data: {} };
-
-/**
- * Get requestState from state by request id
- * @param state
- * @param id
- * @returns {*}
- */
-export function getRequestState(state: ProviderRequestState, id: string | number) {
-  if (Object.hasOwnProperty.call(state, id)) {
-    return Object.assign({}, state[id]);
-  }
-  return { ...initialRequest, id };
-}
 
 
 /**
@@ -44,7 +32,9 @@ export function handleRequest (
     const { id } = action;
     const stateId = Symbol(id);
 
-    const next = getRequestState(state.data, id);
+    const previous = selectSingleRequestState(id, state.data);
+    const next = Object.assign({}, previous);
+    next.$id = Symbol(id);
     const nextReq = transformState(next, action);
 
     const data = Object.assign({}, state.data, { [id]: nextReq });

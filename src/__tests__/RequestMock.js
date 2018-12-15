@@ -1,5 +1,5 @@
-import { initialRequest } from '../../utils/common';
-import randomId from '../../utils/randomId';
+import { initialRequest } from '../utils/common';
+import randomId from '../utils/randomId';
 
 export const makeRandomIds = (size = 10) => Array(size).fill(1).map(randomId);
 

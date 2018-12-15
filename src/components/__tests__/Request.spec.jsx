@@ -1,12 +1,9 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import RequestPending from '../RequestPending';
 import { initialRequest } from '../../utils/common';
 import { Request } from '../Request';
 import randomId from '../../utils/randomId';
-import RequestFailure from '../RequestFailure';
-import RequestSuccess from '../RequestSuccess';
-import RequestPendOnMount from '../RequestPendOnMount';
+import Spinner from '../Spinner/Spinner';
 
 const Requestor = () => <div className="request-or">Requestor</div>;
 
@@ -62,14 +59,6 @@ describe('[Component] Request', () => {
     expects(() => createWrapper()).to.throw()
   });
 
-  it('Should not re-render if any of the defined Request$Props has not changed', () => {
-    const instance = wrapper.instance();
-    const nextProps = instance.props;
-
-    const shouldUpdate = instance.shouldComponentUpdate(nextProps);
-    expects(shouldUpdate).to.be.false();
-  });
-
   it('Should render Requestor by default', () => {
     expects(wrapper.is(Requestor)).to.be.true();
   });
@@ -81,32 +70,32 @@ describe('[Component] Request', () => {
     });
 
     it('Should render a loading component on request pending', () => {
-      expects(wrapper.first().is(RequestPending)).to.be.true();
+      expects(wrapper.first().is(Spinner)).to.be.true();
     });
 
     it('Should render a custom `onPending` component on request pending', () => {
-      expects(wrapper.is(RequestPending)).to.be.true();
+      expects(wrapper.is(Spinner)).to.be.true();
 
       props.onPending = <div className="pending-comp">I'm pending</div>;
       createWrapper();
-      expects(wrapper.dive().is('div.pending-comp')).to.be.true();
+      expects(wrapper.is('div.pending-comp')).to.be.true();
     });
 
     it('`onPending` prop should create a custom pending component' +
       ' when  requestState is pending', () => {
-      expects(wrapper.is(RequestPending)).to.be.true();
+      expects(wrapper.is(Spinner)).to.be.true();
 
       props.onPending = (r) => <div id={'_' + r.data.id} className="pending-comp">I'm pending</div>;
       createWrapper();
-      expects(wrapper.dive().is('div.pending-comp')).to.be.true();
-      expects(wrapper.dive().is(`div#_${requestState.id}`)).to.be.true();
+      expects(wrapper.is('div.pending-comp')).to.be.true();
+      expects(wrapper.is(`div#_${requestState.id}`)).to.be.true();
     });
 
     it('Should render inject children if `inject` prop is set ', () => {
       props.inject = true;
       createWrapper();
 
-      expects(wrapper.dive().is(Requestor)).to.be.true();
+      expects(wrapper.is(Requestor)).to.be.true();
     });
   });
 
@@ -115,11 +104,11 @@ describe('[Component] Request', () => {
       requestState.failed = true;
     });
 
-    it('Should render a RequestFailure on request failed', () => {
+    it('Should render request failure on request failed', () => {
+      props.inject = true;
       requestState.failureCount = 1;
       createWrapper();
 
-      expects(wrapper.is(RequestFailure)).to.be.true();
       expects(wrapper.prop('request').data).to.be.eql(requestState);
     });
 
@@ -127,7 +116,7 @@ describe('[Component] Request', () => {
       props.onFailure = <div className="renderOFailo">Im rendering like o failo</div>
       createWrapper();
 
-      expects(wrapper.dive().is('div.renderOFailo')).to.be.true();
+      expects(wrapper.is('div.renderOFailo')).to.be.true();
     });
 
     it('Should render a custom failure component' +
@@ -137,8 +126,8 @@ describe('[Component] Request', () => {
       );
       createWrapper();
 
-      expects(wrapper.dive().is('div.renderOFailo')).to.be.true();
-      expects(wrapper.dive().is(`div[title="${requestState.id}"]`)).to.be.true();
+      expects(wrapper.is('div.renderOFailo')).to.be.true();
+      expects(wrapper.is(`div[title="${requestState.id}"]`)).to.be.true();
     });
 
     it('Should render children if `onFailure` is not set', () => {
@@ -154,19 +143,15 @@ describe('[Component] Request', () => {
       createWrapper();
     });
 
-    it('Should render RequestSuccess', () => {
-      expects(wrapper.is(RequestSuccess)).to.be.true();
-    });
-
     it('Should render children on request success by default', () => {
-      expects(wrapper.dive().is(Requestor)).to.be.true();
+      expects(wrapper.is(Requestor)).to.be.true();
     });
 
     it('Should render a custom failure component on request failure', () => {
       props.onSuccess = <div className="successComp">Im rendering like winner</div>
       createWrapper();
 
-      expects(wrapper.dive().is('div.successComp')).to.be.true();
+      expects(wrapper.is('div.successComp')).to.be.true();
     });
 
     it('Should render a custom success component' +
@@ -176,8 +161,8 @@ describe('[Component] Request', () => {
       );
       createWrapper();
 
-      expects(wrapper.dive().is('div.successComp')).to.be.true();
-      expects(wrapper.dive().is(`div[title="${requestState.id}"]`)).to.be.true();
+      expects(wrapper.is('div.successComp')).to.be.true();
+      expects(wrapper.is(`div[title="${requestState.id}"]`)).to.be.true();
     });
   });
 
@@ -187,18 +172,15 @@ describe('[Component] Request', () => {
       createWrapper();
     });
 
-    it('Should render a RequestPendOnMount component on `pendOnMount` set', () => {
-      expects(wrapper.is(RequestPendOnMount)).to.be.true();
-    });
 
-    it('Should fallback to RequestPending component if `pendOnMount` is not set as custom (node or function)', () => {
-      expects(wrapper.dive().is(RequestPending)).to.be.true();
+    it('Should fallback to RequestPending component if `pendOnMount` is only set as truthy', () => {
+      expects(wrapper.is(Spinner)).to.be.true();
     });
 
     it('Should render once a custom component created by `pendOnMount` set as a function', () => {
       props.pendOnMount = (r) => <div role={r.data.id} className="pendant">Ya, Im so pendy on fly!</div>;
       createWrapper();
-      expects(wrapper.dive().is(`div[role="${requestState.id}"]`)).to.be.true();
+      expects(wrapper.is(`div[role="${requestState.id}"]`)).to.be.true();
     });
   });
 });

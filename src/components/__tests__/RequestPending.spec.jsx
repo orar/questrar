@@ -1,9 +1,8 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import RequestPending from '../RequestPending';
+import handlePending from '../RequestPending';
 import randomId from '../../utils/randomId';
 import { initialRequest } from '../../utils/common';
-import Spinner from '../Spinner';
 
 const LoneChild = ({}) => <div className="loneChild">Im a lone child</div>;
 
@@ -15,32 +14,29 @@ describe('[Component] RequestPending', function () {
   let wrapper;
 
   const createWrapper = () => {
-    wrapper = shallow(
-      <RequestPending
-        request={{data: requestState, actions }}
-        children={<LoneChild />}
-        {...props}
-      />
-    )
+    wrapper = shallow(handlePending(props))
   };
 
   beforeEach(() => {
     id = randomId();
     requestState = { initialRequest, id };
     actions = {};
-    props = {};
+    props = {
+      request: {data: requestState, actions },
+      children: <LoneChild />
+    };
     createWrapper()
   });
 
   it('Should render children if not handled', () => {
-    expects(wrapper.is(Spinner)).to.be.true();
+    expects(wrapper.is('div.sk-fading-circle')).to.be.true();
   });
 
   it('Should render children on inject set', () => {
     props.inject = true;
     createWrapper();
 
-    expects(wrapper.is(LoneChild)).to.be.true();
+    expects(wrapper.is('div.loneChild')).to.be.true();
   });
 
   it('Should render a custom component created by `RequestPending` callback', () => {

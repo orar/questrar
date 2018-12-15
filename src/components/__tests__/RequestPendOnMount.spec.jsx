@@ -1,7 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import RequestPendOnMount from '../RequestPendOnMount';
-import RequestPending from '../RequestPending';
+import handlePendOnMount from '../RequestPendOnMount';
 import randomId from '../../utils/randomId';
 import { initialRequest } from '../../utils/common';
 
@@ -15,32 +14,29 @@ describe('[Component] RequestPendOnMount', function () {
   let wrapper;
 
   const createWrapper = () => {
-    wrapper = shallow(
-      <RequestPendOnMount
-        request={{data: requestState, actions }}
-        children={<LoneChild />}
-        {...props}
-      />
-    )
+    wrapper = shallow(handlePendOnMount(props))
   };
 
   beforeEach(() => {
     id = randomId();
     requestState = { initialRequest, id };
     actions = {};
-    props = {};
+    props = {
+      request: {data: requestState, actions },
+      children: <LoneChild />
+    };
     createWrapper()
   });
 
   it('Should render RequestPending if not handled by `pendOnMount` prop', () => {
-    expects(wrapper.is(RequestPending)).to.be.true();
+    expects(wrapper.is('div.sk-fading-circle')).to.be.true();
   });
 
   it('Should render children on inject set', () => {
     props.inject = true;
     createWrapper();
 
-    expects(wrapper.is(RequestPending)).to.be.true();
+    expects(wrapper.is('div.loneChild')).to.be.true();
   });
 
   it('Should render a custom component created by `pendOnMount` prop', () => {

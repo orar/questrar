@@ -30,6 +30,7 @@ export default class RequestSubscription {
   }
 
   getSubscribers () {
+    // $FlowFixMe
     return this.subscribers.slice();
   }
 
@@ -109,24 +110,12 @@ export default class RequestSubscription {
   }
 
   /*
-  async notifyAsync (state: RequestStoreState, context?: RequestId) {
+  async notifyAsync (state: RequestStoreState, requestId?: RequestId) {
     this.activeSubscribers = this.subscribers;
     const listeners = Array.from(this.subscribers);
 
     const runPromise = new Promise(() => {
-      for (let i = 0; i < listeners.length; i += 1) {
-        const sub = listeners[i];
-        if (context && sub.options.id) {
-          const subsOptId = sub.options.id;
-          const contextList = Array.isArray(subsOptId) ? subsOptId : [subsOptId];
-
-          if (contextList.includes(context)) {
-            sub.subscriber(state);
-          }
-        } else {
-          sub.subscriber(state);
-        }
-      }
+      this.notify(state, requestId)
     });
 
     return runPromise;
