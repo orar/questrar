@@ -4,7 +4,7 @@ import Provider from '../Provider';
 import randomId from '../../utils/randomId';
 import { initialRequest } from '../../utils/common';
 import Context, { RequestProviderContext } from '../context';
-import { mockStateProvider } from './mock';
+import { mockStateProvider } from '../../__tests__/RequestMock';
 
 class ProviderChild extends React.Component {
   static contextType = Context;

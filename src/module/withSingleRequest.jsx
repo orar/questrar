@@ -10,8 +10,8 @@ import type { Bookkeeper } from './createRequestBookkeeper';
 import createRequestBookkeeper from './createRequestBookkeeper';
 import getComponentName from '../utils/getComponentName';
 import requireReactComponent from '../utils/requireReactComponent';
-import compareRequestsMismatch from '../utils/compareRequestsMismatch';
-import { selectSingleRequestState } from './selectRequestStates';
+import { compareRequestsMismatch } from '../utils/compareRequestsMismatch';
+import { selectSingleRequestState } from '../utils/selectRequestStates';
 
 type WrappedComponentProps = {
   id: RequestId,

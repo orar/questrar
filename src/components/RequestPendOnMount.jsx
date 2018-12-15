@@ -3,7 +3,7 @@ import React from 'react';
 import type { Node } from 'react';
 import isFunc from '../utils/isFunc';
 import type { RequestProp } from '../index';
-import RequestPending from './RequestPending';
+import handleOnPending from './RequestPending';
 
 type Props = {
   request: RequestProp,
@@ -25,12 +25,13 @@ type Props = {
  * @returns RequestPendOnMount component
  * @constructor
  */
-const RequestPendOnMount = ({
+export default function handlePendOnMount ({
   pendOnMount,
   request,
   children,
   inject,
-}: Props) => {
+  ...rest
+}: Props) {
   if (isFunc(pendOnMount)) {
     return pendOnMount(request, children)
   }
@@ -39,11 +40,5 @@ const RequestPendOnMount = ({
     return pendOnMount;
   }
 
-  return (
-    <RequestPending request={request} inject={inject}>
-      {children}
-    </RequestPending>
-  )
-};
-
-export default RequestPendOnMount;
+  return handleOnPending({ request, inject, children, ...rest });
+}

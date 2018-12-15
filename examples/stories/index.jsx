@@ -6,16 +6,18 @@ import TodoApp from '../src/todo/App';
 import DefaultStoreApp from '../src/store/App';
 import PostStoreApp from '../src/context/App';
 import DeleteSelfApp from '../src/delete/App';
+import ButtonsWithRequest from './ButtonsWithRequest';
+import ButtonsWithRequests from './ButtonsWithRequests';
 import '@storybook/addon-console';
 import 'semantic-ui-css/semantic.css';
 
 
 storiesOf('Button', module)
-  .add('with text', () => (
-    <Button onClick={action('clicked')}>Hello Button</Button>
+  .add('buttons with Request', () => (
+    <ButtonsWithRequest />
   ))
-  .add('with some emoji', () => (
-    <Button onClick={action('clicked')}><span role="img" aria-label="so cool">😀 😎 👍 💯</span></Button>
+  .add('buttons with Requests', () => (
+    <ButtonsWithRequests />
   ))
   .add('delete self', () => (
     <DeleteSelfApp />

@@ -17,12 +17,13 @@
     "url": "https://github.com/orarr/questrar/issues"
   },
   "files": [
+    "*.d.ts",
     "dist",
     "esm",
-    "redux",
     "lib",
+    "redux",
     "src",
-    "*.d.ts"
+    "store"
   ],
   "scripts": {
     "lint": "eslint ./",

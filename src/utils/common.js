@@ -1,6 +1,7 @@
 // @flow
 import type { RequestState } from '../index';
 
+const initialObjectId = Symbol('initial_request_state');
 
 //  status flags
 export const PENDING = 'pending';
@@ -15,6 +16,7 @@ export const DIRTY = 'dirty';
 
 //  Initial request state
 export const initialRequest: RequestState = {
+  $id: initialObjectId,
   pending: false,
   success: false,
   failed: false,
