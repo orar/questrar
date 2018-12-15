@@ -1,7 +1,5 @@
 // @flow
-import type { Node } from 'react';
-import type { RequestState } from '../index';
-import { RequestId } from '../index';
+import type { RequestId, RequestState } from '../index';
 
 export type RequestsSubTreesCache = {
   requests: {[key: string|number]: RequestState },
@@ -42,6 +40,7 @@ export default function createCache(): RequestsSubTreesCache {
     },
 
     getTree: function requestWithTree(request: RequestState) {
+      /* eslint-disable-next-line */
       const value = this.requests.get(request.id);
       if (value) return value.tree;
 
