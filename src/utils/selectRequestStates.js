@@ -1,8 +1,8 @@
 // @flow
-import arrayValuesOfKeys from '../utils/arrayValuesOfKeys';
+import arrayValuesOfKeys from './arrayValuesOfKeys';
 import type { RequestId, ProviderRequestState, RequestState } from '../index';
-import { initialRequest } from '../utils/common';
-import isEmptyObj from '../utils/isEmptyObj';
+import { initialRequest } from './common';
+import isEmptyObj from './isEmptyObj';
 
 /**
  * Select request states of a list of request ids provided
@@ -11,18 +11,13 @@ import isEmptyObj from '../utils/isEmptyObj';
  *
  * @private
  */
-export default function getRequest(
+export function selectRequestStates(
   ids: Array<RequestId>,
-  requestObj: ProviderRequestState
+  requestObj: ProviderRequestState,
 ): ProviderRequestState {
   if (!Array.isArray(ids) || ids.length === 0) return {};
 
   if (isEmptyObj(requestObj)) {
-    // Return a single request state instead of an object map of { [id]: requestState }
-    if (ids.length === 1) {
-      return Object.assign({}, initialRequest, { id: ids[0] });
-    }
-
     const reduce = {};
     //  prefill all with initial request states
     for (let i = 0; i < ids.length; i += 1) {
@@ -32,17 +27,12 @@ export default function getRequest(
     return reduce;
   }
 
-  //  extract all requestStates by ids
+  //  extract all requestStates as Array<RequestState> by ids
   const requests = arrayValuesOfKeys(requestObj, ids, (key, obj) => {
     if (Object.hasOwnProperty.call(obj, key)) return obj[key];
 
     return { ...initialRequest, id: key };
   });
-
-  //  Return a single request state instead of an object map
-  if (ids.length === 1) {
-    return requests.find(r => r.id === ids[0]);
-  }
 
   const reduce = {};
   for (let i = 0; i < requests.length; i += 1) {
@@ -54,7 +44,7 @@ export default function getRequest(
 
 
 /**
- * Selects a single request state by request id
+ * Selects a single request state by request id from provider state
  * @param id Request id
  * @param requestStates Provider request states map
  * @returns {*}

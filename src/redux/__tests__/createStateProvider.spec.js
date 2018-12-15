@@ -2,7 +2,6 @@ import configureStore from 'redux-mock-store'
 import randomId  from '../../utils/randomId';
 import createStateProvider, { getProviderState } from '../createStateProvider';
 import { REQUEST_ACTION_TYPE } from '../common';
-import RequestSubscription from '../../store/RequestSubscription';
 import {
   CLEAN,
   DIRTY,
@@ -12,7 +11,6 @@ import {
   REMOVE,
   SUCCESS
 } from '../../utils/common';
-import { initialState } from '../RequestReducer';
 
 describe('[createStateProvider]', () => {
   let id;

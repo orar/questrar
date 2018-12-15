@@ -12,19 +12,15 @@ import isFunc from './isFunc'
 export default (props: Object): Array<string | number> => {
   invariant(isFunc(props.id), `Expected id to be a function, instead of ${typeof props.id}`);
 
-  const hasChildren = props.children && React.Children.count(props.children) >= 1;
-  const mapId = props.id;
-
-
-  if (!hasChildren) {
+  const hasNoChildren = React.Children.count(props.children) < 1;
+  if (hasNoChildren) {
     return [];
   }
 
+  const mapId = props.id;
+
   return React.Children.map(props.children, (child) => {
     if (React.isValidElement(child)) {
-      if (child.props.requestFactoryType) {
-        return child.props.id;
-      }
       return mapId(child.props)
     }
     return null;

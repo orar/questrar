@@ -24,12 +24,12 @@ type Props = {
  * @returns RequestPending component
  * @constructor
  */
-const RequestPending = ({
+export default function handleOnPending ({
   request,
   inject,
   onPending,
   children
-}: Props) => {
+}: Props) {
   if (isFunc(onPending)) {
     return onPending(request, children);
   }
@@ -44,5 +44,3 @@ const RequestPending = ({
 
   return <Spinner size={16} />;
 };
-
-export default RequestPending;

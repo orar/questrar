@@ -7,7 +7,7 @@ import type { RequestState } from '../index';
  * @param req
  * @returns {Request}
  */
-export default (req: RequestState) => {
+export default function resetRequestFlags(req: RequestState) {
   const r = req;
   r.pending = false;
   r.success = false;

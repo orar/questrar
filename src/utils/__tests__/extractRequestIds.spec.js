@@ -43,15 +43,11 @@ describe('[Function] extractRequestIds', () => {
 
   it('Should result empty list if `children` prop is null or empty', () => {
     props.children = null;
+
     expects(extractRequestIds(props)).to.be.empty();
   });
 
   it('Should extract a list of request id from children with `requestFactoryType` prop', () => {
-    const ids = extractRequestIds(props);
-    expects(ids).to.have.lengthOf(4)
-  });
-
-  xit('Should have an empty id list if `requestFactoryType` is set but children have no `id` prop', () => {
     const ids = extractRequestIds(props);
     expects(ids).to.have.lengthOf(4)
   });

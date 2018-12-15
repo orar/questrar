@@ -1,13 +1,9 @@
-import defaultExport, { defaultRequestStateProvider, createStateProvider, RequestSubscription } from '../';
+import defaultExport, { createStateProvider, RequestSubscription } from '../';
 
 
 describe('Store Exports', () => {
   it('Should export default `defaultRequestStateProvider`', () => {
     expects(defaultExport.name).to.be.equal('createDefaultRequestStateProvider')
-  });
-
-  it('Should export a named `defaultRequestStateProvider`', () => {
-    expects(defaultRequestStateProvider).to.be.a('function')
   });
 
   it('Should export a named `createStateProvider`', () => {

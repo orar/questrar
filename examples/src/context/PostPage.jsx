@@ -66,19 +66,25 @@ class Post extends React.Component<Props, State> {
     }
   };
 
-  onRequestSuccess = (request, buttonEl) => (
-    <React.Fragment>
-      {buttonEl}
-      <Popup
-        onClick={() => request.actions.remove(request.data.id)}
-        context={buttonEl.ref}
-        open
-        header={request.data.message.title}
-        content={request.data.message.body}
-        placement="right center"
-      />
-    </React.Fragment>
-  );
+  onRequestSuccess (request, buttonEl) {
+    this.setState({ });
+    // console.log('Setting state');
+
+    return (
+      <React.Fragment>
+        {buttonEl}
+        <Popup
+          onClick={() => request.actions.remove(request.data.id)}
+          context={buttonEl.ref}
+          open
+          header={request.data.message.title}
+          content={request.data.message.body}
+          placement="right center"
+        />
+      </React.Fragment>
+    );
+  }
+  onRequestSuccess = this.onRequestSuccess.bind(this);
 
   render() {
     const { request } = this.props;
@@ -92,6 +98,7 @@ class Post extends React.Component<Props, State> {
           <div className="postActions">
             <TextArea
               className="textArea"
+              value={this.state.text}
               onChange={(evt, text) => this.setState({ text: text.value })}
               placeholder="Say something about the discussion"
             />

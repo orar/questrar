@@ -2,7 +2,7 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 import withSingleRequest from '../withSingleRequest';
 import Provider from '../Provider';
-import { makeRandomIds, mockProviderRequestState } from './mock';
+import { makeRandomIds, mockProviderRequestState } from '../../__tests__/RequestMock';
 
 const TestComponent = ({}) => <div>Component</div>;
 

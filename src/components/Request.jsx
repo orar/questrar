@@ -5,7 +5,7 @@ import type { Node } from 'react';
 import invariant from 'invariant';
 import type { RequestProp, StateProvider } from '../index';
 import withSingleRequest from '../module/withSingleRequest';
-import RequestFactory from './RequestFactory';
+import renderRequestState from './RequestFactory';
 import isRequestId from '../utils/isRequestId';
 
 
@@ -39,13 +39,8 @@ export class Request extends React.Component<Props> {
     super(props);
   }
 
-  shouldComponentUpdate(nextProps: Props) {
-    const { request } = this.props;
-    return nextProps.request.data !== request.data || nextProps !== this.props
-  }
-
   render() {
-    return RequestFactory(this.props);
+    return renderRequestState(this.props);
   }
 }
 

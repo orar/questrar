@@ -2,10 +2,9 @@ import React from 'react';
 import type { Node } from 'react';
 import createChildren from '../utils/createChildren';
 import type { RequestActions, RequestProp, RequestState } from '../index';
-import RequestSuccess from './RequestSuccess';
-import RequestFailure from './RequestFailure';
-import RequestPending from './RequestPending';
-import RequestPendOnMount from './RequestPendOnMount';
+import handleOnPending from './RequestPending';
+import handlePendOnMount from './RequestPendOnMount';
+import isFunc from '../utils/isFunc';
 
 
 type RequestFactoryProps = {
@@ -19,28 +18,52 @@ type RequestFactoryProps = {
   children: Array<Node> | Node,
 }
 
-export default (props: RequestFactoryProps) => {
-  const requestData = props.request.data;
 
-  if (requestData.pending) {
-    return <RequestPending requestFactoryType id={requestData.id} {...props} />
-  }
+/* eslint-disable max-len */
+/**
+ * @param id                A request Id
+ * @param request           A request state specified by the rId
+ * @param inject            Inject the request state and actions into the children component
+ * @param onFailure         An optional function that should be call with the request state(containing error)
+ * @param onSuccess         An optional function that should be call with the request state on pending
+ * @param children          The wrapped component
+ *
+ * @returns RequestFailure component
+ * @constructor
+ */
+export default function renderRequestState(props: RequestFactoryProps){
+  const requestData = props.request.data;
+  const { onFailure, onSuccess, request, children } = props;
 
   if (requestData.failed) {
-    return <RequestFailure requestFactoryType id={requestData.id} {...props} />
+    if (isFunc(onFailure)) return onFailure(request, children);
+
+    if (onFailure) return onFailure;
+
+    return createChildren(props);
   }
 
   if (requestData.success) {
-    return <RequestSuccess requestFactoryType id={requestData.id} {...props} />
+    if (isFunc(onSuccess)) return onSuccess(request, children);
+
+    if (onSuccess) return onSuccess;
+
+    return createChildren(props);
   }
 
-  // At default requestState, all flags (pending, success, failed) are false.
-  // Until the requestState changes, render a loading component
-  // Usually used when if there is no data the
-  // underlying component may have rendering issues or even throw
+  if (requestData.pending) {
+    return handleOnPending(props);
+  }
+
+  /*
+   At default, a requestState has all flags (pending, success, failed) to be false.
+   Until the requestState changes, `pendOnMount` set will render a custom or loading component
+   Can be a useful escape if the underlying component may have rendering issues or even throw
+   if there is no data.
+   */
   if (props.pendOnMount) {
-    return <RequestPendOnMount requestFactoryType id={requestData.id} {...props} />
+    return handlePendOnMount(props);
   }
 
   return createChildren(props);
-};
+}

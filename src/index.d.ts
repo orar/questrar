@@ -3,7 +3,7 @@
 // Flow types
 //==========================================
 
-export declare type  RequestId = string | number
+export declare type  RequestId = string | number | symbol
 
 export declare enum RequestStatus {
     PENDING, FAILED, SUCCESS, DIRTY, CLEAN, REMOVE
@@ -14,7 +14,7 @@ export declare enum RequestStatus {
  */
 export declare interface RequestState {
     id?: RequestId;
-    _id: symbol,
+    $id: Symbol,
 
     pending: boolean;
     success: boolean;
@@ -27,9 +27,6 @@ export declare interface RequestState {
 
     message?: any;
 
-    autoRemove?: boolean;
-    removeOnSuccess?: boolean;
-    removeOnFail?: boolean;
 }
 
 /**
@@ -50,11 +47,6 @@ export declare interface ProviderRequestState {
     [s: string]: RequestState
 }
 
-
-export declare interface RequestSelectorProps {
-    request: RequestState;
-    actions: RequestActions;
-}
 
 /**
  * Request object received by inject functions and props
@@ -107,13 +99,6 @@ export declare interface StateProvider {
 // redux
 // ==============
 
-export declare interface CreateRequestOptions {
-    //modifier?: (payload: any) => any,
-    autoRemove?: boolean,
-
-    autoRemoveOnSuccess?: boolean,
-    autoRemoveOnFailure?: boolean,
-}
 
 export declare interface ReduxRequestState {
     id: Symbol,
@@ -121,7 +106,7 @@ export declare interface ReduxRequestState {
 }
 
 
-export declare function createRequestState(id: RequestId, options?: CreateRequestOptions): CreateRequest;
+export declare function createRequestState(id: RequestId): CreateRequest;
 
 
 

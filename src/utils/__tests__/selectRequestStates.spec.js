@@ -1,5 +1,5 @@
-import selectRequestStates, { selectSingleRequestState } from '../selectRequestStates';
-import { makeRandomIds, mockProviderRequestState } from './mock';
+import { selectRequestStates, selectSingleRequestState } from '../selectRequestStates';
+import { makeRandomIds, mockProviderRequestState } from '../../__tests__/RequestMock';
 
 describe('Selectors', () => {
   describe('[Function] selectRequestStates', () => {
@@ -27,21 +27,6 @@ describe('Selectors', () => {
       const state2 = selectRequestStates([], providerState);
       expects(state2).to.be.empty();
     });
-
-    it('Should extract a single request state given a single id with a non-empty provider state', () => {
-      const state = selectRequestStates([firstId], providerState);
-
-      expects(state).to.be.an('object')
-        .that.includes({ id: idList[0] })
-        .that.is.eql(providerState[firstId]);
-    });
-
-    it('Should extract a single request state given a single id with a no/empty provider state', () => {
-      const state = selectRequestStates([firstId]);
-
-      expects(state).to.be.an('object').that.includes({ id: idList[0] });
-    });
-
 
     it('Should extract all request states matching given list of ids from non-empty provider state', () => {
       const states = selectRequestStates(selectedIds, providerState);

@@ -1,11 +1,12 @@
 // @flow
 import invariant from 'invariant'
 import type { RequestState } from '../index';
-import { CLEAN, DIRTY, FAILED, initialRequest, PENDING, REMOVE, SUCCESS } from '../utils/common';
+import { CLEAN, DIRTY, FAILED, PENDING, REMOVE, SUCCESS } from '../utils/common';
 import resetRequestFlags from '../utils/resetRequestFlags';
 import type { Subscriber, SubscriptionOptions } from './RequestSubscription';
 import type { RequestStore } from './Store'
 import warn from '../utils/warn';
+import { selectSingleRequestState } from '../utils/selectRequestStates';
 
 export default function createStateProvider(requestStore: RequestStore) {
   invariant(requestStore, 'Required: Request store is required');
@@ -19,12 +20,17 @@ export default function createStateProvider(requestStore: RequestStore) {
     return store.updateState(stateId, request)
   }
 
-  const applyStateChange = (id: string) => (transform: (req: RequestState) => RequestState) => {
+  const applyStateChange = (id: string) => (
+    transform: (req: RequestState) => RequestState,
+    reset?: boolean
+  ) => {
     const state = store.getState();
-    const exist = Object.hasOwnProperty.call(state.data, id);
-    const request = exist ? state.data[id] : initialRequest;
-    const req = resetRequestFlags(Object.assign({}, request));
-    req.id = id;
+    const request = selectSingleRequestState(id, state.data);
+    const req = Object.assign({}, request);
+    if (reset) {
+      resetRequestFlags(req);
+    }
+    req.$id = Symbol(id);
     const nextRequest = transform(req);
     return saveState(nextRequest);
   };
@@ -46,7 +52,7 @@ export default function createStateProvider(requestStore: RequestStore) {
       }
       return req;
     };
-    return applyStateChange(id)(updateSuccess)
+    return applyStateChange(id)(updateSuccess, true)
   };
 
   /**
@@ -66,7 +72,7 @@ export default function createStateProvider(requestStore: RequestStore) {
       }
       return req;
     };
-    return applyStateChange(id)(updateFailed)
+    return applyStateChange(id)(updateFailed, true)
   };
 
   /**
@@ -87,7 +93,7 @@ export default function createStateProvider(requestStore: RequestStore) {
       }
       return req;
     };
-    return applyStateChange(id)(updatePending)
+    return applyStateChange(id)(updatePending, true)
   };
 
   /**
