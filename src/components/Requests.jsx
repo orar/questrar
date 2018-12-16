@@ -4,7 +4,7 @@ import React from 'react';
 import type { Node } from 'react';
 import withRequest from '../module/withRequest';
 import renderRequestState from './RequestFactory';
-import type { RequestProp, ProviderRequestState, RequestMapProp } from '../index';
+import type { RequestProp, RequestMapProp } from '../index';
 import extractRequestIds from '../utils/extractRequestIds';
 import overrideRequestProps from '../utils/overrideRequestProps';
 import isRequestId from '../utils/isRequestId';
