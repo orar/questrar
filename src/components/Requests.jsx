@@ -97,6 +97,11 @@ export class Requests extends React.Component<Props> {
   }
 }
 
+// $FlowFixMe
+Requests.defaultProps = {
+  skipOldTrees: true,
+};
+
 
 // $FlowFixMe
 export default withRequest({

@@ -25,6 +25,24 @@ import { Provider, withRequest, Request, Requests } from 'questrar'
 |`onSuccess`   | `Node`, `(requestProp, children) => Node`| no | `children` | Render a custom success component when request state is successful.|
 |`stateProvider` | `StateProvider`| no | `undefined` | StateProvider prop which overrides the Provider component `stateProvider` prop for the particular `Request` component it's provided to.|
 
+##### Requests component API
+| Name | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `id` | `(props: Object) => RequestId` | yes | `undefined` | A function that receives the child props to generate a request Id. |
+
+> The rest of the props follow `Request` API above.
+ Except for `id` and `stateProvider` prop on the `Requests` component, any other props on the `Requests` component can be overridden by a setting its override on the child.
+
+```jsx harmony
+<Requests
+ id={(props) => props.id}
+ inject
+ onPending={<CoolSpinner />}
+>
+  <Todo id={232} data={{...}} inject={false} onPending={<SuperCoolSpinner />} />
+  <Todo id={234} data={{...}} onPending={false} />
+</Requests>
+``` 
 
 ##### withRequest options API 
 
@@ -33,4 +51,5 @@ import { Provider, withRequest, Request, Requests } from 'questrar'
 | --- | --- | --- | --- | --- |
 | `id` | `string`, `number`, `Array< string\|number >`, `(props) => string \| number` | no | `undefined` | Request id or list of request ids |
 | `mergeIdSources` | `boolean` | no | `false` | Combine id and `props.id` for request state selection |
+| `keepSingleRequestMap` | `boolean` | no | `false` | Keep a single request state as a [`RequestMapProp`](.../readme.md#L242) instead of [`RequestProp`](.../readme.md#L53) |
 |`stateProvider` | `StateProvider`| no | `undefined` | StateProvider prop which overrides the Provider component `stateProvider` prop for the particular `withRequest` which it's provided to.|

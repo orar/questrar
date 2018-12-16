@@ -1,7 +1,11 @@
 
 Creating a state provider
 --
-Questrar is agnostic to your app storage implementation. The [readme](../readme.md) implementation used redux as the storage of the app.
+Questrar is agnostic to your app storage implementation. The [readme](../readme.md#L89) implementation used the default store as the storage of all request state.
+The default store has capability of notifying Request components whose request state have changed instead of notifying all Request components.
+But its limited to the component tree. Except you are likely to make fetch requests inside components its not advisable to use the default store. 
+
+
 You can also create your implementation and provide as a `stateProvider` prop to `Provider` component. 
 
 You can checkout the [DefaultStateProvider](../src/store/createStateProvider.js) and [ReduxStateProvider](../src/redux/createStateProvider.js). 

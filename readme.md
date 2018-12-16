@@ -136,6 +136,22 @@ export const UserProfile = ({ userId, data }) => {
 }
 ```
 
+With `Requests` component, `id` prop is a function which will extract request Ids from underlying children elements.
+```jsx harmony
+import { Requests } from 'questrar'; 
+
+export const UserTodo = ({ userId, data }) => {
+    
+    return (
+      <Requests id={(props) => props.requestId} inject  >
+        {data.map(todo => <TodoView requestId={todo.id} data={todo} inject={false} />)}
+      </Requests>
+    );
+}
+```
+`Requests` efficiently caches and selectively updates only children whose request states have changed.
+ However, this is not enabled by default. You can enable by setting `skipOldTrees` prop to `true`.
+
 Where you explicitly want to access the request state object, you can use the `inject` prop on `Request`;
 
 ```jsx harmony
@@ -206,7 +222,8 @@ export default withRequest({ id: (props) => props.userId })(UserProfile);
 type RequestComponentOptions = {
   id?: RequestId | Array<RequestId> | (props: Props) => (RequestId | Array<RequestId>),
   mergeIdSources?: boolean, //  merge options.id and props.id (if there is any),
-  stateProvider: StateProvider, // this stateProvider overrides the Provider stateProvider 
+  keepSingleRequestMap?: boolean, //  keep a single request state data map,
+  stateProvider?: StateProvider, // this stateProvider overrides the Provider stateProvider 
 }
 
 export default withRequest(options?: RequestComponentOptions)(Component)
@@ -234,8 +251,9 @@ type RequestMapProp = {
  
 Any of `props.id` or `options.id` is optional. If no id is found, an empty object is returned
 
-> Note: If a single id is provided by `props.id` or `options.id` or both(if `mergeIdSources` is `true`),
- a `RequestProp` is returned instead of `RequestMapProp`
+> Note: By default if a single id is provided by `props.id` or `options.id` or both(if `mergeIdSources` is `true`),
+ a `RequestProp` is returned instead of `RequestMapProp`. 
+ You can disable this behavior by setting `options.keepSingleRequestMap` to `true`
 
 
 
